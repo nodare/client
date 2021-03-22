@@ -1,0 +1,64 @@
+@ - created page
+@@ - with links
+@@@ - with states
+@@@@ - with functions
+@@@@@ - with functions and functional
+@@@@@@ - connected to api
+@@@@@@@ - with styles
+
+
+ROUTES
+===================================
+
+login @@@@@
+register @@@@@
+home 
+page not found @
+coming soon
+
+about
+search
+profile (me)@
+profile/:id@
+privacy @
+cookies policy @
+terms and conditions @ 
+community guidelines @
+
+community/ @@@@@
+    :community_id - injected sa community link na lang gamit na lang ng dropdown
+    create
+    post/create @
+    post/:post_id
+    settings @
+    recent activity @
+
+
+store-emoticon
+    my emoticons @ 
+    bundle/:bundle_id
+    emoticon/:emoticon_id 
+
+admin
+    messages
+    post
+    report
+        community
+        post
+        messages
+        users
+        
+community/:community_id
+post/:post_id
+report/:report_id
+
+
+redirect to login 
+redirect to page-not-found
+
+
+
+NOTES:
+==================
+create another server and db for messages and posts
+meanwhile create ng relational tables para dito for testing
