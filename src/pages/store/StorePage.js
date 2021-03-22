@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from "react-router";
-import { Tabs, Tab, Jumbotron, Row, Col, Card, Button } from "react-bootstrap";
+import { Tabs, Tab, Jumbotron, Row, Col, Card, Button, Image } from "react-bootstrap";
 import StickerShopCard from "./../../components/shared/cards/StickerShopCard";
 import { stickerShop } from "./../../static";
 
@@ -115,8 +115,34 @@ function MainStorePage() {
                 <Tab eventKey="merchandises" title="Merchandices">
                     <div className="my-2">
                         <Jumbotron>
-                            <h2>Merchandices</h2>
+                            <h2>Merchandises</h2>
                         </Jumbotron>
+                        <Row>
+                            <Col xs={6} md={4}>
+                                <Card className="my-2">
+                                    <Card.Body>
+                                        <div className="d-block w-100">
+                                            <Image src="assets/placeholders/tshirt-placeholder-1.jpg" className="w-100 pb-4"></Image> 
+                                            <h4 className="text-center m-0 p-0"><strong>Title of the tshirt</strong></h4>
+                                            <h5 className="text-center my-2 p-0 text-primary"><strong>$23.50</strong></h5>
+                                            <Button variant="primary" className="btn-block">View more</Button>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col xs={6} md={4}>
+                                <Card className="my-2">
+                                    <Card.Body>
+                                        <div className="d-block w-100">
+                                            <Image src="assets/placeholders/tshirt-placeholder-2.jpg" className="w-100 pb-4"></Image> 
+                                            <h4 className="text-center m-0 p-0"><strong>Title of the tshirt</strong></h4>
+                                            <h5 className="text-center my-2 p-0 text-primary"><strong>$23.50</strong></h5>
+                                            <Button variant="primary" className="btn-block">View more</Button>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
                     </div>
                 </Tab>
 
