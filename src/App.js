@@ -8,8 +8,10 @@ import RegisterPage from "./pages/core/RegisterPage";
 import PageNotFound from "./pages/core/PageNotFound";
 
 import UserCommunityListPage from './pages/community/UserCommunityListPage';
+import UserCommunityViewPage from "./pages/community/UserCommunityViewPage";
 import UserCommunityPostsCreatePage from './pages/community/posts/UserCommunityPostsCreatePage';
 import UserCommunityPostsViewPage from './pages/community/posts/UserCommunityPostsViewPage';
+
 import PrivacyStatementPage from './pages/documents/PrivacyStatementPage';
 import CookiesPolicyPage from './pages/documents/CookiesPolicyPage';
 import TermsAndConditionsPage from './pages/documents/TermsAndConditionsPage';
@@ -17,6 +19,8 @@ import CommunityGuidelinesPage from './pages/documents/CommunityGuidelinesPage';
 import AdminPage from "./pages/admin/AdminPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
 import MainStorePage from "./pages/store/StorePage";
+import StoreEmoticonItemPage from "./pages/store/StoreEmoticonItemPage";
+import StoreMerchandiseItemPage from "./pages/store/StoreMerchandiseItemPage";
 
 
 // components
@@ -65,10 +69,13 @@ function App() {
               <Route exact path="/community">
                 <UserCommunityListPage/>
               </Route>
+              <Route exact path="/community/:community_id">
+                <UserCommunityViewPage/>
+              </Route>
               <Route exact path="/community/post/create">
                 <UserCommunityPostsCreatePage/>
               </Route>
-              <Route exact path="/community/post/:community_id">
+              <Route exact path="/community/:community_id/post">
                 <UserCommunityPostsViewPage/>
               </Route>
               <Route exact path="/community/:community_id/post/:id">
@@ -92,6 +99,12 @@ function App() {
               {/* store page */}
               <Route exact path="/store">
                 <MainStorePage/>
+              </Route>
+              <Route exact path="/store/merchandise/:merchandise_id">
+                <StoreMerchandiseItemPage/>
+              </Route>
+              <Route exact path="/store/emoticon/:emoticon_id">
+                <StoreEmoticonItemPage/>
               </Route>
 
               {/* admin page */}
