@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect } from "react-router-dom";
-import { Container, Button, Form, Row, Col, Card, Toast, Spinner } from "react-bootstrap";
+import { Redirect, Link } from "react-router-dom";
+import { Alert, Container, Button, Form, Row, Col, Card, Toast, Spinner, Breadcrumb } from "react-bootstrap";
 
 import EditorJs from 'react-editor-js'
 import Header from "@editorjs/header";
@@ -8,8 +8,8 @@ import Paragraph from "@editorjs/paragraph";
 import List from "@editorjs/list";
 import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
-import Link from "@editorjs/link";
-import Image from "@editorjs/image";
+// import Link from "@editorjs/link";
+import Image from "@editorjs/simple-image";
 
 function UserCommunityPostsCreatePage() {
     const [postFormValues, setPostFormValues] = useState({
@@ -40,7 +40,6 @@ function UserCommunityPostsCreatePage() {
 
     const handleEditorSave = async () => {
         setIsLoading(true)
-        console.log("isLoading")
         const savedData = await editor.save()
         setTimeout(() => {
             setEditorContent(savedData.blocks)
@@ -61,6 +60,9 @@ function UserCommunityPostsCreatePage() {
                     type: string
                 })
         */
+        if(postFormValues.title === null) return window.alert("Please include a title in your post. ")
+        if(postFormValues.communityId === null) return window.alert("Please select which community to post. ")
+        if(postFormValues.contents.length === 0) return window.alert("Editor is empty. Please write something. ")
         console.log(postFormValues)
         setIsFinished(true)
     }
@@ -68,6 +70,17 @@ function UserCommunityPostsCreatePage() {
     return (
         <>
             <Container>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/community">Community</Breadcrumb.Item>
+                    <Breadcrumb.Item active>Create Post</Breadcrumb.Item>
+                </Breadcrumb>
+                <Alert variant={"warning"}>
+                    <b>NOTE:</b> For <b className="text-danger">Non-subscribed users</b>, please note that you are only allowed to create contents only up to <b className="text-danger">10 blocks.</b> You can create more blocks by subscribing <Link to="/store">here.</Link>
+                </Alert>
+                <Alert variant={"danger"}>
+                    <b>NOTE:</b> Images are not yet available at this time.
+                </Alert>
                 <div>
                     <Row>
                         <Col xs={12}  xl={3}>

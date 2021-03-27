@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
-import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Image } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table, Image } from "react-bootstrap";
 import UserCommunityPostsCreatePage from './../posts/UserCommunityPostsCreatePage';
 import { samplePost } from "./../../../static";
 
@@ -71,6 +72,70 @@ function UserCommunityPostsViewPage() {
                                                     return(
                                                         <p key={i}>{content.data.text}</p>
                                                     )
+                                                    break;
+                                                case "link":
+                                                    return(
+                                                        <Link to={content.data.link}>Link</Link>
+                                                    )
+                                                    break;
+                                                case "quote":
+                                                    return(
+                                                        // to be revised
+                                                        <Card key={i}>
+                                                            <Card.Body>
+                                                                <div className="d-block">
+                                                                    <p>{content.data.text}</p>
+                                                                </div>
+                                                                <small>{content.data.caption}</small>
+                                                            </Card.Body>
+                                                        </Card>
+                                                    )
+                                                    break;
+                                                case "list":
+                                                    switch(content.data.style){
+                                                        case "ordered":
+                                                            <ol>
+                                                                {
+                                                                    content.data.items.map((item,i)=>{
+                                                                        <li key={i}>{item}</li>
+                                                                    })
+                                                                }
+                                                            </ol>
+                                                            break;
+                                                        case "unordered":
+                                                            <ul>
+                                                                {
+                                                                    content.data.items.map((item,i)=>{
+                                                                        <li key={i}>{item}</li>
+                                                                    })
+                                                                }
+                                                            </ul>
+                                                            break;
+                                                        default: 
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "table":
+                                                    <Table>
+                                                        {
+                                                            content.data.content.map((row, i)=>{
+                                                                (
+                                                                    <tr key={i}>
+                                                                        {
+                                                                            row.map((cell, j)=>{
+                                                                                <td key={j}>
+                                                                                    {cell}
+                                                                                </td>
+                                                                            })
+                                                                        }
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                    </Table>
+                                                    break;
+                                                case "image":
+                                                    // code placed sood
                                                     break;
                                                 default:
                                                     break;
@@ -162,6 +227,25 @@ function UserCommunityPostsViewPage() {
 
                     <Tab eventKey="settings" title="settings">
                         Settings page
+                        
+                        <Table
+                            size={'sm'}
+                            borderless
+                            responsive
+                        >
+                            <tr>
+                                <td><strong>Communities</strong></td>
+                                <td>123</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Registered</strong></td>
+                                <td>02/23/2020</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last logged in:</strong></td>
+                                <td>14 minutes ago</td>
+                            </tr>
+                        </Table>
                     </Tab>
                 </Tabs>
                 
