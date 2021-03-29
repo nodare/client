@@ -45,7 +45,7 @@ function LoginPage() {
                                     <Form.Label>Password</Form.Label>
                                     <Form.Control type="password" value={loginForm.password} onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}></Form.Control>
                                 </Form.Group>
-                                <p>Don't have an account? <a href="#">Sign up</a></p>
+                                <p>Don't have an account? <Link to="/register">Sign up</Link></p>
                                 <Button type="button" onClick={() => submitLoginForm()}> Login</Button>
                             </Form>
                         </Container>
