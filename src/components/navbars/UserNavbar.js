@@ -1,6 +1,11 @@
 import React from 'react'
-import { Nav, Navbar, NavDropdown, Container, Row, Col } from "react-bootstrap";
+import { Nav, Navbar, NavDropdown, Container, Row, Col, Tooltip, OverlayTrigger, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+    faBell,
+    faShoppingCart
+} from "@fortawesome/free-solid-svg-icons";
 
 function UserNavbarComponent() {
 
@@ -20,20 +25,28 @@ function UserNavbarComponent() {
                             </Link>
                         </Nav>
                         <Nav>
-                            <Nav.Link>
-                                <Link to="/notifications">
-                                    Notifications
-                                </Link>
+                            <Nav.Link href="/notifications">
+                                <OverlayTrigger 
+                                    placement={"bottom"}
+                                    overlay={
+                                        <Tooltip id={"notificationsTooltip"}>
+                                            {/* Notifications */}
+                                            2 new notifications
+                                        </Tooltip>
+                                    }
+                                    >
+                                        <div>
+                                            <FontAwesomeIcon icon={faBell} />
+                                            <Badge pill variant={"danger"}>2</Badge>
+                                        </div>
+                                </OverlayTrigger>
+                                
                             </Nav.Link>
-                            <Nav.Link>
-                                <Link to="/store">
-                                    Store
-                                </Link>
+                            <Nav.Link href="/store">
+                                <FontAwesomeIcon icon={faShoppingCart}/>
                             </Nav.Link>
-                            <Nav.Link>
-                                <Link to="/login">
-                                    Login
-                                </Link>
+                            <Nav.Link href="/login">
+                                Login
                             </Nav.Link>
                             <NavDropdown title="Account">
                                 <NavDropdown.Item>
