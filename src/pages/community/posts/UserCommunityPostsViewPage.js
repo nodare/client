@@ -12,9 +12,16 @@ function UserCommunityPostsViewPage() {
     // static data for now
     const [post, setPost] = useState(samplePost)
     const [showCommentsBox, setShowCommentsBox] = useState(false)
+    const [commentInput, setCommentInput] = useState('')
 
     const onClickShowCommentsButton = () => {
         setShowCommentsBox(true)
+    }
+
+    const sendComment = () => {
+        // add a ccomment to send a comment to the api
+        setCommentInput('')
+        window.alert("Comment added!")
     }
     
     return (
@@ -156,8 +163,8 @@ function UserCommunityPostsViewPage() {
 
                                 <h4>Discussion (13)</h4>
                                 <Form.Group className="d-flex justify-content-left">
-                                    <textarea className="form-control" placeholder="Write a comment here"></textarea>
-                                    <Button variant="primary">Send</Button>
+                                    <textarea className="form-control" placeholder="Write a comment here" value={commentInput} onChange={e=>setCommentInput(e.target.value)}></textarea>
+                                    <Button variant="primary" onClick={()=>sendComment()}>Send</Button>
                                 </Form.Group>
 
                                 {/* user comments */}
@@ -165,7 +172,7 @@ function UserCommunityPostsViewPage() {
                                     (
                                         <div className="commentsSectionBox">
                                             <div className="d-flex justify-content-center py-3">
-                                                <span onClick={()=>onClickShowCommentsButton()}>Click to show comments</span>
+                                                <span onClick={()=>onClickShowCommentsButton()} style={{cursor: "pointer"}}>Click to show comments</span>
                                             </div>
                                         </div>
                                     )
