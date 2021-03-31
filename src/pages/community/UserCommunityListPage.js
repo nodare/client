@@ -7,7 +7,6 @@ import {
     Card,
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import { Link } from "react-router-dom";
 
 
 function UserCommunityListPage() {
@@ -43,7 +42,7 @@ function UserCommunityListPage() {
                 
                 <Row>
                     <Col sm={6} md={4} xl={3}>
-                        <LinkContainer to={"/community/123"}>
+                        <LinkContainer to={"/community/123"} style={{cursor: "pointer"}}>
                             <Card className="my-3">
                                 <Card.Body>
                                     <h4 className="text-center">Name of Community   </h4>
@@ -54,7 +53,7 @@ function UserCommunityListPage() {
                         </LinkContainer>
                     </Col>
                     <Col sm={6} md={4} xl={3}>
-                        <LinkContainer to={"/community/123"}>
+                        <LinkContainer to={"/community/123"} style={{cursor: "pointer"}}>
                             <Card className="my-3">
                                 <Card.Body>
                                     <h4 className="text-center">Name of Community   </h4>
