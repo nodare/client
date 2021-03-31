@@ -1,5 +1,57 @@
 export const accountId = 123
 
+export const communityCategories = [
+    {
+        "id": 1,
+        "name": "Squirrel, red",
+        "categoryDescription": "Speech/language dis NEC"
+    },
+    {
+        "id": 2,
+        "name": "Pied crow",
+        "categoryDescription": "Hx benign neoplasm brain"
+    },
+    {
+        "id": 3,
+        "name": "Duiker, gray",
+        "categoryDescription": "Ac cerebrovasc insuf NOS"
+    },
+    {
+        "id": 4,
+        "name": "Vulture, lappet-faced",
+        "categoryDescription": "Quartan malaria"
+    },
+    {
+        "id": 5,
+        "name": "White-headed vulture",
+        "categoryDescription": "Testicular hyperfunction"
+    },
+    {
+        "id": 6,
+        "name": "Sifaka, verreaux's",
+        "categoryDescription": "Intracerebral hemorrhage"
+    },
+    {
+        "id": 7,
+        "name": "Beisa oryx",
+        "categoryDescription": "Mal neo mouth floor NOS"
+    },
+    {
+        "id": 8,
+        "name": "Stork, white-necked",
+        "categoryDescription": "Eosinophilic colitis"
+    },
+    {
+        "id": 9,
+        "name": "Wolf, common",
+        "categoryDescription": "Sleep organic disord NEC"
+    },
+    {
+        "id": 10,
+        "name": "Cormorant, little",
+        "categoryDescription": "Fetal mal 1000-1249g"
+    }
+]
 
 export const communityPosts = []
 
