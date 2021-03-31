@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Switch, Route, Link, Redirect  } from "react-r
 import LoginPage from "./pages/core/LoginPage";
 import RegisterPage from "./pages/core/RegisterPage";
 import PageNotFound from "./pages/core/PageNotFound";
+import HomeFeed from './pages/core/HomeFeed';
 
 import UserCommunityListPage from './pages/community/UserCommunityListPage';
 import UserCommunityViewPage from "./pages/community/UserCommunityViewPage";
@@ -25,20 +26,31 @@ import StoreMerchandiseItemPage from "./pages/store/StoreMerchandiseItemPage";
 
 // components
 import UserNavbarComponent from './components/navbars/UserNavbar'
+import SettingsPage from './pages/user/SettingsPage';
+
 
 
 function App() {
-  
+  const [isLoggedIn, IsLoggedIn] = useState(true)
   
   return (
     
     <>
       <Router>
         <UserNavbarComponent/>
-        <Container>
+        <Container className="py-3">
 
-          <div className="py-3">
             <Switch>
+              {/* root */}
+              <Route exact path="/">
+                {
+                  isLoggedIn?
+                    <Redirect to="/home"></Redirect>
+                  :
+                    <Redirect to="/login"></Redirect>
+                }
+              </Route>
+              
               <Route exact path="/login">
                 <LoginPage/>
               </Route>
@@ -50,8 +62,8 @@ function App() {
               </Route>
 
               {/* home */}
-              <Route exact path="/">
-                This is the homepage
+              <Route exact path="/home">
+                <HomeFeed/>
               </Route>
 
               {/* user */}
@@ -60,6 +72,9 @@ function App() {
               </Route>
               <Route exact path="/profile/:id">
                 <UserProfilePage/>
+              </Route>
+              <Route exact path="/settings">
+                <SettingsPage/>
               </Route>
 
               {/* community */}
@@ -79,7 +94,7 @@ function App() {
                 <UserCommunityPostsViewPage/>
               </Route>
               <Route exact path="/community/:community_id/post/:id">
-                <UserCommunityPostsCreatePage/>
+                <UserCommunityPostsViewPage/>
               </Route>
 
               {/* document pages */}
@@ -117,7 +132,6 @@ function App() {
 
             {/* <UserCommunityViewPage/> */}
             {/* <UserCommunityListPage/> */}
-          </div>
         </Container>
         
       </Router>
