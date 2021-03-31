@@ -1,10 +1,15 @@
 import React from 'react'
-import { Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 
 function StoreMerchandiseItemPage() {
     return (
         <>
-            store merchandise page
+            <Container>
+                <Row>
+                    <Col xs={12} md={6}>sdf</Col>
+                    <Col xs={12} md={6}>sdf</Col>
+                </Row>
+            </Container>
         </>
     )
 }

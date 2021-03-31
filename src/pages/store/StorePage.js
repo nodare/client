@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from "react-router";
+import { LinkContainer } from "react-router-bootstrap";
 import { Tabs, Tab, Jumbotron, Row, Col, Card, Button, Image } from "react-bootstrap";
 import StickerShopCard from "./../../components/shared/cards/StickerShopCard";
 import { stickerShop } from "./../../static";
@@ -125,7 +126,9 @@ function MainStorePage() {
                                             <Image src="assets/placeholders/tshirt-placeholder-1.jpg" className="w-100 pb-4"></Image> 
                                             <h4 className="text-center m-0 p-0"><strong>Title of the tshirt</strong></h4>
                                             <h5 className="text-center my-2 p-0 text-primary"><strong>$23.50</strong></h5>
-                                            <Button variant="primary" className="btn-block">View more</Button>
+                                            <LinkContainer to="/store/merchandise/333">
+                                                <Button variant="primary" className="btn-block">View more</Button>
+                                            </LinkContainer>
                                         </div>
                                     </Card.Body>
                                 </Card>
@@ -137,7 +140,9 @@ function MainStorePage() {
                                             <Image src="assets/placeholders/tshirt-placeholder-2.jpg" className="w-100 pb-4"></Image> 
                                             <h4 className="text-center m-0 p-0"><strong>Title of the tshirt</strong></h4>
                                             <h5 className="text-center my-2 p-0 text-primary"><strong>$23.50</strong></h5>
-                                            <Button variant="primary" className="btn-block">View more</Button>
+                                            <LinkContainer to="/store/merchandise/333">
+                                                <Button variant="primary" className="btn-block">View more</Button>
+                                            </LinkContainer>
                                         </div>
                                     </Card.Body>
                                 </Card>
