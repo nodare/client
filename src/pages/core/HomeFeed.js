@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Tab, Nav, Row, Col, Form, Card, Spinner, Button } from "react-bootstrap";
 import { communityCategories } from "./../../static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from "react-router";
 import { LinkContainer } from "react-router-bootstrap";
 import { Tabs, Tab, Jumbotron, Row, Col, Card, Button, Image } from "react-bootstrap";
@@ -14,9 +14,6 @@ function MainStorePage() {
     //     setStickersList(stickerShop)
     // }
 
-    // useEffect(() => {
-    //     fetchStickers()
-    // }, [])
 
     return (
         <>
