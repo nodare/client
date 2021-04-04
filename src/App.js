@@ -37,7 +37,7 @@ function App() {
     
     <>
       <Router>
-        <UserNavbarComponent/>
+        <UserNavbarComponent isLoggedIn={isLoggedIn}/>
         <Container className="py-3">
 
             <Switch>

@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
     faBell,
-    faShoppingCart
+    faShoppingBasket
 } from "@fortawesome/free-solid-svg-icons";
 
-function UserNavbarComponent() {
+function UserNavbarComponent(props) {
 
     const toggleDarkMode = () => {
         console.log("toggling dark mode")
@@ -43,39 +43,45 @@ function UserNavbarComponent() {
                                 
                             </Nav.Link>
                             <Nav.Link href="/store">
-                                <FontAwesomeIcon icon={faShoppingCart}/>
+                                <FontAwesomeIcon icon={faShoppingBasket}/>
                             </Nav.Link>
-                            <Nav.Link href="/login">
-                                Login
-                            </Nav.Link>
-                            <NavDropdown title="Account">
-                                <NavDropdown.Item>
-                                    {/* account keme root */}
-                                </NavDropdown.Item>
-                                <NavDropdown.Item>
-                                    <Link to="/me">
-                                        Profile
-                                    </Link>
-                                </NavDropdown.Item>
-                                <NavDropdown.Item>
-                                    <Link to="/community">
-                                        Communities
-                                    </Link>
-                                </NavDropdown.Item>
-                                <NavDropdown.Item>
-                                    <Link to="/messages">
-                                        Messages
-                                    </Link>
-                                </NavDropdown.Item>
-                                <NavDropdown.Divider/>
-                                <NavDropdown.Item>
-                                    <Link to="/settings">
-                                        Settings
-                                    </Link>
-                                </NavDropdown.Item>
-                                <NavDropdown.Item onClick={()=>toggleDarkMode()}>Dark Mode</NavDropdown.Item>
-                                <NavDropdown.Item>Logout</NavDropdown.Item>
-                            </NavDropdown>
+                            {
+                                props.isLoggedIn === false?
+                                    <Nav.Link href="/login">
+                                        Login
+                                    </Nav.Link>
+                                :
+                                    <NavDropdown title="Account">
+                                        <NavDropdown.Item>
+                                            {/* account keme root */}
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <Link to="/me">
+                                                Profile
+                                            </Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <Link to="/community">
+                                                Communities
+                                            </Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <Link to="/messages">
+                                                Messages
+                                            </Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Divider/>
+                                        <NavDropdown.Item>
+                                            <Link to="/settings">
+                                                Settings
+                                            </Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item onClick={()=>toggleDarkMode()}>Dark Mode</NavDropdown.Item>
+                                        <NavDropdown.Item>Logout</NavDropdown.Item>
+                                    </NavDropdown>
+
+                            }
+                            
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

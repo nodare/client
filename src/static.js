@@ -1,5 +1,68 @@
 export const accountId = 123
 
+export const communities = [
+    {
+        "id": 1,
+        "name": "Stronghold",
+        "description": "Rectal fistula",
+        "dateCreated": "1/17/2020"
+    },
+    {
+        "id": 2,
+        "name": "Tampflex",
+        "description": "Corrosion of first degree of left thigh, subs encntr",
+        "dateCreated": "7/5/2020"
+    },
+    {
+        "id": 3,
+        "name": "Fix San",
+        "description": "Foreign body granuloma of soft tissue, NEC, unsp upper arm",
+        "dateCreated": "9/18/2020"
+    },
+    {
+        "id": 4,
+        "name": "Redhold",
+        "description": "Injury of nerves at shoulder and upper arm level, right arm",
+        "dateCreated": "8/3/2020"
+    },
+    {
+        "id": 5,
+        "name": "Latlux",
+        "description": "Toxic effect of venom of scorpion, undetermined, sequela",
+        "dateCreated": "1/11/2021"
+    },
+    {
+        "id": 6,
+        "name": "Vagram",
+        "description": "Pnctr w foreign body of unsp toe(s) w damage to nail",
+        "dateCreated": "12/12/2020"
+    },
+    {
+        "id": 7,
+        "name": "Bytecard",
+        "description": "Lac w/o fb of l bk wl of thorax w penet thor cavity, subs",
+        "dateCreated": "6/11/2020"
+    },
+    {
+        "id": 8,
+        "name": "Keylex",
+        "description": "Nondisp commnt fx r patella, 7thJ",
+        "dateCreated": "12/23/2019"
+    },
+    {
+        "id": 9,
+        "name": "Sonsing",
+        "description": "Cerebral infarction due to thrombosis of precerebral artery",
+        "dateCreated": "2/15/2021"
+    },
+    {
+        "id": 10,
+        "name": "Alpha",
+        "description": "Other secondary chronic gout, unspecified hand",
+        "dateCreated": "5/18/2020"
+    }
+]
+
 export const communityCategories = [
     {
         "id": 1,
@@ -55,6 +118,109 @@ export const communityCategories = [
 
 export const communityPosts = []
 
+export const postsList = [
+    {
+        "id": 1,
+        "postName": "CELECOXIB",
+        "dateCreated": "2/19/2021"
+    },
+    {
+        "id": 2,
+        "postName": "Artemisia vulgaris",
+        "dateCreated": "1/25/2020"
+    },
+    {
+        "id": 3,
+        "postName": "Menthol",
+        "dateCreated": "1/18/2021"
+    },
+    {
+        "id": 4,
+        "postName": "Calcarea carbonica, Causticum, Chloramphenicolum, Colchicum autumnale, Gambonia, Histaminum hydrochloricum, Hydrastis canadensis, Ichthyolum, Lecithin, Ova tosta, Ovi gallinae pellicula, Pulsatilla, Pyrogenium",
+        "dateCreated": "11/2/2019"
+    },
+    {
+        "id": 5,
+        "postName": "Cefdinir",
+        "dateCreated": "2/9/2021"
+    },
+    {
+        "id": 6,
+        "postName": "Acetaminophen",
+        "dateCreated": "12/7/2019"
+    },
+    {
+        "id": 7,
+        "postName": "Epicoccum nigrum",
+        "dateCreated": "12/25/2019"
+    },
+    {
+        "id": 8,
+        "postName": "PRAVASTATIN SODIUM",
+        "dateCreated": "3/9/2020"
+    },
+    {
+        "id": 9,
+        "postName": "medroxyprogesterone acetate",
+        "dateCreated": "3/20/2020"
+    },
+    {
+        "id": 10,
+        "postName": "Hydrocortisone",
+        "dateCreated": "2/27/2020"
+    },
+    {
+        "id": 11,
+        "postName": "Clonidine Hydrochloride",
+        "dateCreated": "10/23/2020"
+    },
+    {
+        "id": 12,
+        "postName": "Diethylpropion hydrochloride",
+        "dateCreated": "12/22/2019"
+    },
+    {
+        "id": 13,
+        "postName": "Finasteride",
+        "dateCreated": "12/28/2019"
+    },
+    {
+        "id": 14,
+        "postName": "Zinc Oxide",
+        "dateCreated": "1/27/2020"
+    },
+    {
+        "id": 15,
+        "postName": "Avobenzone Octisalate Octocrylene",
+        "dateCreated": "8/31/2019"
+    },
+    {
+        "id": 16,
+        "postName": "Sennosides",
+        "dateCreated": "11/19/2020"
+    },
+    {
+        "id": 17,
+        "postName": "cocoa butter, phenylephrine hcl",
+        "dateCreated": "3/17/2020"
+    },
+    {
+        "id": 18,
+        "postName": "ISOSORBIDE MONONITRATE",
+        "dateCreated": "9/2/2019"
+    },
+    {
+        "id": 19,
+        "postName": "Vancomycin Hydrochloride",
+        "dateCreated": "8/29/2020"
+    },
+    {
+        "id": 20,
+        "postName": "Prazosin Hydrochloride",
+        "dateCreated": "7/13/2019"
+    }
+]
+
 export const samplePost = {
     id: 123,
     user_id: 234,
@@ -101,7 +267,6 @@ export const samplePost = {
     created_at: '2020-08-20 23:40:52',
     updated_at: '2020-08-22 23:40:52'
 }
-
 
 export const stickerShop = [{
     "id": "202804a9-2c65-4ebf-9963-8de41400c210",
@@ -194,3 +359,12 @@ export const stickerShop = [{
     "image": "assets/placeholders/sticker-placeholder.png",
     "price": 62.2
 }]
+
+export const sampleProduct = {
+    "id": 1,
+    "productName": "Agrostis canina L.",
+    "description": "Microscopic examination of specimen from bladder, urethra, prostate, seminal vesicle, perivesical tissue, and of urine and semen, bacterial smear",
+    "rating": 3.5,
+    "image": "./../../assets/placeholders/tshirt-placeholder-1.jpg",
+    "price": 399.00
+}
