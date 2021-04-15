@@ -28,16 +28,20 @@ import StoreMerchandiseItemPage from "./pages/store/StoreMerchandiseItemPage";
 import UserNavbarComponent from './components/navbars/UserNavbar'
 import SettingsPage from './pages/user/SettingsPage';
 
-
-
 function App() {
   const [isLoggedIn, IsLoggedIn] = useState(true)
+  const [isConnected, setIsConnected] = useState(true)
+
   
   return (
     
     <>
       <Router>
-        <UserNavbarComponent isLoggedIn={isLoggedIn}/>
+
+        {
+          isConnected?<UserNavbarComponent isLoggedIn={isLoggedIn}/>:""
+        }
+
         <Container className="py-3">
 
             <Switch>
@@ -50,7 +54,19 @@ function App() {
                     <Redirect to="/login"></Redirect>
                 }
               </Route>
+
+              <Route exact path="/noconnection">
+                {isConnected?<Redirect to="/home"></Redirect>:""}
+                <div className="text-center h-100">
+                  <h1>Whoops! I'm sorry</h1>
+                  The server couldn't return data because we are not connected to the database!
+                </div>
+              </Route>
               
+              {
+                !isConnected?<Redirect to="/noconnection"></Redirect>:""
+              }
+
               <Route exact path="/login">
                 <LoginPage/>
               </Route>
@@ -81,9 +97,6 @@ function App() {
               <Route exact path="/community">
                 <UserCommunityListPage/>
               </Route>
-              <Route exact path="/community">
-                <UserCommunityListPage/>
-              </Route>
               <Route exact path="/community/:community_id">
                 <UserCommunityViewPage/>
               </Route>
@@ -93,7 +106,7 @@ function App() {
               <Route exact path="/community/:community_id/post">
                 <UserCommunityPostsViewPage/>
               </Route>
-              <Route exact path="/community/:community_id/post/:id">
+              <Route exact path="/community/:community_id/post/:post_id">
                 <UserCommunityPostsViewPage/>
               </Route>
 
