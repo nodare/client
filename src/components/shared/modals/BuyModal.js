@@ -34,7 +34,7 @@ export function BuyModal(props) {
                 </Modal.Header>
                 <Modal.Body>{props.text}</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={()=>props.toggleTrigger(false)}>Cancel</Button>
+                    <Button variant="outline-link" onClick={()=>props.toggleTrigger(false)}>Cancel</Button>
                     <Button variant="primary" onClick={() => buyMethod()}>Buy Item {`$${props.data.price}`}</Button>
                 </Modal.Footer>
             </Modal>
