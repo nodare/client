@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import { 
     Container,
@@ -15,27 +15,42 @@ import {
     ListGroup
 } from "react-bootstrap";
 import ChangeLayoutButtons from "./../../components/shared/buttons/ChangeLayoutButtons";
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+
+import { fetchCommunityData, fetchCommunitiyPosts, fetchCommunityPosts } from "./../../services/community.service";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { postsList } from "./../../static";
 
 function UserCommunityViewPage() {
+    const params = useParams();
     const [isLoading, setIsLoading] = useState(false)
     const [layout, setLayout] = useState('cards')
+    const [communityData, setCommunityData] = useState()
     const [posts, setPosts] = useState([])
     
-    const fetchPosts = (id) => {
-        // place code to get posts from the api
-        setPosts(postsList)
+    const getCommunityData = linearId => {
+        fetchCommunityData(linearId).then(res=>{
+            setCommunityData(res.data)
+        })
+        console.log(communityData)
+    }
+    const fetchPosts = (linearId) => {
+        fetchCommunityPosts(linearId)
+        .then(res=>{
+            console.log(res)
+            setPosts(res)
+        })
+        // setPosts(postsList)
     }
     
     useEffect(() => {
         setIsLoading(true)
         setTimeout(() => {
-            fetchPosts(555)
+            getCommunityData(params.community_id)
+            fetchPosts(params.community_id)
             setIsLoading(false)
         }, 1000);
     }, [])
@@ -87,7 +102,7 @@ function UserCommunityViewPage() {
                     ):(
                     
                         /* communities */
-                        postsList.length === 0?
+                        posts.length === 0?
                             <p className="text-center">There are no posts to show. </p>
                         :
                             layout==='cards'?
@@ -96,12 +111,12 @@ function UserCommunityViewPage() {
                                         {
                                             posts.map((post, i)=>{
                                                 return(
-                                                    <LinkContainer to="/community/123/post/123">
+                                                    <LinkContainer to={`/community/${params.community_id}/post/${post.linear_id}`}>
                                                         <Card className="p-3 mb-2 mx-1">
                                                             <Image src="https://placekitten.com/200/250" fluid></Image>
                                                             <div className="text-center py-2">
                                                                 <h5>
-                                                                    {post.postName.substr(0,25)}
+                                                                    {post.title.substr(0,25)}
                                                                 </h5>
                                                             </div>
                                                         </Card>
@@ -118,10 +133,10 @@ function UserCommunityViewPage() {
                                         {
                                             posts.map((post, i)=>{
                                                 return(
-                                                    <LinkContainer to={`/community/123/post/${post.id}`}>
+                                                    <LinkContainer to={`/community/${params.community_id}/post/${post.linear_id}`}>
                                                         <ListGroup.Item as="li" style={{cursor: "pointer"}}>
                                                             <div className="d-flex justify-content-between">
-                                                                <p>{post.postName.substr(0,25)}</p>
+                                                                    <p>{post.title.substr(0,25)}</p>
                                                                 <p class="text-left"><small>Date Created: </small>{post.dateCreated}</p>
                                                             </div>
                                                         </ListGroup.Item>

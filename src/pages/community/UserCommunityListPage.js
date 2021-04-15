@@ -7,16 +7,18 @@ import {
     Jumbotron, 
     Card,
     Form,
-    Spinner
+    Spinner,
+    Button
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import ChangeLayoutButton from "./../../components/shared/buttons/ChangeLayoutButtons";
 
+import { fetchUsersCommunities } from "./../../services/community.service";
 import { communities as staticCommunities } from "./../../static";
 
 // icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faThLarge, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 
 function UserCommunityListPage() {
@@ -31,8 +33,8 @@ function UserCommunityListPage() {
     const [layout, setLayout] = useState('cards')
 
     useEffect(()=>{
+        getCommunityList()
         setTimeout(() => {
-            fetchCommunities()
             setIsLoading(false)
         }, 1000);
     }, [])
@@ -42,10 +44,10 @@ function UserCommunityListPage() {
     }, [search.text])
 
     
-    const fetchCommunities = async () => {
-        
-        // place code to get communities from the api
-        await setCommunities(staticCommunities)
+    const getCommunityList = () => {
+        fetchUsersCommunities().then(res=>{
+            setCommunities(res)
+        })
     }
         
 
@@ -68,9 +70,16 @@ function UserCommunityListPage() {
 
                 <Row>
                     <Col sm={6}>
-                        <Form.Group>
-                            <Form.Control type="text" value={search.text} placeholder="Search for a community" onChange={e => setSearch({...search, text: e.target.value})}/>
-                        </Form.Group>
+                        <Form.Row>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Control type="text" value={search.text} placeholder="Search for a community" onChange={e => setSearch({...search, text: e.target.value})}/>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Button variant="primary"><FontAwesomeIcon icon={faPlus}/> Add new community</Button>
+                            </Col>
+                        </Form.Row>
                     </Col> 
                     <Col sm={6} className="text-right">
                         <ChangeLayoutButton handleChangeLayout={setLayout}/>
@@ -91,12 +100,12 @@ function UserCommunityListPage() {
                                         case 'cards':
                                             return(
                                                 <Col sm={6} md={4} xl={3} key={`com-${i}`}>
-                                                    <LinkContainer to={`/community/${community.id}`} style={{cursor: "pointer"}}>
+                                                    <LinkContainer to={`/community/${community.linear_id}`} style={{cursor: "pointer"}}>
                                                         <Card className="my-3">
                                                             <Card.Body>
-                                                                <h4 className="text-center">{community?.name}</h4>
+                                                                <h4 className="text-center">{community?.title}</h4>
                                                                 <p className="text-center">{community?.description}</p>
-                                                                <p className="text-center"><small>Date created: {community?.dateCreated}</small></p>
+                                                                <p className="text-center"><small>Date created: {community?.created_at}</small></p>
                                                             </Card.Body>
                                                         </Card>
                                                     </LinkContainer>
@@ -106,14 +115,14 @@ function UserCommunityListPage() {
                                             return(
                                                 <Col xs={12} key={`com-${i}`}>
                                                     
-                                                    <LinkContainer to={`/community/${community.id}`} style={{cursor: "pointer"}}>
+                                                    <LinkContainer to={`/community/${community.linear_id}`} style={{cursor: "pointer"}}>
                                                         <Card className="px-3 py-2 my-2">
                                                             <div className="d-flex justify-content-between">
                                                                 <div className="text-left">
-                                                                    <h4>{community?.name}</h4>
-                                                                    <p>{community?.description}</p>
+                                                                    <h4>{community?.title}</h4>
+                                                                    <span>{community?.description}</span>
                                                                 </div>
-                                                                <p><small>Date created: {community?.dateCreated}</small></p>
+                                                                <p><small>Date created: {community?.created_at}</small></p>
                                                             </div>
                                                         </Card>
                                                     </LinkContainer>

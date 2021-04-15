@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Redirect, Link } from "react-router-dom";
 import { Alert, Container, Button, Form, Row, Col, Card, Toast, Spinner, Breadcrumb } from "react-bootstrap";
 
@@ -11,13 +11,17 @@ import Table from "@editorjs/table";
 // import Link from "@editorjs/link";
 import Image from "@editorjs/simple-image";
 
+import { fetchUsersCommunities, createNewPost, addNewPostContents } from "./../../../services/community.service";
+
+import { accountId } from "./../../../static";
+
 function UserCommunityPostsCreatePage() {
     const [postFormValues, setPostFormValues] = useState({
-        title: null,
-        communityId: null,
-        categoryId: null,
-        contents: Array()
+        title: '',
+        community_id: '',
+        category_id: ''
     })
+    const [postContents, setPostContents] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [isFinished, setIsFinished] = useState(false)
     const [editor, setEditor] = useState(null)
@@ -36,36 +40,78 @@ function UserCommunityPostsCreatePage() {
         message: ""
     })
 
+    const [userCommunities, setUserCommunities] = useState([])
+    const [userCategories, setUserCategories] = useState([])
 
+    useEffect(()=>{
+        if(userCommunities.length > 0) setUserCommunities([])
+        fetchUsersCommunities(accountId)
+        .then(res=>{
+            setUserCommunities(res)
+        })
+        .catch(err=>{
+            console.log("err")
+            console.log(err)
+        })
+    }, [])
+
+    
+    const userCommunityOptions = userCommunities.map((community)=>{
+        return(
+            <option key={community.id} value={community.linearId}>{community.title}</option>
+        )
+    })
 
     const handleEditorSave = async () => {
         setIsLoading(true)
         const savedData = await editor.save()
         setTimeout(() => {
             setEditorContent(savedData.blocks)
-            setPostFormValues({...postFormValues, contents: savedData.blocks})
+            setPostContents(savedData.blocks)
             setIsLoading(false)
         }, 500);
     }
 
+    const handleChangeCommunity = async communityName => {
+        setPostFormValues({...postFormValues, community_id: communityName })
+    }
+
+    /* 
+        DATA:
+            categoryId : string
+            community : string
+            contents : Array({
+                data:{
+                    text: string
+                },
+                type: string
+            })
+    */
     const addNewPost = () => {
-        /* 
-            DATA:
-                categoryId : string
-                communityId : string
-                contents : Array({
-                    data:{
-                        text: string
-                    },
-                    type: string
-                })
-        */
         if(postFormValues.title === null) return window.alert("Please include a title in your post. ")
-        if(postFormValues.communityId === null) return window.alert("Please select which community to post. ")
-        if(postFormValues.contents.length === 0) return window.alert("Editor is empty. Please write something. ")
-        console.log(postFormValues)
+        if(postFormValues.community === null) return window.alert("Please select which community to post. ")
+        if(postContents.length === 0) return window.alert("Editor is empty. Please write something. ")
+
+        let data = postFormValues
+        data.community_id = userCommunities.find(community=> community.title === postFormValues.community_id).linear_id
+
+        createNewPost(data)
+        .then(payload=>{
+            addNewPostContents( payload.id, postContents)
+            .then(res=>{
+                window.alert("Post successfully created!")
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+
         setIsFinished(true)
     }
+
 
     return (
         <>
@@ -92,27 +138,22 @@ function UserCommunityPostsCreatePage() {
                         <Col xs={12} md={6} xl={3}>
                             <Form.Group>
                                 <Form.Label>Community</Form.Label>
-                                <Form.Control as="select" value={postFormValues.communityId} onChange={e=>setPostFormValues({...postFormValues, communityId: e.target.value})}>
-                                    <option>123</option>
-                                    <option>asdfasf</option>
-                                    <option>asdfasf</option>
-                                    <option>asdfasf</option>
+                                <Form.Control as="select" value={postFormValues.community_id} onChange={e=>handleChangeCommunity(e.target.value)}>
+                                    <option disabled value="">--Select Community--</option>
+                                    {userCommunityOptions}
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col xs={12} md={6} xl={3}>
                             <Form.Group>
                                 <Form.Label>Category</Form.Label>
-                                <Form.Control as="select" value={postFormValues.categoryId} onChange={e=>setPostFormValues({...postFormValues, categoryId: e.target.value})}>
-                                    <option>cat1</option>
-                                    <option>cat2</option>
-                                    <option>caty3</option>
-                                    <option>cate4</option>
+                                <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, categoryId: e.target.value})}>
+                                    <option disabled value="">--No Category--</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col xs={12} md={6} xl={3}>
-                            <Button block variant="primary w-100" onClick={addNewPost} disabled={isLoading}>
+                            <Button block variant="primary w-100" onClick={() => addNewPost()} disabled={isLoading}>
                                 {
                                     isLoading === true?(
                                         <Spinner animation="border" role="status"></Spinner>
