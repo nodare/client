@@ -26,22 +26,21 @@ function UserNavbarComponent(props) {
                         </Nav>
                         <Nav>
                             <Nav.Link href="/notifications">
-                                <OverlayTrigger 
-                                    placement={"bottom"}
+                                {/* <OverlayTrigger 
+                                    placement="bottom"
                                     overlay={
                                         <Tooltip id={"notificationsTooltip"}>
-                                            {/* Notifications */}
                                             2 new notifications
                                         </Tooltip>
                                     }
                                     >
-                                        <div>
+                                        <>
                                             <FontAwesomeIcon icon={faBell} />
                                             <Badge pill variant={"danger"}>2</Badge>
-                                        </div>
-                                </OverlayTrigger>
-                                
+                                        </>
+                                </OverlayTrigger> */}
                             </Nav.Link>
+                            
                             <Nav.Link href="/store">
                                 <FontAwesomeIcon icon={faShoppingBasket}/>
                             </Nav.Link>
@@ -61,7 +60,7 @@ function UserNavbarComponent(props) {
                                             </Link>
                                         </NavDropdown.Item>
                                         <NavDropdown.Item>
-                                            <Link to="/community">
+                                            <Link to="/square">
                                                 Communities
                                             </Link>
                                         </NavDropdown.Item>

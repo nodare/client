@@ -14,45 +14,41 @@ import {
     Button,
     ListGroup
 } from "react-bootstrap";
+import { connect } from "react-redux";
+
 import ChangeLayoutButtons from "./../../components/shared/buttons/ChangeLayoutButtons";
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 
 import { fetchCommunityData, fetchCommunitiyPosts, fetchCommunityPosts } from "./../../services/community.service";
+import { getCommunityPosts, clearPosts } from "./../../util/redux/actions/posts.actions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { postsList } from "./../../static";
 
-function UserCommunityViewPage() {
+function UserCommunityViewPage(props) {
     const params = useParams();
     const [isLoading, setIsLoading] = useState(false)
     const [layout, setLayout] = useState('cards')
     const [communityData, setCommunityData] = useState()
-    const [posts, setPosts] = useState([])
+    // const [posts, setPosts] = useState([])
     
     const getCommunityData = linearId => {
         fetchCommunityData(linearId).then(res=>{
             setCommunityData(res.data)
         })
-        console.log(communityData)
-    }
-    const fetchPosts = (linearId) => {
-        fetchCommunityPosts(linearId)
-        .then(res=>{
-            console.log(res)
-            setPosts(res)
-        })
-        // setPosts(postsList)
     }
     
     useEffect(() => {
         setIsLoading(true)
+        props.getCommunityPosts(params.community_id)
         setTimeout(() => {
-            getCommunityData(params.community_id)
-            fetchPosts(params.community_id)
             setIsLoading(false)
         }, 1000);
+        return()=>{
+            props.clearPosts()
+        }
     }, [])
 
     return (
@@ -63,7 +59,7 @@ function UserCommunityViewPage() {
                     <Breadcrumb.Item href="/home">
                         Home
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item href="/community">
+                    <Breadcrumb.Item href="/square">
                         Communities
                     </Breadcrumb.Item>
                     <Breadcrumb.Item active>Name of community</Breadcrumb.Item>
@@ -86,7 +82,7 @@ function UserCommunityViewPage() {
                                 <Button variant={"outline-secondary"}><FontAwesomeIcon onClick={setLayout} icon={faList}/></Button>
                             </ButtonGroup> */}
                             
-                            <LinkContainer to="/community/post/create">    
+                            <LinkContainer to="/square/post/create">    
                                 <Button variant="success"> <FontAwesomeIcon icon={faPlus} /> Create new post</Button>
                             </LinkContainer>
                         </div>
@@ -102,16 +98,16 @@ function UserCommunityViewPage() {
                     ):(
                     
                         /* communities */
-                        posts.length === 0?
+                        props.posts.length === 0?
                             <p className="text-center">There are no posts to show. </p>
                         :
                             layout==='cards'?
                                 <ResponsiveMasonry columnsCountBreakPoints={{350: 1, 750: 2, 900: 4}}>
                                     <Masonry>
                                         {
-                                            posts.map((post, i)=>{
+                                            props.posts.map((post, i)=>{
                                                 return(
-                                                    <LinkContainer to={`/community/${params.community_id}/post/${post.linear_id}`}>
+                                                    <LinkContainer key={i} to={`/square/${params.community_id}/post/${post.linear_id}`}>
                                                         <Card className="p-3 mb-2 mx-1">
                                                             <Image src="https://placekitten.com/200/250" fluid></Image>
                                                             <div className="text-center py-2">
@@ -131,9 +127,9 @@ function UserCommunityViewPage() {
                                 layout==='list'?
                                     <ListGroup as="ul">
                                         {
-                                            posts.map((post, i)=>{
+                                            props.posts.map((post, i)=>{
                                                 return(
-                                                    <LinkContainer to={`/community/${params.community_id}/post/${post.linear_id}`}>
+                                                    <LinkContainer to={`/square/${params.community_id}/post/${post.linear_id}`}>
                                                         <ListGroup.Item as="li" style={{cursor: "pointer"}}>
                                                             <div className="d-flex justify-content-between">
                                                                     <p>{post.title.substr(0,25)}</p>
@@ -157,4 +153,13 @@ function UserCommunityViewPage() {
     )
 }
 
-export default UserCommunityViewPage
+const mapStateToProps = state => ({
+    community: state.community,
+    posts: state.posts.items
+})
+
+const mapDispatchToProps = {
+    getCommunityPosts,
+    clearPosts
+}
+export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityViewPage)

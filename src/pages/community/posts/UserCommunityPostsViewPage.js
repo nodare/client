@@ -1,114 +1,114 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
-import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table, Image } from "react-bootstrap";
+import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table } from "react-bootstrap";
+import { connect } from 'react-redux';
 import * as ta from "timeago.js";
 
-import { fetchPostData, fetchPostContents, fetchCommentsByPost, addCommentbyPostId, deleteComment } from "./../../../services/community.service";
-import { getUserDetails } from "./../../../services/user.service";
+import UpvoteButton from "components/shared/buttons/UpvoteButton";
+import PostCommentItem from "components/common/comments/PostCommentItem";
+
+
+import { getPostData, getPostContents, clearPost, clearContents } from "util/redux/actions/posts.actions";
+import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments } from "util/redux/actions/comments.actions";
+import { getUserDetails } from "services/user.service";
 
 // static post
 import { accountId } from "./../../../static";
 
-import UpvoteButton from "./../../../components/shared/buttons/UpvoteButton";
 
 
-function UserCommunityPostsViewPage() {
+function UserCommunityPostsViewPage(props) {
     const params = useParams()
-
     const [isLoading, setIsLoading] = useState(true)
-    const [isCommentsLoading, setIsCommentsLoading] = useState(true)
-    
-    const [owner, setOwner] = useState(true)
-    // static data for now
-    const [post, setPost] = useState([])
-    const [postContents, setPostContents] = useState([])
-    const [postComments, setPostComments] = useState([])
-    
+    const [isCommentsLoading, setIsCommentsLoading] = useState(false)
     const [showCommentsBox, setShowCommentsBox] = useState(true)
+    const postComments = props.comments
+
+    const [owner, setOwner] = useState(true)
+    
     const [commentInput, setCommentInput] = useState('')
 
     const onClickShowCommentsButton = () => {
         setShowCommentsBox(true)
     }
 
-    const loadComments = () => {
-        fetchCommentsByPost(params.post_id)
-        .then(resComments=>{
-            let commentsTemp = resComments
-            commentsTemp.map((comment,i)=>{
-                getUserDetails(comment.user_id)
-                    .then(resUserDetails => {
-                        comment.userDetails = resUserDetails
-                    })
-                    .catch(err=>{console.log(err)})
-            })
-            setPostComments(commentsTemp)
-        })
-        setTimeout(() => {
-            setIsCommentsLoading(false)
-        }, 1000);
+    const loadComments = async () => {
+        await setIsCommentsLoading(true)
+        await props.getPostComments(params.post_id)
+        await setIsCommentsLoading(false)
     }
 
     const onClickSendComment = () => {
-        // add a ccomment to send a comment to the api
+        // add a comment to send a comment to the api
         if(commentInput === ""){
             window.alert("Write something in the comment box.")
         }else{
-            let data = {
-                user_id: accountId,
-                content: commentInput
-            }
             
-            addCommentbyPostId(post.linear_id, data)
-            .then(res=>{
+            let data = {
+                user_id: accountId, 
+                post_id: params.post_id,
+                content: commentInput,
+                parent_comment_id: null
+            }
+
+            const addComment = async (data) => {
+                await props.addPostComment(data)
+            }
+
+            addComment(data).then(()=>{
                 setCommentInput('')
-                window.alert("Comment added!")
-                setIsCommentsLoading(true)
                 loadComments()
-            })
-            .catch(err=>{
-                window.alert("Unable to add a comment to this post. Please try again")
             })
             
         }
     }
 
+    const onClickSendCommentReply = ( data, commentLinearId=null ) => {
+        console.log(data)
+        props.addPostComment(data)
+        .then(()=>{
+            console.log("tests")
+            loadComments()
+        })
+    }
+
     const onClickDeleteComment = commentLinearId => {
-        deleteComment(commentLinearId)
+        props.removePostComment(commentLinearId)
         .then(res=>{
             window.alert("Comment deleted")
-            setIsCommentsLoading(true)
             loadComments()
         })
     }
 
     useEffect(() => {
-        fetchPostData(params.post_id)
-        .then(resPost=>{
-            setPost(resPost)
-            fetchPostContents(resPost.linear_id)
-            .then(resContent=>{
-                setPostContents(resContent)
-            })
-        })
+        const loadData = async () => {
+            await props.getPostData(params.post_id)
+            await props.getPostContents(params.post_id)
+            loadComments()
+        }
+        loadData()
         setIsLoading(false)
         
+        // fetchPostData(params.post_id)
+        // .then(resPost=>{
+        //     setPost(resPost)
+        //     fetchPostContents(resPost.linear_id)
+        //     .then(resContent=>{
+        // })
+        //         setPostContents(resContent)
+        //     })
+        
         return()=>{
-            setPost([])
-            setPostContents([])
+            props.clearPost()
+            props.clearContents()
+            props.clearComments()
         }
 
     }, [])
 
-    useEffect(() => {
-        loadComments()
-        
-    }, [isLoading])
-    
     return (
         <>
             <Container>
-                
                 <Tabs defaultActiveKey="post">
                     <Tab eventKey="post" title="post">
                         
@@ -118,9 +118,9 @@ function UserCommunityPostsViewPage() {
                                 {/* main post */}
                                 <>
                                     <span>Posted by: Lex</span><br/>
-                                    <span>{ta.format(new Date(post.created_at))}</span>
+                                    <span>{ta.format(new Date(props.postData.created_at))}</span>
                                     
-                                    {postContents.map((content, i)=>{
+                                    {props.contents.map((content, i)=>{
                                         {
                                             switch(content.type){
                                                 case "header":
@@ -133,39 +133,32 @@ function UserCommunityPostsViewPage() {
                                                             return(
                                                                 <h2 key={i}>{content.text}</h2>
                                                             )
-                                                            break;
                                                         case 3:
                                                             return(
                                                                 <h3 key={i}>{content.text}</h3>
                                                             )
-                                                            break;
                                                         case 4:
                                                             return(
                                                                 <h4 key={i}>{content.text}</h4>
                                                             )
-                                                            break;
                                                         case 5:
                                                             return(
                                                                 <h5 key={i}>{content.text}</h5>
                                                             )
-                                                            break;
                                                         case 6:
                                                             return(
                                                                 <h6 key={i}>{content.text}</h6>
                                                             )
-                                                            break;
                                                     }
                                                     break;
                                                 case "paragraph":
                                                     return(
                                                         <p key={i}>{content.text}</p>
                                                     )
-                                                    break;
                                                 case "link":
                                                     return(
                                                         <Link to={content.link}>Link</Link>
                                                     )
-                                                    break;
                                                 case "quote":
                                                     return(
                                                         // to be revised
@@ -178,7 +171,6 @@ function UserCommunityPostsViewPage() {
                                                             </Card.Body>
                                                         </Card>
                                                     )
-                                                    break;
                                                 case "list":
                                                     switch(content.style){
                                                         case "ordered":
@@ -242,7 +234,7 @@ function UserCommunityPostsViewPage() {
                                     <Button size="sm" variant="danger">Report</Button>
                                 </ButtonGroup>
 
-                                <h4>Discussion (13)</h4>
+                                <h4>Discussion ({props.comments.length})</h4>
                                 <Form.Group className="d-flex justify-content-left">
                                     <textarea className="form-control" placeholder="Write a comment here" value={commentInput} onChange={e=>setCommentInput(e.target.value)}></textarea>
                                     <Button variant="primary" onClick={()=>onClickSendComment()}>Send</Button>
@@ -259,7 +251,7 @@ function UserCommunityPostsViewPage() {
                                     )
                                 :
                                 isCommentsLoading ?"Loading..":(
-                                    postComments.length == 0 ?
+                                    props.comments.length == 0 ?
                                         (
                                             <div className="text-center">
                                                 <p>There are no comments to show as of now. </p>
@@ -267,33 +259,21 @@ function UserCommunityPostsViewPage() {
                                         )
                                     :
                                     postComments.map((comment, i)=>{
-                                                return(
-                                                    <div key={i} className="commentsSectionBox">
-                                                        <div className="d-flex justify-content-left py-3">
-                                                            <Image 
-                                                                src={"https://placekitten.com/100/100"}
-                                                                style={{height:'50px'}}
-                                                                className="my-1 px-2"
-                                                                roundedCircle
-                                                            ></Image>
-                                                            <div id="commentsSectionBox">
-                                                                <strong>{comment.userDetails?.nickname}</strong> <small>{ta.format(comment.created_at)}</small>
-                                                                <p>{comment.content}</p>
-                                                                <div>
-                                                                    <ButtonGroup className="justify-content-right">
-                                                                        <UpvoteButton/>
-                                                                        <Button size="sm" variant="primary">Comment</Button>
-                                                                        <Button size="sm" variant="danger" onClick={() => onClickDeleteComment(comment.linear_id)}>Delete</Button>
-                                                                        <Button size="sm" variant="danger">Repsort</Button>
-                                                                    </ButtonGroup>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        )
-                                }
+                                        if(comment.parent_comment_id === null){
+                                            return(
+                                                <div key={i}>
+                                                    <PostCommentItem
+                                                        image={"https://placekitten.com/100/100"}
+                                                        comment={comment}
+                                                        handleAddCommentReply={onClickSendCommentReply}
+                                                        handleDeleteComment={onClickDeleteComment}
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    })
+                                )
+                            }
 
                             </Card.Body>
                         </Card>
@@ -332,4 +312,21 @@ function UserCommunityPostsViewPage() {
     )
 }
 
-export default UserCommunityPostsViewPage
+const mapStateToProps = state => ({
+    postData: state.posts.item,
+    contents: state.posts.contents,
+    comments: state.comments.items
+})
+
+const mapDispatchToProps = {
+    getPostData,
+    getPostContents,
+    getPostComments,
+    addPostComment,
+    removePostComment,
+    clearPost,
+    clearContents,
+    clearComments
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityPostsViewPage)

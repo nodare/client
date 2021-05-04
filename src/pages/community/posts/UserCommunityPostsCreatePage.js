@@ -118,7 +118,7 @@ function UserCommunityPostsCreatePage() {
             <Container>
                 <Breadcrumb>
                     <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/community">Community</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/square">Community</Breadcrumb.Item>
                     <Breadcrumb.Item active>Create Post</Breadcrumb.Item>
                 </Breadcrumb>
                 <Alert variant={"warning"}>
@@ -179,7 +179,7 @@ function UserCommunityPostsCreatePage() {
             </Toast>
             {
                 isFinished === false?null:(
-                    <Redirect push to="/community"></Redirect>
+                    <Redirect push to="/square"></Redirect>
                 )
             }
             <></>

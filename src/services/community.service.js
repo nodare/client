@@ -2,15 +2,10 @@ import axios from "axios";
 import { apiLink, accountId as staticUserId, communities as staticCommunities } from "./../static";
 
 
-/* 
-==============================
-            POSTS
-==============================
-*/
 
 // fetch user's communities
 export const fetchUsersCommunities = async userId => {
-    return await axios.get(`${apiLink}community/user/${staticUserId}`)
+    return await axios.get(`community/user/${staticUserId || userId}`)
         .then(res=>{
             return res.data
         })
@@ -30,9 +25,15 @@ export const fetchCommunityData = async linearId => { // community linear id
         })
 }
 
+/* 
+==============================
+            POSTS
+==============================
+*/
+
 // fetch posts connected to a community
 export const fetchCommunityPosts = async linearId => { // community linear id
-    return await axios.get(`${apiLink}posts/community/${linearId}`)
+    return await axios.get(`posts/community/${linearId}`)
         .then(res=>{
             return res.data
         })
@@ -97,18 +98,6 @@ export const addNewPostContents = async (postLinearId, data) => {
 
 }
 
-/* 
-==============================
-        POST UPVOTES
-==============================
-*/
-
-export const verifyUpvote = async (postLinearId, userId) => {
-    // await axios.get()
-    console.log("verifying upvote")
-
-}
-
 
 /* 
 ==============================
@@ -132,7 +121,7 @@ export const fetchCommentsByPost = async postLinearId => {
 
 // create new post 
 export const addCommentbyPostId = async (postLinearId, data) => {
-    return await axios.post(`${apiLink}posts/comments/post/${postLinearId}`, data)
+    return await axios.post(`${apiLink}posts/${postLinearId}/comments`, data)
     .then(res=>{
         return res.data
     })

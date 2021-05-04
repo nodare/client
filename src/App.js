@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Alert, Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect  } from "react-router-dom";
 
+// redux
+import { createStore, applyMiddleware, compose } from "redux";
+import { Provider } from "react-redux";
+import thunk from "redux-thunk";
+import reducers from "./util/redux";
+
+
+
 // pages
 import LoginPage from "./pages/core/LoginPage";
 import RegisterPage from "./pages/core/RegisterPage";
@@ -29,13 +37,23 @@ import UserNavbarComponent from './components/navbars/UserNavbar'
 import SettingsPage from './pages/user/SettingsPage';
 
 function App() {
+  // redux main store
+  
+  const store = createStore(
+    reducers,
+    compose(
+      applyMiddleware(thunk),
+      window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    )
+  )
+
+  
   const [isLoggedIn, IsLoggedIn] = useState(true)
   const [isConnected, setIsConnected] = useState(true)
-
   
   return (
     
-    <>
+    <Provider store={store}>
       <Router>
 
         {
@@ -73,7 +91,7 @@ function App() {
               <Route exact path="/register">
                 <RegisterPage/>
                 </Route>
-              <Route path="/page-not-found">
+              <Route exact path="/page-not-found">
                 <PageNotFound/>
               </Route>
 
@@ -94,19 +112,16 @@ function App() {
               </Route>
 
               {/* community */}
-              <Route exact path="/community">
+              <Route exact path="/square">
                 <UserCommunityListPage/>
               </Route>
-              <Route exact path="/community/:community_id">
+              <Route exact path="/square/:community_id">
                 <UserCommunityViewPage/>
               </Route>
-              <Route exact path="/community/post/create">
+              <Route exact path="/square/post/create">
                 <UserCommunityPostsCreatePage/>
               </Route>
-              <Route exact path="/community/:community_id/post">
-                <UserCommunityPostsViewPage/>
-              </Route>
-              <Route exact path="/community/:community_id/post/:post_id">
+              <Route exact path="/square/:community_id/post/:post_id">
                 <UserCommunityPostsViewPage/>
               </Route>
 
@@ -141,6 +156,8 @@ function App() {
                 {/* <Redirect to="/admin/dashboard"></Redirect> */}
               </Route>
 
+              <Redirect to="/page-not-found"></Redirect>
+
             </Switch>
 
             {/* <UserCommunityViewPage/> */}
@@ -150,10 +167,16 @@ function App() {
       </Router>
       
 
-    </>
+    </Provider>
 
   );
 }
 
 
 export default App;
+
+
+/* 
+  NOTES TO REMEMBER: just to avoid confusion
+  - communities are called "square"
+*/
