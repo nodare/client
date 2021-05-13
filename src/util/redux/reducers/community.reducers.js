@@ -32,6 +32,14 @@ export default function(state=communityState, action) {
             return{
                 ...state
             }
+        case "UPDATE_COMMUNITY":
+            return{
+                ...state
+            }
+        case "UPDATE_COMMUNITY_FILES":
+            return{
+                ...state
+            }
         case "CLEAR_COMMUNITY_ITEMS":
             return{
                 ...state, 

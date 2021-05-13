@@ -18,6 +18,7 @@ import HomeFeed from './pages/core/HomeFeed';
 
 import UserCommunityListPage from './pages/community/UserCommunityListPage';
 import UserCommunityViewPage from "./pages/community/UserCommunityViewPage";
+import UserCommunitySettingsPage from "./pages/community/UserCommunitySettingsPage";
 import UserCommunityPostsCreatePage from './pages/community/posts/UserCommunityPostsCreatePage';
 import UserCommunityPostsViewPage from './pages/community/posts/UserCommunityPostsViewPage';
 
@@ -27,6 +28,7 @@ import TermsAndConditionsPage from './pages/documents/TermsAndConditionsPage';
 import CommunityGuidelinesPage from './pages/documents/CommunityGuidelinesPage';
 import AdminPage from "./pages/admin/AdminPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
+import MessengerPage from './pages/messenger/MessengerPage';
 import MainStorePage from "./pages/store/StorePage";
 import StoreEmoticonItemPage from "./pages/store/StoreEmoticonItemPage";
 import StoreMerchandiseItemPage from "./pages/store/StoreMerchandiseItemPage";
@@ -107,6 +109,9 @@ function App() {
               <Route exact path="/profile/:id">
                 <UserProfilePage/>
               </Route>
+              <Route exact path="/messenger">
+                <MessengerPage/>
+              </Route>
               <Route exact path="/settings">
                 <SettingsPage/>
               </Route>
@@ -117,6 +122,9 @@ function App() {
               </Route>
               <Route exact path="/square/:community_id">
                 <UserCommunityViewPage/>
+              </Route>
+              <Route exact path="/square/:community_id/settings">
+                <UserCommunitySettingsPage/>
               </Route>
               <Route exact path="/square/post/create">
                 <UserCommunityPostsCreatePage/>

@@ -1,13 +1,17 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Nav, Navbar, NavDropdown, Container, Row, Col, Tooltip, OverlayTrigger, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
     faBell,
+    faEnvelope,
     faShoppingBasket
 } from "@fortawesome/free-solid-svg-icons";
 
+import MessagingWindow from "components/messaging/MessagingWindow";
+
 function UserNavbarComponent(props) {
+    const [messagingWindow, showMessagingWindow] = useState(false)
 
     const toggleDarkMode = () => {
         console.log("toggling dark mode")
@@ -25,8 +29,8 @@ function UserNavbarComponent(props) {
                             </Link>
                         </Nav>
                         <Nav>
-                            <Nav.Link href="/notifications">
-                                {/* <OverlayTrigger 
+                            {/* <Nav.Link href="/notifications">
+                                <OverlayTrigger 
                                     placement="bottom"
                                     overlay={
                                         <Tooltip id={"notificationsTooltip"}>
@@ -38,11 +42,14 @@ function UserNavbarComponent(props) {
                                             <FontAwesomeIcon icon={faBell} />
                                             <Badge pill variant={"danger"}>2</Badge>
                                         </>
-                                </OverlayTrigger> */}
-                            </Nav.Link>
+                                </OverlayTrigger>
+                            </Nav.Link> */}
                             
                             <Nav.Link href="/store">
                                 <FontAwesomeIcon icon={faShoppingBasket}/>
+                            </Nav.Link>
+                            <Nav.Link onClick={showMessagingWindow}>
+                                <FontAwesomeIcon icon={faEnvelope}/>
                             </Nav.Link>
                             {
                                 props.isLoggedIn === false?
@@ -65,7 +72,7 @@ function UserNavbarComponent(props) {
                                             </Link>
                                         </NavDropdown.Item>
                                         <NavDropdown.Item>
-                                            <Link to="/messages">
+                                            <Link to="/messenger">
                                                 Messages
                                             </Link>
                                         </NavDropdown.Item>
@@ -85,6 +92,11 @@ function UserNavbarComponent(props) {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
+            <MessagingWindow
+                isOpen={messagingWindow}
+                toggleTrigger={showMessagingWindow}
+                onHide={() => showMessagingWindow(false)}
+            ></MessagingWindow>
         </>
     )
 }

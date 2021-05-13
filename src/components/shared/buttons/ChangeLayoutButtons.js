@@ -4,7 +4,7 @@ import { ButtonGroup, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThLarge, faList } from "@fortawesome/free-solid-svg-icons";
 
-function ChangeLayoutButtons(props) {
+export default function ChangeLayoutButtons(props) {
     return (
         <>
             <ButtonGroup>
@@ -14,5 +14,3 @@ function ChangeLayoutButtons(props) {
         </>
     )
 }
-
-export default ChangeLayoutButtons

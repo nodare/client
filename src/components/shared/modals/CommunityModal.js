@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Modal, Button, Form } from "react-bootstrap";
+import PropTypes from "prop-types";
 
 import { accountId } from "static";
 
@@ -67,3 +68,8 @@ export function CreateCommunityModal(props) {
     )
 }
 
+CreateCommunityModal.propTypes = {
+    isShow: PropTypes.bool.isRequired,
+    toggleTrigger: PropTypes.func.isRequired,
+    handleCreateCommunity: PropTypes.func.isRequired,
+}

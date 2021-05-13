@@ -1,8 +1,8 @@
-import axios from 'axios';
-
 const upvoteState = {
-    posts: [],
-    comments: []
+    postUpvotes: [],
+    postUpvoteItem: {},
+    postCommentUpvotes: [],
+    isUpvoted: false
 }
 
 export default function(state=upvoteState, action){
@@ -10,9 +10,15 @@ export default function(state=upvoteState, action){
         case "VERIFY_UPVOTE":
             return ({
                 ...state,
-                posts: action.payload
+                postUpvoteItem: action.payload
+            })
+        case "TOGGLE_POST_UPVOTE":
+            return ({
+                ...state
             })
         default:
-            break;
+            return({
+                ...state
+            })
     }
 }

@@ -24,10 +24,35 @@ export const getUsersCommunities = ( userLinearId ) => async dispatch => {
     })
 }
 
+export const getCommunityData = (communityLinearId) => async dispatch => {
+    let res = await axios.get(`community/${communityLinearId}`)
+    return dispatch({
+        type: "GET_COMMUNITY_DATA",
+        payload: res.data[0]
+    })
+}
+
+
 export const createCommunity = (data) => async dispatch => {
     let res = await axios.post(`community`, data)
     return dispatch({
         type: 'ADD_COMMUNITY',
+        payload: res.data
+    })
+}
+
+export const updateCommunity = (communityLinearId, data) => async dispatch => {
+    let res = await axios.put(`community/${communityLinearId}`, data)
+    return dispatch({
+        type: 'UPDATE_COMMUNITY',
+        payload: res.data
+    })
+}
+
+export const updateCommunityFiles = (communityLinearId, data) => async dispatch => {
+    let res = await axios.put(`community/${communityLinearId}`, data)
+    return dispatch({
+        type: 'UPDATE_COMMUNITY_FILES',
         payload: res.data
     })
 }

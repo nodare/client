@@ -10,7 +10,7 @@ import {
     Form,
     Spinner
 } from "react-bootstrap";
-import { BuyModal } from "components/shared/modals/BuyModal";
+import BuyModal from "components/shared/modals/BuyModal";
 import { sampleProduct } from "static";
 
 function StoreMerchandiseItemPage() {

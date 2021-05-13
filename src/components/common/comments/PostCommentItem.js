@@ -1,25 +1,29 @@
-import React, {useState} from 'react'
-import UpvoteButton from "components/shared/buttons/UpvoteButton";
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from "prop-types";
 import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table, Image } from "react-bootstrap";
 import * as ta from "timeago.js";
 
+import { getUserDetails, clearUserDetails } from "util/redux/actions/auth.actions";
+
+import UpvoteButton from "components/shared/buttons/UpvoteButton";
+import DeleteModal from "components/shared/modals/common/DeleteModal";
 
 import { accountId } from "static";
 
-/* 
-    props:
-        key: number
-        image: string,
-        comment: Object,
-        handleUpvoteButton: function
-        handleCommentReply: function
-        handleDeleteComment: function
-        handleReportButton: function
-*/
 function PostCommentItem(props) {
+    const [userDetails, setUserDetails] = useState({})
     const [commentInput, setCommentInput] = useState("")
     const [commentInputBox, toggleCommentInputBox] = useState(false)
-    const [toastContainer, setToastContainer] = useState("")
+    const [deleteCommentModal, showDeleteCommentModal] = useState(false)
+
+    
+    const getUserDetails = async () => {
+        await props.getUserDetails(props.comment.user_id)
+        await setUserDetails(props.user)
+        // await props.clearUserDetails()
+        await console.log(userDetails)
+    }
 
     const handleCommentReplyButton = (commentLinearId) => {
         if(commentInput === ""){
@@ -36,6 +40,25 @@ function PostCommentItem(props) {
         setCommentInput("")
     }
 
+    const onClickDeleteButton = () => {
+        showDeleteCommentModal(true)
+    }
+
+    const handleDeleteCommentButton = () => {
+        props.handleDeleteComment(props.comment.linear_id)
+        showDeleteCommentModal(false)
+    }
+    
+
+    useEffect(() => {
+        getUserDetails()
+        return() => {
+            props.clearUserDetails()
+        }
+    }, [])
+
+    
+
 
     return (
         <>
@@ -48,12 +71,12 @@ function PostCommentItem(props) {
                         roundedCircle
                     ></Image>
                     <div id="commentsSectionBox" className="w-100">
-                        <strong>{props.comment.userDetails?.nickname}</strong> <small>{ta.format(props.comment.created_at)}</small>
+                        <strong>{userDetails.nickname}</strong> <small>{ta.format(props.comment.created_at)}</small>
                         <p>{props.comment.content}</p>
                         <ButtonGroup className="justify-content-right">
-                            <UpvoteButton/>
+                            {/* <UpvoteButton/> */}
                             <Button size="sm" variant="primary" onClick={()=>toggleCommentInputBox(!commentInput)}>Comment</Button>
-                            <Button size="sm" variant="danger" onClick={() => props.handleDeleteComment(props.comment.linear_id)}>Delete</Button>
+                            <Button size="sm" variant="danger" onClick={() => onClickDeleteButton(true)}>Delete</Button>
                             <Button size="sm" variant="danger">Report</Button>
                         </ButtonGroup>
                     </div>
@@ -83,8 +106,35 @@ function PostCommentItem(props) {
                         }
                     </div>
             </div>
+            <DeleteModal
+                isShow={deleteCommentModal}
+                toggleTrigger={showDeleteCommentModal}
+                header={"Confirm Comment Delete"}
+                text={"Are you sure you want to delete this comment?"}
+                handleDeleteButton={() => handleDeleteCommentButton()}
+                deleteButtonText={"Delete Comment"}
+            ></DeleteModal>
         </>
     )
 }
 
-export default PostCommentItem
+const mapStateToProps = state => ({
+    user: state.auth.userDetails
+})
+
+const mapDispatchToProps = {
+    getUserDetails,
+    clearUserDetails
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostCommentItem)
+
+PostCommentItem.propTypes = {
+    image: PropTypes.string,
+    comment: PropTypes.object,
+    user: PropTypes.object,
+    handleUpvoteButton: PropTypes.func,
+    handleCommentReply: PropTypes.func,
+    handleDeleteComment: PropTypes.func,
+    handleReportButton: PropTypes.func,
+}

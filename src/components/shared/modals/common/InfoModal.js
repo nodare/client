@@ -1,11 +1,13 @@
 import React from 'react'
+import PropTypes from "prop-types";
+
 import { Modal, Button } from "react-bootstrap";
-import PropTypes, { string } from "prop-types";
-export default function BuyModal(props) {
-    
-    const buyMethod = () =>{
+
+export default function InfoModal(props) {
+
+    const handleConfirmMethod = () =>{
         // place some code to set a timeout and add a condition to close the modal
-        props.handleBuyButton()
+        props.handleConfirmModal()
         props.toggleTrigger(false)
     }
     
@@ -22,18 +24,18 @@ export default function BuyModal(props) {
                 <Modal.Body>{props.text}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-link" onClick={()=>props.toggleTrigger(false)}>Cancel</Button>
-                    <Button variant="primary" onClick={() => buyMethod()}>Buy Item {`$${props.data.price}`}</Button>
+                    <Button variant="danger" onClick={() => handleConfirmMethod()}>{props.confirmButtonText}</Button>
                 </Modal.Footer>
             </Modal>
         </>
     )
 }
 
-BuyModal.propTypes = {
+InfoModal.propTypes = {
     isShow: PropTypes.bool.isRequired,
     toggleTrigger: PropTypes.func.isRequired,
     header: PropTypes.string.isRequired, 
     text: PropTypes.string.isRequired,
-    handleBuyButton: PropTypes.func.isRequired,
-    data: PropTypes.object
+    handleConfirmModal: PropTypes.func.isRequired,
+    confirmButtonText: PropTypes.string.isRequired,
 }

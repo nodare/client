@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table } from "react-bootstrap";
 import { connect } from 'react-redux';
 import * as ta from "timeago.js";
 
 import UpvoteButton from "components/shared/buttons/UpvoteButton";
 import PostCommentItem from "components/common/comments/PostCommentItem";
+import DeleteModal from "components/shared/modals/common/DeleteModal";
 
 
-import { getPostData, getPostContents, clearPost, clearContents } from "util/redux/actions/posts.actions";
+import { getCommunityData, clearCommunityData} from "util/redux/actions/community.actions";
+import { getPostData, getPostContents, removeContentsByPost, removePost, clearPost, clearContents } from "util/redux/actions/posts.actions";
 import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments } from "util/redux/actions/comments.actions";
-import { getUserDetails } from "services/user.service";
+import { verifyPostUpvote, togglePostUpvote } from "util/redux/actions/upvotes.actions";
 
 // static post
 import { accountId } from "./../../../static";
@@ -19,14 +21,36 @@ import { accountId } from "./../../../static";
 
 function UserCommunityPostsViewPage(props) {
     const params = useParams()
+    const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
     const [isCommentsLoading, setIsCommentsLoading] = useState(false)
     const [showCommentsBox, setShowCommentsBox] = useState(true)
+    const [deleteCommunityModal, showDeleteCommunityModal] = useState(false)
+    
     const postComments = props.comments
 
     const [owner, setOwner] = useState(true)
     
     const [commentInput, setCommentInput] = useState('')
+
+    const onClickUpvoteButton = () => {
+        let data = {
+            status: !props.postUpvoteData.status
+        }
+        props.togglePostUpvote( props.postUpvoteData.linear_id, data)
+        props.verifyPostUpvote(params.post_id, accountId)
+    }
+    
+    const onClickDeleteCommunity = () => {
+        showDeleteCommunityModal(true)
+    }
+
+    const deleteCommunity = () => {
+        props.removePost(props.postData.linear_id)
+        props.removeContentsByPost(props.postData.linear_id)
+        history.replace(`/square/${props.postData.community_id}`)
+        window.alert("Post Deleted")
+    }
 
     const onClickShowCommentsButton = () => {
         setShowCommentsBox(true)
@@ -63,8 +87,7 @@ function UserCommunityPostsViewPage(props) {
         }
     }
 
-    const onClickSendCommentReply = ( data, commentLinearId=null ) => {
-        console.log(data)
+    const sendCommentReply = ( data, commentLinearId=null ) => {
         props.addPostComment(data)
         .then(()=>{
             console.log("tests")
@@ -72,22 +95,31 @@ function UserCommunityPostsViewPage(props) {
         })
     }
 
-    const onClickDeleteComment = commentLinearId => {
+    const deleteComment = commentLinearId => {
         props.removePostComment(commentLinearId)
         .then(res=>{
-            window.alert("Comment deleted")
+            // window.alert("Comment deleted")
             loadComments()
         })
     }
 
     useEffect(() => {
         const loadData = async () => {
-            await props.getPostData(params.post_id)
-            await props.getPostContents(params.post_id)
+            await props.getCommunityData(params.community_id)
+            .then(async () => {
+                await props.getPostData(params.post_id)
+                .then(()=>{
+                    props.getPostContents(params.post_id)
+                    props.verifyPostUpvote(params.post_id, accountId)
+                })
+            })
             loadComments()
         }
         loadData()
         setIsLoading(false)
+        if(props.postData === null || props.postData === ""){
+            history.replace('/page-not-found')
+        }
         
         // fetchPostData(params.post_id)
         // .then(resPost=>{
@@ -117,6 +149,7 @@ function UserCommunityPostsViewPage(props) {
 
                                 {/* main post */}
                                 <>
+                                    <h2>{props.postData.title}</h2>
                                     <span>Posted by: Lex</span><br/>
                                     <span>{ta.format(new Date(props.postData.created_at))}</span>
                                     
@@ -227,10 +260,15 @@ function UserCommunityPostsViewPage(props) {
 
                                 {/* post buttons */}
                                 <ButtonGroup className="py-3">
-                                    <UpvoteButton/>
+                                    <UpvoteButton 
+                                        upvoteName={props.communityData.upvote_name}
+                                        upvotedName={props.communityData.upvoted_name}
+                                        isUpvoted={props.postUpvoteData.status}
+                                        handleUpvote={onClickUpvoteButton}
+                                    />
                                     <Button size="sm" variant="primary" onClick={() => onClickShowCommentsButton(true)}>Comment</Button>
                                     <Button size="sm" variant="primary">Share</Button>
-                                    <Button size="sm" variant="danger">Delete</Button>
+                                    <Button size="sm" variant="danger" onClick={()=>onClickDeleteCommunity()}>Delete</Button>
                                     <Button size="sm" variant="danger">Report</Button>
                                 </ButtonGroup>
 
@@ -265,8 +303,8 @@ function UserCommunityPostsViewPage(props) {
                                                     <PostCommentItem
                                                         image={"https://placekitten.com/100/100"}
                                                         comment={comment}
-                                                        handleAddCommentReply={onClickSendCommentReply}
-                                                        handleDeleteComment={onClickDeleteComment}
+                                                        handleAddCommentReply={sendCommentReply}
+                                                        handleDeleteComment={deleteComment}
                                                     />
                                                 </div>
                                             )
@@ -308,22 +346,39 @@ function UserCommunityPostsViewPage(props) {
                 </Tabs>
                 
             </Container>
+            <DeleteModal
+                isShow={deleteCommunityModal}
+                toggleTrigger={showDeleteCommunityModal}
+                header={"Confirm Delete"}
+                text={"Are you sure you want to remove this community?"}
+                deleteButtonText={"Remove Community"}
+                handleDeleteButton={() => deleteCommunity()}
+            ></DeleteModal>
+
         </>
     )
 }
 
 const mapStateToProps = state => ({
+    communityData: state.community.item,
     postData: state.posts.item,
     contents: state.posts.contents,
-    comments: state.comments.items
+    comments: state.comments.items,
+    postUpvoteData: state.upvotes.postUpvoteItem
 })
 
 const mapDispatchToProps = {
+    verifyPostUpvote,
+    togglePostUpvote,
+    getCommunityData,
     getPostData,
+    removePost,
     getPostContents,
     getPostComments,
     addPostComment,
     removePostComment,
+    removeContentsByPost,
+    clearCommunityData,
     clearPost,
     clearContents,
     clearComments

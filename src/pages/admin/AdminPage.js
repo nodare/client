@@ -43,6 +43,9 @@ function AdminPage() {
                                     <Link to={`${url}/reports`}>Reports</Link>
                                 </Nav.Link>
                                 <Nav.Link>
+                                    <Link to={`${url}/store`}>Store</Link>
+                                </Nav.Link>
+                                <Nav.Link>
                                     <Link to={`${url}/settings`}>Settings</Link>
                                 </Nav.Link>
                                 {/* <Nav.Link>Messages</Nav.Link>

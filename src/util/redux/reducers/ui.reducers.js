@@ -1,7 +1,9 @@
 const uiState = {
     isDarkMode: false,
     isLoading: false,
-    hasConnectedToServer: true
+    hasConnectedToServer: true,
+    backgroundWallpaper: null,
+    lang: "en-us"
 }
 
 // reducer

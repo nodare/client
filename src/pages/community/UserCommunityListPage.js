@@ -86,7 +86,7 @@ function UserCommunityListPage(props) {
                                 </Form.Group>
                             </Col>
                             <Col>
-                                <Button variant="primary" onClick={() => toggleCreateCommunityDialog(!createCommunityDialog)}><FontAwesomeIcon icon={faPlus}/>  new community</Button>
+                                <Button variant="primary" onClick={() => toggleCreateCommunityDialog(!createCommunityDialog)}><FontAwesomeIcon icon={faPlus}/> New Community</Button>
                             </Col>
                         </Form.Row>
                     </Col> 
@@ -112,7 +112,7 @@ function UserCommunityListPage(props) {
                                                     <LinkContainer to={`/square/${community.linear_id}`} style={{cursor: "pointer"}}>
                                                         <Card className="my-3">
                                                             <Card.Body>
-                                                                <h4 className="text-center">{community?.title} {community?.community_type === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
+                                                                <h4 className="text-center">{community?.title} {community?.isVisible === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
                                                                 <p className="text-center">{community?.description}</p>
                                                                 <p className="text-center"><small>Date created: {community?.created_at}</small></p>
                                                                 {/* <small className="text-center">{community?.community_type === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</small> */}
@@ -129,7 +129,7 @@ function UserCommunityListPage(props) {
                                                         <Card className="px-3 py-2 my-2">
                                                             <div className="d-flex justify-content-between">
                                                                 <div className="text-left">
-                                                                    <h4>{community?.title} {community?.community_type === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
+                                                                    <h4>{community?.title} {community?.isVisible === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
                                                                     <span>{community?.description}</span>
                                                                 </div>
                                                                 <p><small>Date created: {community?.created_at}</small></p>

@@ -31,6 +31,10 @@ export default function(state=postsState, action){
             return({
                 ...state
             })
+        case "DELETE_POST":
+            return({
+                ...state
+            })
         case "CLEAR_POSTS":
             return({
                 ...state,
@@ -47,6 +51,10 @@ export default function(state=postsState, action){
                 contents: action.payload
             })
         case "ADD_NEW_POST_CONTENTS":
+            return({
+                ...state
+            })
+        case "DELETE_CONTENTS_BY_POST":
             return({
                 ...state
             })

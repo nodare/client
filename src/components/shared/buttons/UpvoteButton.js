@@ -1,23 +1,36 @@
 import React, {useState} from 'react'
+import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
 
-function UpvoteButton(props) {
-    const [isVoted, setIsVoted] = useState(false)
+export default function UpvoteButton(props) {
     const [isLoading, setIsLoading] = useState(false)
 
-    const toggleVote = () => {
-        setIsVoted(!isVoted)
+    const handleUpvoteButton = () => {
+        props.handleUpvote()
     }
 
     return (
         <div>
-            {isVoted === false?
-            (<Button size="sm" variant="primary" onClick={toggleVote}>Upvote</Button>)
+            {props.isUpvoted === 0?
+            (
+                <Button size="sm" variant="primary" onClick={() => handleUpvoteButton()}>
+                    { props.upvoteName || "Upvote"}
+                </Button>
+            )
             :
-            (<Button size="sm" variant="primary-outline" onClick={toggleVote}>Upvoted</Button>)
+            (
+                <Button size="sm" variant="primary-outline" onClick={() => handleUpvoteButton()}>
+                    { props.upvotedName || "Upvoted"}
+                </Button>
+            )
             }
         </div>
     )
 }
 
-export default UpvoteButton
+UpvoteButton.propTypes = {
+    isUpvoted: PropTypes.bool.isRequired,
+    handleUpvote: PropTypes.func.isRequired,
+    upvoteName: PropTypes.string,
+    upvotedName: PropTypes.string
+}

@@ -34,10 +34,18 @@ export const addNewPost = data => async dispatch => {
 }
 
 export const updatePost = ( postLinearId, data ) => async dispatch => {
-    let res = null
+    let res = axios.put(`posts/${postLinearId}`, data)
     return dispatch({
         type: "UPDATE_POST",
         payload: null
+    })
+}
+
+export const removePost = (postLinearId) => async dispatch => {
+    let res = axios.delete(`posts/${postLinearId}`)
+    return dispatch({
+        type: "DELETE_POST",
+        payload: res.data
     })
 }
 
@@ -88,6 +96,15 @@ export const addNewPostContents = (postLinearId, data) => async dispatch => {
         payload: res.data
     })
 }
+
+export const removeContentsByPost = postLinearId => async dispatch => {
+    let res =  await axios.delete(`posts/contents/source/${postLinearId}`)
+    return dispatch({
+        type: "DELETE_POST_CONTENTS_BY_POST",
+        payload: res.data
+    })
+}
+
 
 export const clearContents = () => async dispatch=> {
     return dispatch({

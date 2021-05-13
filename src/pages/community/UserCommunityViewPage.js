@@ -4,6 +4,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import { 
     Container,
     Card, 
+    Dropdown,
+    DropdownButton,
     Image,
     Spinner,
     Breadcrumb,
@@ -16,16 +18,15 @@ import {
 } from "react-bootstrap";
 import { connect } from "react-redux";
 
-import ChangeLayoutButtons from "./../../components/shared/buttons/ChangeLayoutButtons";
+import ChangeLayoutButtons from "components/shared/buttons/ChangeLayoutButtons";
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 
-import { fetchCommunityData, fetchCommunitiyPosts, fetchCommunityPosts } from "./../../services/community.service";
-import { getCommunityPosts, clearPosts } from "./../../util/redux/actions/posts.actions";
+import { getCommunityData, clearCommunityData } from "util/redux/actions/community.actions";
+import { getCommunityPosts, clearPosts } from "util/redux/actions/posts.actions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEllipsisV} from "@fortawesome/free-solid-svg-icons";
 
-import { postsList } from "./../../static";
 
 function UserCommunityViewPage(props) {
     const params = useParams();
@@ -35,18 +36,20 @@ function UserCommunityViewPage(props) {
     // const [posts, setPosts] = useState([])
     
     const getCommunityData = linearId => {
-        fetchCommunityData(linearId).then(res=>{
+        props.getCommunityData(linearId).then(res=>{
             setCommunityData(res.data)
         })
     }
     
     useEffect(() => {
         setIsLoading(true)
+        getCommunityData(params.community_id)
         props.getCommunityPosts(params.community_id)
         setTimeout(() => {
             setIsLoading(false)
         }, 1000);
         return()=>{
+            props.clearCommunityData()
             props.clearPosts()
         }
     }, [])
@@ -65,7 +68,8 @@ function UserCommunityViewPage(props) {
                     <Breadcrumb.Item active>Name of community</Breadcrumb.Item>
                 </Breadcrumb>
                 <Jumbotron>
-                    <h2>Name of community</h2>
+                    <h2>{props.community.title}</h2>
+                    <small>Date created: {(props.community.created_at)}</small>
                 </Jumbotron>
 
                 <Row>
@@ -76,15 +80,20 @@ function UserCommunityViewPage(props) {
                     </Col>
                     <Col sm={6}>
                         <div className="text-right">
-                            <ChangeLayoutButtons handleChangeLayout={setLayout}/>
-                            {/* <ButtonGroup>
-                                <Button variant={"outline-secondary"}><FontAwesomeIcon onClick={setLayout} icon={faThLarge}/></Button>
-                                <Button variant={"outline-secondary"}><FontAwesomeIcon onClick={setLayout} icon={faList}/></Button>
-                            </ButtonGroup> */}
-                            
                             <LinkContainer to="/square/post/create">    
                                 <Button variant="success"> <FontAwesomeIcon icon={faPlus} /> Create new post</Button>
                             </LinkContainer>
+                            <ChangeLayoutButtons handleChangeLayout={setLayout}/>
+                            <DropdownButton
+                                as="ButtonGroup"
+                                title={<FontAwesomeIcon icon={faEllipsisV}/>}
+                                variant={"outline-secondary"} 
+                                drop={'down'}
+                            >
+                                <LinkContainer to={`/square/${props.community.linear_id}/settings`}>
+                                    <Dropdown.Item>Settings</Dropdown.Item>
+                                </LinkContainer>
+                            </DropdownButton>
                         </div>
                     </Col>
                 </Row>
@@ -154,12 +163,14 @@ function UserCommunityViewPage(props) {
 }
 
 const mapStateToProps = state => ({
-    community: state.community,
+    community: state.community.item,
     posts: state.posts.items
 })
 
 const mapDispatchToProps = {
+    getCommunityData,
     getCommunityPosts,
+    clearCommunityData,
     clearPosts
 }
 export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityViewPage)

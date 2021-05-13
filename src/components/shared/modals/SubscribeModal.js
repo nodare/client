@@ -1,18 +1,6 @@
 import React from 'react'
 import { Modal, Button } from "react-bootstrap";
-
-/*
-    Modal dictionary:
-        isShow                      *value to toggle the modal
-        toggleTrigger               *method to toggle the modal
-        header                      *text to put in the header
-        text                        *text to put in the body of the modal.
-        handleSubscribeButton       *buy method
-        *data                       *data passed to the modal        
-        button{
-            
-        }
-*/
+import PropTypes from "prop-types";
 
 
 export function SubscribeModal(props) {
@@ -37,4 +25,12 @@ export function SubscribeModal(props) {
             </Modal>
         </>
     )
+}
+
+SubscribeModal.propTypes = {
+    isShow: PropTypes.bool.isRequired,
+    toggleTrigger: PropTypes.func.isRequired,
+    header: PropTypes.string.isRequired, 
+    text: PropTypes.string.isRequired,
+    handleSubscribeButton: PropTypes.func.isRequired,
 }
