@@ -49,6 +49,14 @@ export const updateCommunity = (communityLinearId, data) => async dispatch => {
     })
 }
 
+export const removeCommunity = (communityLinearId) => async dispatch => {
+    let res = await axios.delete(`community/${communityLinearId}`)
+    return dispatch({
+        type: 'REMOVE_COMMUNITY',
+        payload: res.data
+    })
+}
+
 export const updateCommunityFiles = (communityLinearId, data) => async dispatch => {
     let res = await axios.put(`community/${communityLinearId}`, data)
     return dispatch({
@@ -66,5 +74,63 @@ export const clearCommunityItems = () => async dispatch => {
 export const clearCommunityData = () => async dispatch => {
     return dispatch({
         type: "CLEAR_COMMUNITY_DATA",
+    })
+}
+
+/* 
+================================
+        COMMUNITY CATEGORIES
+================================
+*/
+
+export const getCommunityCategories = (communityLinearId) => async dispatch => {
+    let res = await axios.get(`community/category/source/${communityLinearId}`)
+    return dispatch({
+        type: 'GET_COMMUNITY_CATEGORIES',
+        payload: res.data
+    })
+} 
+
+export const getCommunityCategoryData = (categoryLinearId) => async dispatch => {
+    let res = await axios.get(`community/category/${categoryLinearId}`)
+    return dispatch({
+        type: 'GET_COMMUNITY_CATEGORY_DATA',
+        payload: res.data
+    })
+} 
+
+export const createCommunityCategory = (data) => async dispatch => {
+    let res = await axios.post(`community/category/add`, data)
+    return dispatch({
+        type: 'ADD_COMMUNITY_CATEGORY',
+        payload: res.data
+    })
+} 
+
+export const updateCommunityCategory = (categoryLinearId, data) => async dispatch => {
+    let res = await axios.put(`community/category/${categoryLinearId}`, data)
+    return dispatch({
+        type: 'UPDATE_COMMUNITY_CATEGORY',
+        payload: res.data
+    })
+} 
+
+export const removeCommunityCategory = (categoryLinearId, data) => async dispatch => {
+    let res = await axios.delete(`community/category/${categoryLinearId}`, data)
+    return dispatch({
+        type: 'REMOVE_COMMUNITY_CATEGORY',
+        payload: res.data
+    })
+} 
+
+export const clearCategoryItems = () => async dispatch => {
+    return dispatch({
+        type: "CLEAR_CATEGORY_ITEMS"
+    })
+}
+
+export const clearCategoryData = () => async dispatch => {
+    return dispatch({
+        type: "CLEAR_CATEGORY_DATA",
     })
 }

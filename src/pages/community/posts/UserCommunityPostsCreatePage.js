@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, Link } from "react-router-dom";
+import { connect } from 'react-redux'
+import { useHistory } from "react-router";
 import { Alert, Container, Button, Form, Row, Col, Card, Toast, Spinner, Breadcrumb } from "react-bootstrap";
 
 import EditorJs from 'react-editor-js'
@@ -11,15 +13,18 @@ import Table from "@editorjs/table";
 // import Link from "@editorjs/link";
 import Image from "@editorjs/simple-image";
 
-import { fetchUsersCommunities, createNewPost, addNewPostContents } from "./../../../services/community.service";
+// import { fetchUsersCommunities, createNewPost, addNewPostContents } from "./../../../services/community.service";
+import { getUsersCommunities, getCommunityCategories,clearCommunityItems, clearCategoryItems} from "util/redux/actions/community.actions";
+import { addNewPost, addNewPostContents } from "util/redux/actions/posts.actions";
 
-import { accountId } from "./../../../static";
+import { accountId } from "static";
 
-function UserCommunityPostsCreatePage() {
+function UserCommunityPostsCreatePage(props) {
+    const history = useHistory()
     const [postFormValues, setPostFormValues] = useState({
         title: '',
         community_id: '',
-        category_id: ''
+        category_id: '0'
     })
     const [postContents, setPostContents] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -42,25 +47,23 @@ function UserCommunityPostsCreatePage() {
 
     const [userCommunities, setUserCommunities] = useState([])
     const [userCategories, setUserCategories] = useState([])
+    
+    const loadOptions = () => {
+        props.getUsersCommunities(accountId)
+    }
 
     useEffect(()=>{
+        // wat
         if(userCommunities.length > 0) setUserCommunities([])
-        fetchUsersCommunities(accountId)
-        .then(res=>{
-            setUserCommunities(res)
-        })
-        .catch(err=>{
-            console.log("err")
-            console.log(err)
-        })
+        loadOptions()
     }, [])
 
+    useEffect(()=>{
+        props.getCommunityCategories(postFormValues.community_id)
+        console.log("getting")
+    }, [postFormValues.community_id])
+
     
-    const userCommunityOptions = userCommunities.map((community)=>{
-        return(
-            <option key={community.id} value={community.linearId}>{community.title}</option>
-        )
-    })
 
     const handleEditorSave = async () => {
         setIsLoading(true)
@@ -72,34 +75,29 @@ function UserCommunityPostsCreatePage() {
         }, 500);
     }
 
-    const handleChangeCommunity = async communityName => {
-        setPostFormValues({...postFormValues, community_id: communityName })
+    // may problem dito. late kinukuha length
+    const handleChangeCommunity = communityLinearId => {
+        setPostFormValues({...postFormValues, community_id: communityLinearId })
+        console.log(postFormValues)
     }
 
-    /* 
-        DATA:
-            categoryId : string
-            community : string
-            contents : Array({
-                data:{
-                    text: string
-                },
-                type: string
-            })
-    */
     const addNewPost = () => {
         if(postFormValues.title === null) return window.alert("Please include a title in your post. ")
         if(postFormValues.community === null) return window.alert("Please select which community to post. ")
         if(postContents.length === 0) return window.alert("Editor is empty. Please write something. ")
+        if(postContents.category_id === ""){
+            postContents.category_id = 0
+        }
 
         let data = postFormValues
-        data.community_id = userCommunities.find(community=> community.title === postFormValues.community_id).linear_id
+        data.user_id = accountId
 
-        createNewPost(data)
-        .then(payload=>{
-            addNewPostContents( payload.id, postContents)
+        props.addNewPost(data)
+        .then(newPost=>{
+            props.addNewPostContents( newPost.payload.linear_id, postContents)
             .then(res=>{
                 window.alert("Post successfully created!")
+                history.replace(`/square/${data.community_id}`)
             })
             .catch(err=>{
                 console.log(err)
@@ -108,8 +106,6 @@ function UserCommunityPostsCreatePage() {
         .catch(err=>{
             console.log(err)
         })
-
-        setIsFinished(true)
     }
 
 
@@ -140,15 +136,28 @@ function UserCommunityPostsCreatePage() {
                                 <Form.Label>Community</Form.Label>
                                 <Form.Control as="select" value={postFormValues.community_id} onChange={e=>handleChangeCommunity(e.target.value)}>
                                     <option disabled value="">--Select Community--</option>
-                                    {userCommunityOptions}
+                                    {
+                                        props.communities.map((community)=>{
+                                            return(
+                                                <option key={community.id} value={community.linear_id}>{community.title}</option>
+                                            )
+                                        })
+                                    }
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col xs={12} md={6} xl={3}>
                             <Form.Group>
                                 <Form.Label>Category</Form.Label>
-                                <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, categoryId: e.target.value})}>
-                                    <option disabled value="">--No Category--</option>
+                                <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, category_id: e.target.value})}>
+                                    <option value="0">--No Category--</option>
+                                    {
+                                        props.categories.map((category)=>{
+                                            return(
+                                                <option key={category.id} value={category.linear_id}>{category.name}</option>
+                                            )
+                                        })
+                                    }
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -177,14 +186,23 @@ function UserCommunityPostsCreatePage() {
                     {toast.message}
                 </Toast.Body>
             </Toast>
-            {
-                isFinished === false?null:(
-                    <Redirect push to="/square"></Redirect>
-                )
-            }
             <></>
         </>
     )
 }
 
-export default UserCommunityPostsCreatePage
+const mapStateToProps = state => ({
+    communities: state.community.items,
+    categories: state.community.categoryItems,
+})
+
+const mapDispatchToProps = {
+    getUsersCommunities, 
+    getCommunityCategories,
+    addNewPost,
+    addNewPostContents,
+    clearCommunityItems, 
+    clearCategoryItems
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityPostsCreatePage)

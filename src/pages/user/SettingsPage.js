@@ -1,8 +1,38 @@
-import React from 'react'
-import { Row, Col, Nav, Tab, Table } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { connect } from "react-redux";
+import { Button, Card, Row, Col, Nav, Tab, Table, Form, Image} from 'react-bootstrap'
+import axios from 'axios'
+
+import { serverUrl, accountId } from "static";
 
 
-function SettingsPage() {
+
+function SettingsPage({user}) {
+    const [image, setImage] = useState(null)
+    
+    const selectImage = e => {
+        setImage(e.target.files[0])
+        console.log(image)
+    }
+
+    const uploadProfileImage = () => {
+        if(!image){
+            window.alert("No image uploaded")
+            return
+        }
+        let fd = new FormData()
+        fd.set('userProfilePicture', image, image.name)
+        axios.post(`users/upload/profile/${user.linear_id}`, fd, { headers: {"Content-type": "multipart/form-data"} })
+        .then((res)=>{
+            console.log(res)
+            window.alert("Image uploaded successfully")
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    }
+    
+
     return (
         <>
             <Tab.Container defaultActiveKey="account">
@@ -11,6 +41,7 @@ function SettingsPage() {
                         <h2>Settings</h2>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Link eventKey="account">Account</Nav.Link>
+                            <Nav.Link eventKey="profile">Profile</Nav.Link>
                             <Nav.Link eventKey="security">Security</Nav.Link>
                         </Nav>
                     </Col>
@@ -18,42 +49,64 @@ function SettingsPage() {
                         <Tab.Content>
                             
                             <Tab.Pane eventKey="account">
-                                <h4>Account Settings</h4>
                                 
-                                <Table size="md" borderless responsive>
-                                    
-                                    <tr>
-                                        <td className="text-left">
-                                            <strong>Name</strong>
-                                        </td>
-                                        <td className="text-left">John doe</td>
-                                        <td className="text-right">
-                                            <span className="btn-link" style={{cursor: "pointer"}}>Edit</span>
-                                        </td>
-                                    </tr>
-                                    
-                                    <tr>
-                                        <td className="text-left">
-                                            <strong>Username</strong>
-                                        </td>
-                                        <td className="text-left">johndoe123</td>
-                                        <td className="text-right">
-                                            <span className="btn-link" style={{cursor: "pointer"}}>Edit</span>
-                                        </td>
-                                    </tr>
-                                    
-                                    <tr>
-                                        <td className="text-left">
-                                            <strong>Contact</strong>
-                                        </td>
-                                        <td className="text-left">Primary: johndoe123@gmail.com</td>
-                                        <td className="text-right">
-                                            <span className="btn-link" style={{cursor: "pointer"}}>Edit</span>
-                                        </td>
-                                    </tr>
+                                <Card>
+                                    <Card.Header>General</Card.Header>
+                                    <Card.Body>
 
-                                </Table>
+                                        <Row>
+                                            <Col xs={12} md={2} className="text-right">Name</Col>
+                                            <Col xs={12} md={9}>asdf</Col>
+                                        </Row>
+                                        <Row>
+                                            <Col xs={12} md={2} className="text-right">Username</Col>
+                                            <Col xs={12} md={9}>{user?.username}</Col>
+                                        </Row>
+                                        <Row>
+                                            <Col xs={12} md={2} className="text-right">Contact</Col>
+                                            <Col xs={12} md={9}>{user?.contact}</Col>
+                                        </Row>
+                                        
+                                    </Card.Body>
+                                </Card>
 
+                            </Tab.Pane>
+                                
+                            <Tab.Pane eventKey="profile">
+                                <Card>
+                                    <Card.Header>Profile</Card.Header>
+                                    <Card.Body>
+
+                                        <Row>
+                                            <Col xs={12} md={2} className="text-right">Profile Picture</Col>
+                                            <Col xs={12} md={9}>
+                                                {!image === null?
+                                                    <>
+                                                        <Image
+                                                            src={`${image?.name}`}
+                                                            style={{height: "100px", width: "100px"}}
+                                                            thumbnail
+                                                        />
+                                                    </>
+                                                :
+                                                    <>
+                                                        <Image
+                                                            src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image?.photo_orig_name}`}
+                                                            style={{height: "100px", width: "100px"}}
+                                                            thumbnail
+                                                        />
+                                                    </>
+                                                }
+                                                <Form.Group>
+                                                    <Form.Label>Update Profile Picture</Form.Label>
+                                                    <Form.Control type="file" onChange={e => selectImage(e)}/>
+                                                </Form.Group>
+                                                <Button variant="success" onClick={() => uploadProfileImage()}>Save Changes</Button>
+                                            </Col>
+                                        </Row>
+                                        
+                                    </Card.Body>
+                                </Card>
                             </Tab.Pane>
                             
                             <Tab.Pane eventKey="security">
@@ -78,4 +131,12 @@ function SettingsPage() {
     )
 }
 
-export default SettingsPage
+const mapStateToProps = state => ({
+    
+})
+
+const mapDispatchToProps = {
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage)

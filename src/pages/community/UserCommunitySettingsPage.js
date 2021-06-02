@@ -97,22 +97,24 @@ function UserCommunitySettingsPage(props) {
                         <Card.Body>
                             <Row>
                                 
-                                <Col xs={12} md={2} className="text-right">Title</Col>
+                                <Col xs={12} md={2} className="text-right"><strong>Title</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <input type="text" className="form-control" name={"title"} value={communitySettingsForm?.title} onChange={handleFormInputChange} required placeholder="Enter community title"/>
                                         <Form.Text className="text-muted">This field should not be empty</Form.Text>
                                     </Form.Group>
                                 </Col>
-                                
-                                <Col xs={12} md={2} className="text-right">Description</Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12} md={2} className="text-right"><strong>Description</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <textarea className="form-control" name={"description"} value={communitySettingsForm?.description} onChange={handleFormInputChange} required placeholder="Write description here"></textarea>
                                     </Form.Group>
                                 </Col>
-
-                                <Col xs={12} md={2} className="text-right">Thumbnail Image</Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12} md={2} className="text-right"><strong>Thumbnail Image</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <Form.File
@@ -121,12 +123,13 @@ function UserCommunitySettingsPage(props) {
                                             onChange={handleImageUpload} 
                                             data-browse={"Upload image"}
                                             custom
-                                        />
+                                            />
                                         <Form.Text>Current: {props.communityData.thumbnail_image || "none"}</Form.Text>
                                     </Form.Group>
                                 </Col>
-                                
-                                <Col xs={12} md={2} className="text-right">Visibility</Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12} md={2} className="text-right"><strong>Visibility</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <Form.Check
@@ -138,8 +141,6 @@ function UserCommunitySettingsPage(props) {
                                         />
                                     </Form.Group>
                                 </Col>
-                                
-                                
                             </Row>
                         </Card.Body>
                     </Card>
@@ -149,14 +150,14 @@ function UserCommunitySettingsPage(props) {
                         <Card.Body>
                             <Row>
                                 
-                                <Col xs={12} md={2} className="text-right">Upvote Name</Col>
+                                <Col xs={12} md={2} className="text-right"><strong>Upvote Name</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <input type="text" className="form-control" name={"upvote_name"} value={communitySettingsForm?.upvote_name} onChange={handleFormInputChange} placeholder="Enter upvote name"/>
                                     </Form.Group>
                                 </Col>
 
-                                <Col xs={12} md={2} className="text-right">Upvoted Name</Col>
+                                <Col xs={12} md={2} className="text-right"><strong>Upvoted Name</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <input type="text" className="form-control" name={"upvoted_name"} value={communitySettingsForm?.upvoted_name} onChange={handleFormInputChange} placeholder="Enter upvoted name"/>

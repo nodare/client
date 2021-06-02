@@ -6,6 +6,7 @@ import comments from "./reducers/comments.reducers.js";
 import upvotes from "./reducers/upvotes.reducers.js";
 import auth from "./reducers/auth.reducers";
 import messages from "./reducers/messages.reducers";
+import users from "./reducers/users.reducers";
 
 export default combineReducers({
     ui: ui,
@@ -14,5 +15,6 @@ export default combineReducers({
     comments: comments,
     upvotes: upvotes,
     auth: auth,
-    messages: messages
+    messages: messages,
+    users: users
 })

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { apiLink, accountId } from "./../../../static";
+import { accountId } from "static";
 
 /* 
 ================================
@@ -12,6 +12,15 @@ export const getCommunityPosts = communityLinearId => async dispatch => {
     let res = await axios.get(`posts/community/${communityLinearId}`)
     return dispatch({
         type: "GET_COMMUNITY_POSTS",
+        payload: res.data
+    })
+}
+
+// get users community posts by category
+export const getCommunityPostsByCategory = (communityLinearId, categoryLinearId) => async dispatch => {
+    let res = await axios.get(`posts/community/${communityLinearId}/category/${categoryLinearId}`)
+    return dispatch({
+        type: "GET_COMMUNITY_POSTS_BY_CATEGORY",
         payload: res.data
     })
 }
@@ -29,7 +38,7 @@ export const addNewPost = data => async dispatch => {
     let res = await axios.post(`posts`, data)
     return dispatch({
         type: "ADD_NEW_POST",
-        payload: null
+        payload: res.data
     })
 }
 
@@ -80,7 +89,7 @@ export const getPostContents = postLinearId => async dispatch => {
 }
 
 export const addNewPostContents = (postLinearId, data) => async dispatch => {
-    await data.map((content, i)=>{
+    let res = await data.map((content, i)=>{
         content = {
             ...content, 
             ...content.data, 
@@ -89,8 +98,10 @@ export const addNewPostContents = (postLinearId, data) => async dispatch => {
             order: i
         };
         delete content.data;
+        axios.post(`posts/contents`, content)
+        .then(res=>{return res.data})
+        .catch(err=>{return err})
     })
-    let res = await axios.post(`posts/contents`, data)
     return dispatch({
         type: "ADD_NEW_POST_CONTENTS",
         payload: res.data
@@ -150,7 +161,7 @@ export const updateComment = commentLinearId => async dispatch => {
 
 // delete a comment
 export const deleteComment = ( commentLinearId ) => async dispatch => {
-    let res = await axios.delete(`${apiLink}posts/comments/${commentLinearId}`)
+    let res = await axios.delete(`posts/comments/${commentLinearId}`)
     return dispatch({
         type: "DELETE_COMMENT",
         payload: res.data

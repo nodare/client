@@ -1,6 +1,8 @@
 const communityState = {
     items: [],
     item: {},
+    categoryItems: [],
+    categoryItem: {},
     queries: [],
     isLoading: false,
     hasError: false,
@@ -36,10 +38,40 @@ export default function(state=communityState, action) {
             return{
                 ...state
             }
+        case "REMOVE_COMMUNITY":
+            return{
+                ...state
+            }
         case "UPDATE_COMMUNITY_FILES":
             return{
                 ...state
             }
+
+
+        case "GET_COMMUNITY_CATEGORIES":
+            return{
+                ...state,
+                categoryItems: action.payload
+            }
+        case "GET_COMMUNITY_CATEGORY_DATA":
+            return{
+                ...state,
+                categoryItem: action.payload
+            }
+        case "ADD_COMMUNITY_CATEGORY":
+            return{
+                ...state
+            }
+        case "UPDATE_COMMUNITY_CATEGORY":
+            return{
+                ...state
+            }
+        case "REMOVE_COMMUNITY_CATEGORY":
+            return{
+                ...state
+            }
+
+
         case "CLEAR_COMMUNITY_ITEMS":
             return{
                 ...state, 
@@ -51,6 +83,18 @@ export default function(state=communityState, action) {
                 ...state, 
                 message: "Clear community data",
                 item: {}
+            }
+        case "CLEAR_CATEGORY_ITEMS":
+            return{
+                ...state, 
+                message: "Cleared user's categories",
+                categoryItems: []
+            }
+        case "CLEAR_CATEGORY_DATA":
+            return{
+                ...state, 
+                message: "Clear category data",
+                categoryItem: {}
             }
         default:
             return state;

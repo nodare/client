@@ -1,7 +1,15 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Card, Row, Col, Image, Table } from "react-bootstrap";
+import { connect } from 'react-redux';
 
-function UserProfile() {
+import { serverUrl} from 'static'
+
+function UserProfile({user}) {
+
+    useEffect(() => {
+        console.log(user)
+    }, [user])
+    
     return (
         <>
 
@@ -12,10 +20,10 @@ function UserProfile() {
                         <Card>
                             <Card.Body>
                                 <div className="w-100 text-center">
-                                    
+
                                     <Image 
-                                        src={"https://placekitten.com/200/200"}
-                                        style={{height:'150px'}}
+                                        src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image?.photo_orig_name}`}
+                                        style={{height:'150px', width: "auto"}}
                                         className="my-3"
                                         roundedCircle
                                     ></Image>
@@ -119,4 +127,8 @@ function UserProfile() {
     )
 }
 
-export default UserProfile
+const mapStateToProps = state => ({})
+
+const mapDispatchToProps = {}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile)

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { CookiesProvider } from "react-cookie";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios'
@@ -7,11 +8,15 @@ import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
 
-axios.defaults.baseURL = "http://localhost:3414/api/v1/"
+import { apiUrl } from "static";
+
+axios.defaults.baseURL = apiUrl
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <CookiesProvider>
+      <App />
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

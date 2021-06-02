@@ -26,8 +26,6 @@ function UserCommunityPostsViewPage(props) {
     const [isCommentsLoading, setIsCommentsLoading] = useState(false)
     const [showCommentsBox, setShowCommentsBox] = useState(true)
     const [deleteCommunityModal, showDeleteCommunityModal] = useState(false)
-    
-    const postComments = props.comments
 
     const [owner, setOwner] = useState(true)
     
@@ -103,32 +101,25 @@ function UserCommunityPostsViewPage(props) {
         })
     }
 
-    useEffect(() => {
-        const loadData = async () => {
-            await props.getCommunityData(params.community_id)
-            .then(async () => {
-                await props.getPostData(params.post_id)
-                .then(()=>{
-                    props.getPostContents(params.post_id)
-                    props.verifyPostUpvote(params.post_id, accountId)
-                })
+    const loadData = async () => {
+        await props.getCommunityData(params.community_id)
+        .then(async () => {
+            await props.getPostData(params.post_id)
+            .then(()=>{
+                props.getPostContents(params.post_id)
+                props.verifyPostUpvote(params.post_id, accountId)
             })
-            loadComments()
-        }
+        })
+        loadComments()
+    }
+    
+    useEffect(() => {
+        
         loadData()
         setIsLoading(false)
         if(props.postData === null || props.postData === ""){
             history.replace('/page-not-found')
         }
-        
-        // fetchPostData(params.post_id)
-        // .then(resPost=>{
-        //     setPost(resPost)
-        //     fetchPostContents(resPost.linear_id)
-        //     .then(resContent=>{
-        // })
-        //         setPostContents(resContent)
-        //     })
         
         return()=>{
             props.clearPost()
@@ -136,7 +127,7 @@ function UserCommunityPostsViewPage(props) {
             props.clearComments()
         }
 
-    }, [])
+    }, [isLoading])
 
     return (
         <>
@@ -296,7 +287,7 @@ function UserCommunityPostsViewPage(props) {
                                             </div>
                                         )
                                     :
-                                    postComments.map((comment, i)=>{
+                                    props.comments.map((comment, i)=>{
                                         if(comment.parent_comment_id === null){
                                             return(
                                                 <div key={i}>

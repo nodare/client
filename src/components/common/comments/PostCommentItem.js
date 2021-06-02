@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table, Image } from "react-bootstrap";
 import * as ta from "timeago.js";
 
+import { useUserDetails } from "util/helpers/hooks/user.hooks";
 import { getUserDetails, clearUserDetails } from "util/redux/actions/auth.actions";
 
 import UpvoteButton from "components/shared/buttons/UpvoteButton";
@@ -12,18 +13,14 @@ import DeleteModal from "components/shared/modals/common/DeleteModal";
 import { accountId } from "static";
 
 function PostCommentItem(props) {
-    const [userDetails, setUserDetails] = useState({})
+    const [isLoading, setIsLoading] = useState(true)
+    const [userDetails, setUserDetails] = useState(null)
     const [commentInput, setCommentInput] = useState("")
     const [commentInputBox, toggleCommentInputBox] = useState(false)
     const [deleteCommentModal, showDeleteCommentModal] = useState(false)
 
+    const user = useUserDetails(props.comment.user_id)
     
-    const getUserDetails = async () => {
-        await props.getUserDetails(props.comment.user_id)
-        await setUserDetails(props.user)
-        // await props.clearUserDetails()
-        await console.log(userDetails)
-    }
 
     const handleCommentReplyButton = (commentLinearId) => {
         if(commentInput === ""){
@@ -51,11 +48,13 @@ function PostCommentItem(props) {
     
 
     useEffect(() => {
-        getUserDetails()
-        return() => {
-            props.clearUserDetails()
+        if(user.isLoading === true){
+            setIsLoading(true)
+        }else{
+            setUserDetails(user.response)
+            setIsLoading(false)
         }
-    }, [])
+    }, [user])
 
     
 
@@ -71,7 +70,7 @@ function PostCommentItem(props) {
                         roundedCircle
                     ></Image>
                     <div id="commentsSectionBox" className="w-100">
-                        <strong>{userDetails.nickname}</strong> <small>{ta.format(props.comment.created_at)}</small>
+                        <strong>{userDetails?.email || "name"}</strong> <small>{ta.format(props.comment.created_at)}</small>
                         <p>{props.comment.content}</p>
                         <ButtonGroup className="justify-content-right">
                             {/* <UpvoteButton/> */}

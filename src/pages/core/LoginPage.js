@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { Link, Redirect } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useCookies } from "react-cookie";
+import { connect } from 'react-redux'
+import { Link, useHistory } from "react-router-dom";
+import  { loginUser, testIsAuth, clearToken } from "util/redux/actions/auth.actions";
 import { 
     Form, 
     Container, 
@@ -8,23 +11,50 @@ import {
     Col
 } from "react-bootstrap";
 
-function LoginPage() {
+function LoginPage(props) {
+    const history = useHistory()
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [tkn, setTokenCookie] = useCookies(['auth'])
     const [isPassed, setIsPassed] = useState(false)
     const [loginForm, setLoginForm] = useState({
-        username: "",
+        email: "",
         password: ""
+        // email: "assistant_manager@weendi.com",
+        // password: "asdqwe123"
     })
 
     const submitLoginForm = () => {
         setLoginForm({
             ...loginForm, 
-            username: loginForm.username.trim(),
+            email: loginForm.email.trim(),
             password: loginForm.password.trim()
         })
-        if(loginForm.username === "" || loginForm.password === "") return window.alert("Please fill out the fields required")
-        console.log(loginForm)
-        setIsPassed(true)
+        if(loginForm.email === "" || loginForm.password === "") return window.alert("Please fill out the fields required")
+        props.loginUser(loginForm)
     }
+
+    useEffect(() => {
+        if(localStorage.getItem('token')){
+            history.push('/')
+        }
+        return () => {
+            props.clearToken()
+        }
+    }, [])
+
+    useEffect(() => {
+        if(props.token){
+            const date = new Date()
+            date.setSeconds(date.getSeconds() + 10)
+            setTokenCookie("Auth", props.token, {
+                path: '/', 
+                expires: date
+            })
+            setIsLoggedIn(true)
+            localStorage.setItem("token", `${props.token}`)
+            history.push('/')
+        }
+    }, [props.token])
     
     return (
         <>
@@ -38,8 +68,8 @@ function LoginPage() {
                         <Container className="align-items-center d-flex">
                             <Form className="w-100">
                                 <Form.Group>
-                                    <Form.Label>Username</Form.Label>
-                                    <Form.Control type="text" value={loginForm.username} onChange={e => setLoginForm({ ...loginForm, username: e.target.value })}></Form.Control>
+                                    <Form.Label>E-mail Address</Form.Label>
+                                    <Form.Control type="text" value={loginForm.email} onChange={e => setLoginForm({ ...loginForm, email: e.target.value })}></Form.Control>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Password</Form.Label>
@@ -53,15 +83,20 @@ function LoginPage() {
                 </Row>
             </Container>
 
-            {
-                isPassed === false?"":
-                (
-                    <Redirect to="/home"></Redirect>
-                )
-            }
             
         </>
     )
 }
 
-export default LoginPage
+const mapStateToProps = state => ({
+    userDetails: state.auth.userDetails,
+    token: state.auth.token
+})
+
+const mapDispatchToProps = {
+    loginUser,
+    testIsAuth,
+    clearToken
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage)

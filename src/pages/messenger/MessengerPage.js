@@ -68,8 +68,8 @@ function MessagingWindow(props) {
         props.getConversationData(conversationLinearId)
         .then(()=>{
                 setTimeout(() => {
-                setIsMessagesLoading(false)
-                props.getConversationMessages(conversationLinearId)
+                    props.getConversationMessages(conversationLinearId)
+                    setIsMessagesLoading(false)
             }, 1000);
         })
     }

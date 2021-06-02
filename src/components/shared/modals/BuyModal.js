@@ -1,6 +1,6 @@
 import React from 'react'
 import { Modal, Button } from "react-bootstrap";
-import PropTypes, { string } from "prop-types";
+import PropTypes from "prop-types";
 export default function BuyModal(props) {
     
     const buyMethod = () =>{

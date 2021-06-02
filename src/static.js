@@ -1,4 +1,5 @@
-export const apiLink = "http://localhost:3414/api/v1/"
+export const serverUrl = "http://localhost:3414/"
+export const apiUrl = `${serverUrl}api/v1/`
 export const accountId = 'b8152334-65a8-4b28-99e1-fbeef33bb9c4'
 export const accountIdNumber = 32
 

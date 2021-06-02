@@ -18,6 +18,11 @@ export default function(state=postsState, action){
                 ...state,
                 items: action.payload
             })
+        case "GET_COMMUNITY_POSTS_BY_CATEGORY":
+            return({
+                ...state,
+                items: action.payload
+            })
         case "GET_POST_DATA":
             return({
                 ...state,
