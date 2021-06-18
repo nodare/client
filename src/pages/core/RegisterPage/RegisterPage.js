@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { 
     Form, 
@@ -9,9 +8,8 @@ import {
     Col
 } from "react-bootstrap";
 
-import { registerUser } from "util/redux/actions/auth.actions";
 
-function RegisterPage(props) {
+function RegisterPageComponent(props) {
     const [toggleRegister, setToggleRegister] = useState(false)
     const [registerForm, setRegisterForm] = useState({
         email: "",
@@ -88,8 +86,4 @@ function RegisterPage(props) {
 }
 
 
-const mapDispatchToProps = {
-    registerUser
-}
-
-export default connect(null, mapDispatchToProps)(RegisterPage)
+export { RegisterPageComponent }

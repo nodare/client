@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCookies } from "react-cookie";
-import { connect } from 'react-redux'
 import { Link, useHistory } from "react-router-dom";
-import  { loginUser, testIsAuth, clearToken } from "util/redux/actions/auth.actions";
+
 import { 
     Form, 
     Container, 
@@ -11,7 +10,7 @@ import {
     Col
 } from "react-bootstrap";
 
-function LoginPage(props) {
+function LoginPageComponent(props) {
     const history = useHistory()
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [tkn, setTokenCookie] = useCookies(['auth'])
@@ -50,7 +49,7 @@ function LoginPage(props) {
                 path: '/', 
                 expires: date
             })
-            setIsLoggedIn(true)
+            // setIsLoggedIn(true)
             localStorage.setItem("token", `${props.token}`)
             history.push('/')
         }
@@ -88,15 +87,5 @@ function LoginPage(props) {
     )
 }
 
-const mapStateToProps = state => ({
-    userDetails: state.auth.userDetails,
-    token: state.auth.token
-})
 
-const mapDispatchToProps = {
-    loginUser,
-    testIsAuth,
-    clearToken
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage)
+export { LoginPageComponent }

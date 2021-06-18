@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export const getCommunityDetails = (communityLinearId) => {
+export const useCommunityDetails = (communityLinearId) => {
     const [response, setResponse] = useState(null)
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(true)

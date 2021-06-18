@@ -5,6 +5,7 @@ const communityState = {
     categoryItem: {},
     queries: [],
     isLoading: false,
+    followers: null,
     hasError: false,
     message: "community message"
 }
@@ -45,6 +46,22 @@ export default function(state=communityState, action) {
         case "UPDATE_COMMUNITY_FILES":
             return{
                 ...state
+            }
+
+        // community fullow reducers
+        case "GET_COMMUNITY_FOLLOWERS":
+            return{
+                ...state,
+                followers: action.payload
+            }
+        case "FOLLOW_COMMUNITY":
+            return{
+                ...state,
+            }
+        case "CLEAR_FOLLOW_COMMUNITY":
+            return{
+                ...state, 
+                followers: null
             }
 
 

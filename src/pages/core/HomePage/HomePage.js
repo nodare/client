@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { connect } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image } from "react-bootstrap";
-import { communityCategories } from "./../../static";
+import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
+    faSatelliteDish,
     faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
-import { getAllCommunities, clearCommunityItems } from "util/redux/actions/community.actions";
+import { useLatestFeed } from 'util/helpers/hooks/feed.hooks'
 
-function HomeFeed(props) {
+import FeedItemCard from 'components/shared/cards/FeedItemCards'
+
+
+function HomePage(props) {
+    const feed = useLatestFeed()
+    const [feedPosts, setFeedPosts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [selectedPage, setSelectedPage] = useState("feed")
     const [search, setSearch] = useState({
@@ -60,13 +65,21 @@ function HomeFeed(props) {
             case "category":
                 break;
             default: 
-                break;
+                break;  
         }
     }
 
     useEffect(() => {
         setSelectedPage('feed')
+        
     }, [])
+
+    useEffect(() => {
+        if(!feed.isLoading){
+            setFeedPosts(feed.response)
+        }
+        console.log(feedPosts)
+    }, [feed])
 
     
 
@@ -74,7 +87,7 @@ function HomeFeed(props) {
         <>
             <Tab.Container defaultActiveKey="feed">
                 <Row>
-                    <Col sm={3}>
+                    <Col sm={3} className="position-sticky">
                         <div className="py-3">
                             <Form.Group className="d-flex">
                                 <Form.Control placeholder="Search" type="text" onChange={e=>onChangeSearchBox(e)}></Form.Control>
@@ -125,7 +138,20 @@ function HomeFeed(props) {
                                     <>
                                         <Tab.Content>
                                             <Tab.Pane eventKey="feed">
-                                                Feed
+                                                {
+                                                    feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
+                                                    <>
+                                                        {
+                                                            feedPosts && feedPosts.map((post, i)=>{
+                                                                if(feed.isLoading == false){
+                                                                    return (
+                                                                        <FeedItemCard key={i} post={post}/>
+                                                                    )
+                                                                }
+                                                            })
+                                                        }
+                                                    </>
+                                                }
                                             </Tab.Pane>
                                             <Tab.Pane eventKey="explore">
                                                 <span className="h3">Explore more communities</span>
@@ -179,14 +205,4 @@ function HomeFeed(props) {
     )
 }
 
-const mapStateToProps = state => ({
-    communities: state.community.items
-})
-
-
-const mapDispatchToProps = {
-    getAllCommunities,
-    clearCommunityItems
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomeFeed)
+export { HomePage }

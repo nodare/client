@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Modal, Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
-
-import { accountId } from "static";
+import { UiContext } from 'pages'
 
 export function CreateCommunityModal(props) {
+    const ui = React.useContext(UiContext)
     const [communityNameInput, setCommunityNameInput] = useState("")
     const [communityDescriptionInput, setCommunityDescriptionInput] = useState("")
     const [communityType, setCommunityType] = useState(false)
@@ -14,7 +14,7 @@ export function CreateCommunityModal(props) {
         if(communityDescriptionInput === "") return window.alert("Write something in the community description")
         
         let data = {
-            user_id: accountId,
+            user_id: ui?.currentUser?.linear_id,
             title: communityNameInput,
             description: communityDescriptionInput,
             community_type: communityType,

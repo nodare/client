@@ -15,7 +15,6 @@ export const useActiveUserDetails = (token = null) => {
                 let data = res.data.user
                 let profileImage = await axios.get(`users/images/profile/${data.linear_id}?current=1`) 
                 data.current_image = profileImage.data || null
-                console.log(data)
                 setResponse(data)
             })
             .catch(err=>{

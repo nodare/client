@@ -22,7 +22,7 @@ function UserProfile({user}) {
                                 <div className="w-100 text-center">
 
                                     <Image 
-                                        src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image?.photo_orig_name}`}
+                                        src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image[0]?.photo_orig_name}`}
                                         style={{height:'150px', width: "auto"}}
                                         className="my-3"
                                         roundedCircle

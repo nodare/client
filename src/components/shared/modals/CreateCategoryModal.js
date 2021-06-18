@@ -7,10 +7,10 @@ import React, { useState } from 'react'
 import { Button, Form, InputGroup, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-import { accountId } from "static";
+import { UiContext } from 'pages'
 
 function CreateCategoryModal(props) {
-    
+    const ui = React.useContext(UiContext)
     const [categoryName, setCategoryName] = useState("")
     const [hasInputError, setHasInputError] = useState(true)
     const [categoryNameInputError, setCategoryNameInputError] = useState("")
@@ -34,7 +34,7 @@ function CreateCategoryModal(props) {
     
     const createCategoryMethod = () => {
         let data = {
-            user_id: accountId,
+            user_id: ui?.currentUser?.linear_id,
             community_id: props.community.linear_id,
             name: categoryName
         }

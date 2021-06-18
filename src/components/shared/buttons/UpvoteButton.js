@@ -29,7 +29,7 @@ export default function UpvoteButton(props) {
 }
 
 UpvoteButton.propTypes = {
-    isUpvoted: PropTypes.bool.isRequired,
+    isUpvoted: PropTypes.any,
     handleUpvote: PropTypes.func.isRequired,
     upvoteName: PropTypes.string,
     upvotedName: PropTypes.string
