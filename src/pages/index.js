@@ -1,9 +1,8 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Container, Button } from "react-bootstrap";
 import { createBrowserHistory } from "history";
-
-
 import RouteComponent from 'routes'
+
 
 // components
 import UserNavbarComponent from 'components/navbars/UserNavbar'

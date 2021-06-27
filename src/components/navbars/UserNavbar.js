@@ -17,9 +17,10 @@ import MessagingWindow from "components/messaging/MessagingWindow";
 import { ProfileImageSmall } from 'components/shared/images/ProfileImage'
 import { logoutUser } from "util/redux/actions/auth.actions";
 
-
+import { UserContext } from 'pages/user/UserContextProvider'
 
 function UserNavbarComponent(props) {
+    const usertest = useContext(UserContext)
     const history = useHistory()
     const ui = useContext(UiContext)
     const [user, setUser] = useState(null)
@@ -39,6 +40,10 @@ function UserNavbarComponent(props) {
     }
 
     useEffect(() => {
+        console.log(usertest)
+    }, [usertest])
+
+    useEffect(() => {
         setUser(props.user)
     }, [user])
     
@@ -53,6 +58,9 @@ function UserNavbarComponent(props) {
                     :""
                 :""
             }
+            {/* <UserContext>
+                asdfasdf
+            </UserContext> */}
             <Navbar bg={'light'} expand="lg">
                 <Container>
                     <Navbar.Toggle/>

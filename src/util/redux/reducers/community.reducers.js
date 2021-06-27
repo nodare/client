@@ -5,7 +5,7 @@ const communityState = {
     categoryItem: {},
     queries: [],
     isLoading: false,
-    followers: null,
+    followers: [],
     hasError: false,
     message: "community message"
 }
@@ -48,8 +48,13 @@ export default function(state=communityState, action) {
                 ...state
             }
 
-        // community fullow reducers
+        // community follow reducers
         case "GET_COMMUNITY_FOLLOWERS":
+            return{
+                ...state,
+                followers: action.payload
+            }
+        case "GET_USER_FOLLOWERS":
             return{
                 ...state,
                 followers: action.payload

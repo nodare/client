@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { LinkContainer } from "react-router-bootstrap";
 import PropTypes from 'prop-types'
-import { Card, Image, Button, Form, Row, Col } from "react-bootstrap";
+import { map } from 'lodash'
+import { Link } from 'react-router-dom'
+import { LinkContainer } from 'react-router-bootstrap'
+import { Card, Button,Form } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThumbsUp, faComment, faEye, faShare } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faShare } from '@fortawesome/free-solid-svg-icons'
 
 import { ProfileImageSmall } from "components/shared/images/ProfileImage";
 import PostContentsComponent from 'components/common/posts/PostContents'
+import UpvoteButton from 'components/shared/buttons/UpvoteButton'
+import CommentsButton from 'components/shared/buttons/CommentsButton'
 
 import { serverUrl } from 'static'
 import { useActiveUserDetails } from 'util/helpers/hooks/user.hooks'
 
-function FeedItemCard({post}) {
+function FeedItemCard({post, handleUpvotePost}) {
     const user = useActiveUserDetails(localStorage.getItem('token') || null)
-    const [currentUser, setCurrentUser] = useState(localStorage.getItem('token'))
+    const [currentUser, setCurrentUser] = useState(null)
     const [postData, setPostData] = useState(null)
+    const [isUpvoted, setIsUpvoted] = useState(false)
+    const [showComment, setShowComment] = useState(false)
     
     useEffect(() => {
         setPostData(post)
@@ -31,6 +36,20 @@ function FeedItemCard({post}) {
         }
     }, [user])
 
+    useEffect(() => {
+        map(postData?.upvotes ,  upvote=>{
+            if(upvote?.user_id === currentUser.linear_id){
+                setIsUpvoted(true)
+            }
+        })
+    }, [currentUser])
+
+    const upvotePost = () => {
+        setIsUpvoted(prevState => prevState = !prevState)
+    }
+
+    // show na lang ng comments 
+    
     return (
         <>
             <Card className="my-2">
@@ -60,21 +79,38 @@ function FeedItemCard({post}) {
                     :""}
                 </Card.Body>
                 <Card.Body className="py-0">
-                    <Card.Img src={post?.image || "assets/placeholders/image-placeholder.png"}/>
+                    {post.image?
+                    <>
+                        <Card.Img src={post?.image || "assets/placeholders/image-placeholder.png"}/>
+                    </>:""}
                 </Card.Body>
-                <Card.Body>
-                    <Button variant={"outline-link"}><FontAwesomeIcon icon={faThumbsUp}/> 123</Button>
-                    <Button variant={"outline-link"}><FontAwesomeIcon icon={faComment}/> 6 comments</Button>
-                    <Button variant={"outline-link"}><FontAwesomeIcon icon={faShare}/> Share</Button>
+                <hr className="m-0"/>
+                <Card.Body className="py-2">
+                    <UpvoteButton
+                        isUpvoted={isUpvoted}
+                        handleUpvote={() => upvotePost()}
+                        count={post?.upvotes?.length}
+                    />
+                    <CommentsButton count={post?.comments?.length} handleClick={() => setShowComment(true)}/>
+                    <Button variant={"outline-primary"} size={'sm'}><FontAwesomeIcon icon={faShare}/> Share</Button>
+                    <LinkContainer to={`/square/${post?.community_id}/post/${post?.linear_id}`}>
+                        <Button variant={"link"} size={'sm'}>View full post</Button>
+                    </LinkContainer>
                 </Card.Body>
-                <Card.Body>
-                    <div className="d-flex justify-content-left">
-                        {/* <ProfileImageSmall imageUrl={`${serverUrl}images/users/${user.linear_id}/${user?.current_image[0]?.photo_orig_name}`}/> */}
-                        <Form.Group>
-                            <Form.Control type="text" placeholder="Write down a comment.."/>
-                        </Form.Group>
-                    </div>
-                </Card.Body>
+                <hr className="m-0"/>
+                {
+                    showComment?
+                        <Card.Body className="py-3">
+                            <div className="d-flex justify-content-left">
+                                <ProfileImageSmall imageUrl={`${serverUrl}images/users/${currentUser?.linear_id}/${currentUser?.current_image[0]?.photo_orig_name}`}/>
+                                <Form.Group className="my-0">
+                                    <Form.Control type="text" placeholder="Write down a comment.."/>
+                                    <Form.Label className="my-0"><small>Press 'Enter' to send</small></Form.Label>
+                                </Form.Group>
+                            </div>
+                        </Card.Body>
+                    :""
+                }
             </Card>
         </>
     )
@@ -96,5 +132,6 @@ FeedItemCard.propTypes = {
     isLoading: PropTypes.bool,
     title: PropTypes.string,
     author: PropTypes.string,
-    image: PropTypes.string
+    image: PropTypes.string,
+    handleUpvotePost: PropTypes.func
 }

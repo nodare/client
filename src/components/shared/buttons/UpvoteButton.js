@@ -10,27 +10,38 @@ export default function UpvoteButton(props) {
     }
 
     return (
-        <div>
-            {props.isUpvoted === 0?
+        <>
+            {props.isUpvoted === (0 || false)?
             (
                 <Button size="sm" variant="primary" onClick={() => handleUpvoteButton()}>
                     { props.upvoteName || "Upvote"}
+                    {
+                        props.count && props.count !== 0?
+                        <> {props.count}</>
+                        :""
+                    }
                 </Button>
             )
             :
             (
-                <Button size="sm" variant="primary-outline" onClick={() => handleUpvoteButton()}>
+                <Button size="sm" variant="outline-primary" onClick={() => handleUpvoteButton()}>
                     { props.upvotedName || "Upvoted"}
+                    {
+                        props.count && props.count !== 0?
+                        <> {props.count}</>
+                        :""
+                    }
                 </Button>
             )
             }
-        </div>
+        </>
     )
 }
 
 UpvoteButton.propTypes = {
     isUpvoted: PropTypes.any,
+    count: PropTypes.number,
     handleUpvote: PropTypes.func.isRequired,
     upvoteName: PropTypes.string,
-    upvotedName: PropTypes.string
+    upvotedName: PropTypes.string,
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, createElement } from 'react';
-import { Switch, Route, Redirect } from 'react-router'
+import { Switch, Route } from 'react-router'
 
 // pages
 import { LoginPageContainer } from "pages/core/LoginPage";
@@ -19,7 +19,7 @@ import TermsAndConditionsPage from 'pages/documents/TermsAndConditionsPage';
 import CommunityGuidelinesPage from 'pages/documents/CommunityGuidelinesPage';
 import AdminPage from "pages/admin/AdminPage";
 import UserProfilePage from "pages/user/UserProfilePage";
-import SettingsPage from 'pages/user/SettingsPage'
+import { UserSettingsPageContainer } from 'pages/user/SettingsPage'
 import MessengerPage from 'pages/messenger/MessengerPage';
 import MainStorePage from "pages/store/StorePage";
 import StoreEmoticonItemPage from "pages/store/StoreEmoticonItemPage";
@@ -39,7 +39,7 @@ const routeList = [
     { path: "/me", component: UserProfilePage, isExact: true},
     { path: "/profile/:id", component: UserProfilePage, isExact: true},
     { path: "/messenger", component: MessengerPage, isExact: true},
-    { path: "/settings", component: SettingsPage, isExact: true},
+    { path: "/settings", component: UserSettingsPageContainer, isExact: true},
     
     // community pages
     { path: "/square", component: ListPageContainer , isExact: true},

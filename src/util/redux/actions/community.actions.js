@@ -91,6 +91,14 @@ export const getCommunityFollowers = (communityLinearId) => async dispatch => {
     })
 }
 
+export const getUsersFollowers = (communityLinearId) => async dispatch => {
+    let res = await axios.get(`community/user/${communityLinearId}/follow`)
+    return dispatch({
+        type: "GET_USER_FOLLOWERS",
+        payload: res.data || null
+    })
+}
+
 export const followCommunity = (data) => async dispatch => {
     let res = await axios.post(`community/follow/add`, data)
     return dispatch({
@@ -151,7 +159,7 @@ export const removeCommunityCategory = (categoryLinearId, data) => async dispatc
         type: 'REMOVE_COMMUNITY_CATEGORY',
         payload: res.data
     })
-} 
+}
 
 export const clearCategoryItems = () => async dispatch => {
     return dispatch({

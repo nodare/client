@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react'
+import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
 import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image } from "react-bootstrap";
 import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-    faSatelliteDish,
     faSearch
 } from "@fortawesome/free-solid-svg-icons";
+import { UiContext } from 'pages'
 
 import { useLatestFeed } from 'util/helpers/hooks/feed.hooks'
+import { useCommunityDetails } from 'util/helpers/hooks/community.hooks'
 
 import FeedItemCard from 'components/shared/cards/FeedItemCards'
 
+import { UserContextProvider } from 'pages/user/UserContextProvider'
 
 function HomePage(props) {
+    const ui = React.useContext(UiContext)
+    const usertest = React.useContext(UserContextProvider)
     const feed = useLatestFeed()
     const [feedPosts, setFeedPosts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [followedCommunitiesList, setFollowedCommunitiesList] = useState(null)
     const [selectedPage, setSelectedPage] = useState("feed")
     const [search, setSearch] = useState({
         text: "",
@@ -70,21 +76,30 @@ function HomePage(props) {
     }
 
     useEffect(() => {
+        console.log(usertest)
         setSelectedPage('feed')
-        
     }, [])
 
+    useEffect(() => {
+        props.getUsersFollowers(ui?.currentUser?.linear_id)
+    }, [ui])
+
+    useEffect(() => {
+        setFollowedCommunitiesList(prevState=>props.followers)
+    }, [props.followers, followedCommunitiesList])
+
+    
     useEffect(() => {
         if(!feed.isLoading){
             setFeedPosts(feed.response)
         }
-        console.log(feedPosts)
     }, [feed])
-
-    
 
     return (
         <>
+            <UserContextProvider>
+                
+            </UserContextProvider>
             <Tab.Container defaultActiveKey="feed">
                 <Row>
                     <Col sm={3} className="position-sticky">
@@ -109,7 +124,13 @@ function HomePage(props) {
                                 <Col sm={12}>
                                     <Card>
                                         <Card.Body>
-                                            asdfasd
+                                            {
+                                                map(followedCommunitiesList, (fcommunity)=>{
+                                                    return (
+                                                        <FollowedCommunityItemComponent id={fcommunity.community_id}/>
+                                                    )
+                                                })
+                                            }
                                         </Card.Body>
                                     </Card>
                                 </Col>
@@ -142,10 +163,13 @@ function HomePage(props) {
                                                     feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
                                                     <>
                                                         {
-                                                            feedPosts && feedPosts.map((post, i)=>{
+                                                            map(feedPosts, (post, i)=>{
                                                                 if(feed.isLoading == false){
                                                                     return (
-                                                                        <FeedItemCard key={i} post={post}/>
+                                                                        <FeedItemCard 
+                                                                            key={i} 
+                                                                            post={post}
+                                                                        />
                                                                     )
                                                                 }
                                                             })
@@ -203,6 +227,26 @@ function HomePage(props) {
             </Tab.Container>
         </>
     )
+}
+
+const FollowedCommunityItemComponent = ({id}) => {
+    const { isLoading, error, response} = useCommunityDetails(id)
+    const [community, setCommunity] = useState(null)
+    
+    useEffect(() => {
+        !isLoading && setCommunity(response && response[0])
+    }, [isLoading, error, response])
+    
+
+    return(
+        <div className="d-flex justify-content-left py-1">
+            <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
+            <div className="d-block">
+                <span><small>{community && community.title}</small></span>
+            </div>
+        </div>
+    )
+    
 }
 
 export { HomePage }

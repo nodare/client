@@ -11,8 +11,9 @@ import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import { createLogger } from "redux-logger";
 import reducers from "./util/redux";
-
 import MainPage from 'pages/index'
+
+import {UserContextProvider} from 'pages/user/UserContextProvider'
 
 function App() {
   
@@ -40,9 +41,11 @@ function App() {
   return (
     
     <Provider store={store}>
-      <Router>
-        <MainPage/>
-      </Router>
+      <UserContextProvider value={{test: "Object"}}>
+        <Router>
+          <MainPage/>
+        </Router>
+      </UserContextProvider>
     </Provider>
 
   );

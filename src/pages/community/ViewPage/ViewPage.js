@@ -114,6 +114,7 @@ function ViewPageComponent(props) {
             props.getCommunityPostsByCategory(params.community_id, 0)
             .then(()=>{
                 if(props.posts){
+                    selectCategory(0)
                     setIsLoading(false)
                 }
             })
@@ -134,6 +135,10 @@ function ViewPageComponent(props) {
         })
     }, [ui])
 
+    useEffect(() => {
+        selectCategory(0)
+    }, [props.post])
+    
     return (
         <>
             <Container>
@@ -187,7 +192,6 @@ function ViewPageComponent(props) {
                             }
                             
                             <ListGroup>
-                                <ListGroup.Item onClick={()=>selectCategory(0)} active={selectedCategory === 0} >Main</ListGroup.Item>
                                 {
                                     props.categories.length > 0?
                                         props.categories.map((category, i)=>{

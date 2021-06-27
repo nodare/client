@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { connect } from "react-redux";
+import React, { useState } from 'react'
 import { Button, Card, Row, Col, Nav, Tab, Table, Form, Image} from 'react-bootstrap'
 import axios from 'axios'
 
-import { serverUrl, accountId } from "static";
+import { serverUrl } from "static";
 
 
 
-function SettingsPage({user}) {
+const UserSettingsPageComponent = ({user}) => {
     const [image, setImage] = useState(null)
     
     const selectImage = e => {
@@ -131,12 +130,4 @@ function SettingsPage({user}) {
     )
 }
 
-const mapStateToProps = state => ({
-    
-})
-
-const mapDispatchToProps = {
-
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsPage)
+export { UserSettingsPageComponent }
