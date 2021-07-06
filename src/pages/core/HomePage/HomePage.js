@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { connect } from "react-redux";
+import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
 import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image } from "react-bootstrap";
-import { communityCategories } from "./../../static";
+import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
     faSearch
 } from "@fortawesome/free-solid-svg-icons";
+import { UiContext } from 'pages'
 
-import { getAllCommunities, clearCommunityItems } from "util/redux/actions/community.actions";
+import { useLatestFeed } from 'util/helpers/hooks/feed.hooks'
+import { useCommunityDetails } from 'util/helpers/hooks/community.hooks'
 
-function HomeFeed(props) {
+import FeedItemCard from 'components/shared/cards/FeedItemCards'
+
+import { UserContextProvider } from 'pages/user/UserContextProvider'
+
+function HomePage(props) {
+    const ui = React.useContext(UiContext)
+    const usertest = React.useContext(UserContextProvider)
+    const feed = useLatestFeed()
+    const [feedPosts, setFeedPosts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [followedCommunitiesList, setFollowedCommunitiesList] = useState(null)
     const [selectedPage, setSelectedPage] = useState("feed")
     const [search, setSearch] = useState({
         text: "",
@@ -60,21 +71,38 @@ function HomeFeed(props) {
             case "category":
                 break;
             default: 
-                break;
+                break;  
         }
     }
 
     useEffect(() => {
+        console.log(usertest)
         setSelectedPage('feed')
     }, [])
 
+    useEffect(() => {
+        props.getUsersFollowers(ui?.currentUser?.linear_id)
+    }, [ui])
+
+    useEffect(() => {
+        setFollowedCommunitiesList(prevState=>props.followers)
+    }, [props.followers, followedCommunitiesList])
+
     
+    useEffect(() => {
+        if(!feed.isLoading){
+            setFeedPosts(feed.response)
+        }
+    }, [feed])
 
     return (
         <>
+            <UserContextProvider>
+                
+            </UserContextProvider>
             <Tab.Container defaultActiveKey="feed">
                 <Row>
-                    <Col sm={3}>
+                    <Col sm={3} className="position-sticky">
                         <div className="py-3">
                             <Form.Group className="d-flex">
                                 <Form.Control placeholder="Search" type="text" onChange={e=>onChangeSearchBox(e)}></Form.Control>
@@ -96,7 +124,13 @@ function HomeFeed(props) {
                                 <Col sm={12}>
                                     <Card>
                                         <Card.Body>
-                                            asdfasd
+                                            {
+                                                map(followedCommunitiesList, (fcommunity)=>{
+                                                    return (
+                                                        <FollowedCommunityItemComponent id={fcommunity.community_id}/>
+                                                    )
+                                                })
+                                            }
                                         </Card.Body>
                                     </Card>
                                 </Col>
@@ -125,7 +159,23 @@ function HomeFeed(props) {
                                     <>
                                         <Tab.Content>
                                             <Tab.Pane eventKey="feed">
-                                                Feed
+                                                {
+                                                    feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
+                                                    <>
+                                                        {
+                                                            map(feedPosts, (post, i)=>{
+                                                                if(feed.isLoading == false){
+                                                                    return (
+                                                                        <FeedItemCard 
+                                                                            key={i} 
+                                                                            post={post}
+                                                                        />
+                                                                    )
+                                                                }
+                                                            })
+                                                        }
+                                                    </>
+                                                }
                                             </Tab.Pane>
                                             <Tab.Pane eventKey="explore">
                                                 <span className="h3">Explore more communities</span>
@@ -179,14 +229,24 @@ function HomeFeed(props) {
     )
 }
 
-const mapStateToProps = state => ({
-    communities: state.community.items
-})
+const FollowedCommunityItemComponent = ({id}) => {
+    const { isLoading, error, response} = useCommunityDetails(id)
+    const [community, setCommunity] = useState(null)
+    
+    useEffect(() => {
+        !isLoading && setCommunity(response && response[0])
+    }, [isLoading, error, response])
+    
 
-
-const mapDispatchToProps = {
-    getAllCommunities,
-    clearCommunityItems
+    return(
+        <div className="d-flex justify-content-left py-1">
+            <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
+            <div className="d-block">
+                <span><small>{community && community.title}</small></span>
+            </div>
+        </div>
+    )
+    
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeFeed)
+export { HomePage }

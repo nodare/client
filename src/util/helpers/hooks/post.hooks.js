@@ -18,7 +18,7 @@ export const usePostData = (postLinearId) => {
             let postContents = await axios.get(`posts/contents/${postLinearId}`)
             let postComments = await axios.get(`comments/post/source/${postLinearId}`)
             let postUpvotes = await axios.get(`votes/post/${postLinearId}`)
-            let userDetails = await axios.get(`auth/user/${accountId}`)
+            let userDetails = await axios.get(`users/${accountId}`)
             data.category = postCategory.data[0]
             data.contents = postContents.data
             data.comments = postComments.data

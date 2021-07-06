@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useHistory } from "react-router-dom";
+import {  useParams, useHistory } from "react-router-dom";
 import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table } from "react-bootstrap";
-import { connect } from 'react-redux';
 import * as ta from "timeago.js";
 
+import PostContentsComponent from 'components/common/posts/PostContents'
 import UpvoteButton from "components/shared/buttons/UpvoteButton";
 import PostCommentItem from "components/common/comments/PostCommentItem";
 import DeleteModal from "components/shared/modals/common/DeleteModal";
 
-
-import { getCommunityData, clearCommunityData} from "util/redux/actions/community.actions";
-import { getPostData, getPostContents, removeContentsByPost, removePost, clearPost, clearContents } from "util/redux/actions/posts.actions";
-import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments } from "util/redux/actions/comments.actions";
-import { verifyPostUpvote, togglePostUpvote } from "util/redux/actions/upvotes.actions";
-
 // static post
-import { accountId } from "./../../../static";
+import { accountId } from "static";
 
 
 
-function UserCommunityPostsViewPage(props) {
+function ViewPostPage(props) {
     const params = useParams()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
@@ -143,109 +137,9 @@ function UserCommunityPostsViewPage(props) {
                                     <h2>{props.postData.title}</h2>
                                     <span>Posted by: Lex</span><br/>
                                     <span>{ta.format(new Date(props.postData.created_at))}</span>
+
+                                    <PostContentsComponent contents={props.contents}/>
                                     
-                                    {props.contents.map((content, i)=>{
-                                        {
-                                            switch(content.type){
-                                                case "header":
-                                                    switch(content.level){
-                                                        case 1:
-                                                            return(
-                                                                <h1 key={i}>{content.text}</h1>
-                                                            )
-                                                        case 2:
-                                                            return(
-                                                                <h2 key={i}>{content.text}</h2>
-                                                            )
-                                                        case 3:
-                                                            return(
-                                                                <h3 key={i}>{content.text}</h3>
-                                                            )
-                                                        case 4:
-                                                            return(
-                                                                <h4 key={i}>{content.text}</h4>
-                                                            )
-                                                        case 5:
-                                                            return(
-                                                                <h5 key={i}>{content.text}</h5>
-                                                            )
-                                                        case 6:
-                                                            return(
-                                                                <h6 key={i}>{content.text}</h6>
-                                                            )
-                                                    }
-                                                    break;
-                                                case "paragraph":
-                                                    return(
-                                                        <p key={i}>{content.text}</p>
-                                                    )
-                                                case "link":
-                                                    return(
-                                                        <Link to={content.link}>Link</Link>
-                                                    )
-                                                case "quote":
-                                                    return(
-                                                        // to be revised
-                                                        <Card key={i}>
-                                                            <Card.Body>
-                                                                <div className="d-block">
-                                                                    <p>{content.text}</p>
-                                                                </div>
-                                                                <small>{content.caption}</small>
-                                                            </Card.Body>
-                                                        </Card>
-                                                    )
-                                                case "list":
-                                                    switch(content.style){
-                                                        case "ordered":
-                                                            <ol>
-                                                                {
-                                                                    content.items.map((item,i)=>{
-                                                                        <li key={i}>{item}</li>
-                                                                    })
-                                                                }
-                                                            </ol>
-                                                            break;
-                                                        case "unordered":
-                                                            <ul>
-                                                                {
-                                                                    content.items.map((item,i)=>{
-                                                                        <li key={i}>{item}</li>
-                                                                    })
-                                                                }
-                                                            </ul>
-                                                            break;
-                                                        default: 
-                                                            break;
-                                                    }
-                                                    break;
-                                                // case "table":
-                                                //     <Table>
-                                                //         {
-                                                //             content.data.content.map((row, i)=>{
-                                                //                 (
-                                                //                     <tr key={i}>
-                                                //                         {
-                                                //                             row.map((cell, j)=>{
-                                                //                                 <td key={j}>
-                                                //                                     {cell}
-                                                //                                 </td>
-                                                //                             })
-                                                //                         }
-                                                //                     </tr>
-                                                //                 )
-                                                //             })
-                                                //         }
-                                                //     </Table>
-                                                //     break;
-                                                case "image":
-                                                    // code placed sood
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                    })}
                                 </>
                                 {/* end of main post */}
 
@@ -350,29 +244,4 @@ function UserCommunityPostsViewPage(props) {
     )
 }
 
-const mapStateToProps = state => ({
-    communityData: state.community.item,
-    postData: state.posts.item,
-    contents: state.posts.contents,
-    comments: state.comments.items,
-    postUpvoteData: state.upvotes.postUpvoteItem
-})
-
-const mapDispatchToProps = {
-    verifyPostUpvote,
-    togglePostUpvote,
-    getCommunityData,
-    getPostData,
-    removePost,
-    getPostContents,
-    getPostComments,
-    addPostComment,
-    removePostComment,
-    removeContentsByPost,
-    clearCommunityData,
-    clearPost,
-    clearContents,
-    clearComments
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityPostsViewPage)
+export { ViewPostPage }

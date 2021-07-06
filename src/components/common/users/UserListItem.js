@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 import { useUserDetails } from "util/helpers/hooks/user.hooks";
 
-function UserListItem({user}) {
+function UserListItem(props) {
     const user = useUserDetails(props.user.linear_id)
     return (
         <>
@@ -21,6 +21,6 @@ function UserListItem({user}) {
 
 export default UserListItem
 
-UserListItem.propTypes = {
-    user: PropTypes.object.isRequired
-}
+// UserListItem.propTypes = {
+//     user: PropTypes.object.isRequired
+// }

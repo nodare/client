@@ -58,7 +58,7 @@ export const removeCommunity = (communityLinearId) => async dispatch => {
 }
 
 export const updateCommunityFiles = (communityLinearId, data) => async dispatch => {
-    let res = await axios.put(`community/${communityLinearId}`, data)
+    let res = await axios.put(`community/${communityLinearId}/files`, data, {headers: {"Content-Type": 'multipart/form-data'}})
     return dispatch({
         type: 'UPDATE_COMMUNITY_FILES',
         payload: res.data
@@ -79,9 +79,47 @@ export const clearCommunityData = () => async dispatch => {
 
 /* 
 ================================
-        COMMUNITY CATEGORIES
+        COMMUNITY FOLLOW
 ================================
 */
+
+export const getCommunityFollowers = (communityLinearId) => async dispatch => {
+    let res = await axios.get(`community/${communityLinearId}/follow`)
+    return dispatch({
+        type: "GET_COMMUNITY_FOLLOWERS",
+        payload: res.data || null
+    })
+}
+
+export const getUsersFollowers = (communityLinearId) => async dispatch => {
+    let res = await axios.get(`community/user/${communityLinearId}/follow`)
+    return dispatch({
+        type: "GET_USER_FOLLOWERS",
+        payload: res.data || null
+    })
+}
+
+export const followCommunity = (data) => async dispatch => {
+    let res = await axios.post(`community/follow/add`, data)
+    return dispatch({
+        type: "FOLLOW_COMMUNITY",
+        payload: res.data
+    })
+}
+
+export const clearFollow = () => async dispatch => {
+    return dispatch({
+        type: "CLEAR_FOLLOW_COMMUNITY",
+        payload: null
+    })
+}
+
+/* 
+================================
+    COMMUNITY CATEGORIES
+================================
+*/
+
 
 export const getCommunityCategories = (communityLinearId) => async dispatch => {
     let res = await axios.get(`community/category/source/${communityLinearId}`)
@@ -121,7 +159,7 @@ export const removeCommunityCategory = (categoryLinearId, data) => async dispatc
         type: 'REMOVE_COMMUNITY_CATEGORY',
         payload: res.data
     })
-} 
+}
 
 export const clearCategoryItems = () => async dispatch => {
     return dispatch({

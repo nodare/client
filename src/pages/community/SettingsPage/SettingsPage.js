@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from 'react-router';
-import { connect } from 'react-redux'
 
 import { Breadcrumb, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
@@ -8,39 +7,42 @@ import bsCustomFileInput from "bs-custom-file-input";
 
 import InfoModal from "components/shared/modals/common/InfoModal";
 
-import { getCommunityData, updateCommunity, clearCommunityData } from "util/redux/actions/community.actions";
-
-
-function UserCommunitySettingsPage(props) {
+function SettingsPageComponent(props) {
     const params = useParams()
     const history = useHistory()
     const fileData = new FormData()
 
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [isChanged, setIsChanged] = useState(false)
     
     const [communitySettingsForm, setCommunitySettingsForm] = useState({})
+    const [communityUploadedImages, setCommunityUploadedImages] = useState([])
     const [confirmDiscardModal, showConfirmDiscardModal] = useState(false)
+    
 
     const loadCommunityData = () => {
-        setIsLoading(true)
         props.getCommunityData(params.community_id)
         prefillForm()
         setIsLoading(false)
     }
 
     const prefillForm = () => {
-        setCommunitySettingsForm(props.communityData)
+        setCommunitySettingsForm(props.community)
     }
 
     const handleSaveSettings = (event) => {
         event.preventDefault()
-        const formData = new FormData();
-        
+        console.log(fileData.entries())
         props.updateCommunity(params.community_id, communitySettingsForm)
         .then(()=>{
-            window.alert("Settings saved!")
-            history.replace(`/square`)
+            console.log(fileData)
+            console.log(communityUploadedImages)
+            props.updateCommunityFiles(params.community_id, communityUploadedImages)
+            .then((res)=>{
+                console.log(res)
+                window.alert("Settings saved!")
+                history.push(`/square`)
+            })
         })
     }
 
@@ -49,11 +51,11 @@ function UserCommunitySettingsPage(props) {
     }
     
     const handleImageUpload = event => {
-        fileData.append('thumbnail_image', event.target.files[0])
-        // console.log(event.target.files[0])
-        console.log(fileData)
-        
+        fileData.append(event.target.name, event.target.files[0])
         setCommunitySettingsForm({...communitySettingsForm, [event.target.name]: event.target.files[0].name})
+        setCommunityUploadedImages(prevState=>{
+            return {...prevState, [event.target.name]: event.target.files[0]}
+        })
     }
     
     const handleCheckboxChange = event => {
@@ -63,7 +65,6 @@ function UserCommunitySettingsPage(props) {
 
     useEffect(() => {
         loadCommunityData()
-
         return()=>{
             props.clearCommunityData()
         }
@@ -80,7 +81,7 @@ function UserCommunitySettingsPage(props) {
                     <Breadcrumb.Item href="/square">
                         Communities
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item href={`/square/${params.community_id}`}>{props.communityData.title}</Breadcrumb.Item>
+                    <Breadcrumb.Item href={`/square/${params.community_id}`}>{props.community.title}</Breadcrumb.Item>
                     <Breadcrumb.Item active>Settings</Breadcrumb.Item>
                 </Breadcrumb>
 
@@ -118,13 +119,13 @@ function UserCommunitySettingsPage(props) {
                                 <Col xs={12} md={9}>
                                     <Form.Group>
                                         <Form.File
-                                            label={communitySettingsForm.thumbnail_image || "Upload thumbnail photo.."}
+                                            label={communitySettingsForm?.thumbnail_image || "Upload thumbnail photo.."}
                                             name={"thumbnail_image"} 
                                             onChange={handleImageUpload} 
                                             data-browse={"Upload image"}
                                             custom
                                             />
-                                        <Form.Text>Current: {props.communityData.thumbnail_image || "none"}</Form.Text>
+                                        <Form.Text>Current: {props?.community?.thumbnail_image || "none"}</Form.Text>
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -191,14 +192,4 @@ function UserCommunitySettingsPage(props) {
 }
 
 
-const mapStateToProps = (state) => ({
-    communityData: state.community.item,
-})
-
-const mapDispatchToProps = {
-    getCommunityData,
-    updateCommunity,
-    clearCommunityData
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserCommunitySettingsPage)
+export { SettingsPageComponent }

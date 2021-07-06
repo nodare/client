@@ -10,15 +10,17 @@ import {
     faShoppingBasket
 } from "@fortawesome/free-solid-svg-icons";
 
-import { UiContext } from "pages/index";
+import { UiContext } from "pages";
 import { serverUrl } from "static";
 
 import MessagingWindow from "components/messaging/MessagingWindow";
+import { ProfileImageSmall } from 'components/shared/images/ProfileImage'
 import { logoutUser } from "util/redux/actions/auth.actions";
 
-
+import { UserContext } from 'pages/user/UserContextProvider'
 
 function UserNavbarComponent(props) {
+    const usertest = useContext(UserContext)
     const history = useHistory()
     const ui = useContext(UiContext)
     const [user, setUser] = useState(null)
@@ -26,6 +28,7 @@ function UserNavbarComponent(props) {
 
     const toggleDarkMode = () => {
         console.log("toggling dark mode")
+        console.log(ui)
     }
     
     const logoutUser = () => {
@@ -35,6 +38,10 @@ function UserNavbarComponent(props) {
         window.alert("You are successfully logged out!")
         history.push('/login')
     }
+
+    useEffect(() => {
+        console.log(usertest)
+    }, [usertest])
 
     useEffect(() => {
         setUser(props.user)
@@ -51,6 +58,9 @@ function UserNavbarComponent(props) {
                     :""
                 :""
             }
+            {/* <UserContext>
+                asdfasdf
+            </UserContext> */}
             <Navbar bg={'light'} expand="lg">
                 <Container>
                     <Navbar.Toggle/>
@@ -80,7 +90,10 @@ function UserNavbarComponent(props) {
                                             <LinkContainer to="/me">
                                                 <NavDropdown.Item>
                                                     <div className="d-flex justify-content my-1">
-                                                        <Image src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image?.photo_orig_name}`} style={{height: "25px"}} className="mr-2" roundedCircle/>
+                                                        <ProfileImageSmall
+                                                            imageUrl={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image[0]?.photo_orig_name}`}
+                                                        />
+                                                        {/* <Image src={`${serverUrl}images/users/${user?.linear_id}/${user?.current_image?.photo_orig_name}`} style={{height: "25px"}} className="mr-2" roundedCircle/> */}
                                                         {/* <Image src={"http://placekitten.com/100/100"} style={{height: "25px"}} className="mr-2" roundedCircle/> */}
                                                         <span>{ui?.currentUser?.username}</span>
                                                     </div>

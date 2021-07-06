@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, Link } from "react-router-dom";
-import { connect } from 'react-redux'
+import axios from 'axios'
+import { serverUrl } from 'static'
+
 import { useHistory } from "react-router";
-import { Alert, Container, Button, Form, Row, Col, Card, Toast, Spinner, Breadcrumb } from "react-bootstrap";
+import { Alert, Container, Button, Form, Row, Col, Card, Spinner, Breadcrumb } from "react-bootstrap";
+
+import { HotToast } from 'components/common/toasts/toast'
 
 import EditorJs from 'react-editor-js'
 import Header from "@editorjs/header";
@@ -10,25 +14,18 @@ import Paragraph from "@editorjs/paragraph";
 import List from "@editorjs/list";
 import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
-// import Link from "@editorjs/link";
-import Image from "@editorjs/simple-image";
+import LinkTool from "@editorjs/link";
+import ImageTool from "@editorjs/image";
 
-// import { fetchUsersCommunities, createNewPost, addNewPostContents } from "./../../../services/community.service";
-import { getUsersCommunities, getCommunityCategories,clearCommunityItems, clearCategoryItems} from "util/redux/actions/community.actions";
-import { addNewPost, addNewPostContents } from "util/redux/actions/posts.actions";
+import toast from 'react-hot-toast'
 
-import { accountId } from "static";
+import { UiContext } from 'pages'
 
-function UserCommunityPostsCreatePage(props) {
+function CreatePostPage(props) {
     const history = useHistory()
-    const [postFormValues, setPostFormValues] = useState({
-        title: '',
-        community_id: '',
-        category_id: '0'
-    })
+    const ui = React.useContext(UiContext)
     const [postContents, setPostContents] = useState([])
     const [isLoading, setIsLoading] = useState(false)
-    const [isFinished, setIsFinished] = useState(false)
     const [editor, setEditor] = useState(null)
     const [editorContent, setEditorContent] = useState(null)
     const editorTools = {
@@ -37,33 +34,41 @@ function UserCommunityPostsCreatePage(props) {
         list: List,
         quote: Quote,
         table: Table,
-        link: Link,
-        image: Image
+        link: LinkTool,
+        image: {
+            class: ImageTool,
+            config: {
+                endpoints: {
+                    byFile: `/uploads/posts`,
+                    byFile: `/uploads/posts`
+                }
+            }
+        }
     }
-    const [toast, setToast] = useState({
-        isVisible: true,
-        message: ""
+    const [postFormValues, setPostFormValues] = useState({
+        title: "",
+        community_id: "",
+        category_id: "0"
     })
 
     const [userCommunities, setUserCommunities] = useState([])
     const [userCategories, setUserCategories] = useState([])
     
     const loadOptions = () => {
-        props.getUsersCommunities(accountId)
+        props.getUsersCommunities(ui?.currentUser?.linear_id)
     }
 
     useEffect(()=>{
         // wat
         if(userCommunities.length > 0) setUserCommunities([])
         loadOptions()
-    }, [])
+    }, [ui])
 
     useEffect(()=>{
         props.getCommunityCategories(postFormValues.community_id)
-        console.log("getting")
+        .then(()=>{
+        })
     }, [postFormValues.community_id])
-
-    
 
     const handleEditorSave = async () => {
         setIsLoading(true)
@@ -72,25 +77,23 @@ function UserCommunityPostsCreatePage(props) {
             setEditorContent(savedData.blocks)
             setPostContents(savedData.blocks)
             setIsLoading(false)
+            console.log(savedData)
         }, 500);
     }
 
     // may problem dito. late kinukuha length
     const handleChangeCommunity = communityLinearId => {
         setPostFormValues({...postFormValues, community_id: communityLinearId })
-        console.log(postFormValues)
     }
 
     const addNewPost = () => {
-        if(postFormValues.title === null) return window.alert("Please include a title in your post. ")
-        if(postFormValues.community === null) return window.alert("Please select which community to post. ")
-        if(postContents.length === 0) return window.alert("Editor is empty. Please write something. ")
-        if(postContents.category_id === ""){
-            postContents.category_id = 0
-        }
+        if(postFormValues.title === "") return toast.error("Please include a title in your post. ")
+        if(postFormValues.community === "") return toast.error("Please select which community to post. ")
+        if(postFormValues.category_id === "") return toast.error("There's no category. Please select a category. ")
+        if(postContents.length === 0) return toast.error("Editor is empty. Please write something. ")
 
         let data = postFormValues
-        data.user_id = accountId
+        data.user_id = ui?.currentUser?.linear_id
 
         props.addNewPost(data)
         .then(newPost=>{
@@ -111,6 +114,7 @@ function UserCommunityPostsCreatePage(props) {
 
     return (
         <>
+            <HotToast/>
             <Container>
                 <Breadcrumb>
                     <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
@@ -150,7 +154,6 @@ function UserCommunityPostsCreatePage(props) {
                             <Form.Group>
                                 <Form.Label>Category</Form.Label>
                                 <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, category_id: e.target.value})}>
-                                    <option value="0">--No Category--</option>
                                     {
                                         props.categories.map((category)=>{
                                             return(
@@ -181,28 +184,9 @@ function UserCommunityPostsCreatePage(props) {
                     </EditorJs>
                 </Card>
             </Container>
-            <Toast show={toast.isVisible} delay={1000} autohide onClose={() => setToast({isVisible: false})}>
-                <Toast.Body>
-                    {toast.message}
-                </Toast.Body>
-            </Toast>
-            <></>
         </>
     )
 }
 
-const mapStateToProps = state => ({
-    communities: state.community.items,
-    categories: state.community.categoryItems,
-})
 
-const mapDispatchToProps = {
-    getUsersCommunities, 
-    getCommunityCategories,
-    addNewPost,
-    addNewPostContents,
-    clearCommunityItems, 
-    clearCategoryItems
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserCommunityPostsCreatePage)
+export { CreatePostPage }
