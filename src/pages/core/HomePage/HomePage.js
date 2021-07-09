@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
-import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image } from "react-bootstrap";
+import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image,Jumbotron } from "react-bootstrap";
 import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -178,18 +178,32 @@ function HomePage(props) {
                                                 }
                                             </Tab.Pane>
                                             <Tab.Pane eventKey="explore">
-                                                <span className="h3">Explore more communities</span>
+                                                <Jumbotron style={{padding:"2em"}}>
+                                                    <h3>Explore more communities</h3>
+                                                </Jumbotron>
                                                 <Row className="my-2">
                                                     {props.communities.map((community, i)=>{
                                                         return(
                                                             <>
                                                                 <Col xs={6} md={4} key={i}>
                                                                     <LinkContainer to={`/square/${community.linear_id}`}>
-                                                                        <Card>
-                                                                            <Card.Body>
-                                                                                <Image src="http://placekitten.com/300/300" className="w-100"/>
-                                                                                <strong>{community.title}</strong>
+                                                                        <Card bg="light" text="white">
+                                                                            <Card.Img src="http://placekitten.com/300/300"/>
+                                                                            <Card.ImgOverlay style={{padding:"0px"}}>
+                                                                            <Card.Body className="w-100" style={
+                                                                                {
+                                                                                    position:"absolute",
+                                                                                    bottom:"0px",
+                                                                                    minHeight:"110px",
+                                                                                    maxHeight:"100%",
+                                                                                    overflow:"hidden",
+                                                                                    background:"rgba(0,0,0,0.6)"
+                                                                                }
+                                                                                }>
+                                                                                <Card.Title className="h6">{community.title}</Card.Title>
+                                                                                <Card.Text style={{fontSize:"13px"}}>{community.description}</Card.Text>
                                                                             </Card.Body>
+                                                                            </Card.ImgOverlay>
                                                                         </Card>
                                                                     </LinkContainer>
                                                                 </Col>

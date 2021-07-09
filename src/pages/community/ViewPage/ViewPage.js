@@ -215,7 +215,7 @@ function ViewPageComponent(props) {
                                 <>
                                     {/* create own independent component for user item  */}
                                     <div className="d-flex justify-content-left py-1">
-                                        <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
+                                        <Image src="https://placekitten.com/200/200" roundedCircle style={{height:"40px"}} className="mr-3"/>
                                         <div className="d-block">
                                             <span><strong>{user?.username}</strong> {props.community?.user_id === user?.linear_id?"(You)":""} </span>
                                             <span className="d-block">Owner</span>
