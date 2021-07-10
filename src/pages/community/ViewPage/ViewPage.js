@@ -128,7 +128,7 @@ function ViewPageComponent(props) {
     
     useEffect(() => {
         
-        props?.followers?.map((follower)=>{
+        props?.community?.followers?.map((follower)=>{
             if(ui && ui?.currentUser?.linear_id === follower?.user_id){
                 setIsFollowed(follower?.isFollowed === 1 ? true : false)
             }
@@ -222,7 +222,7 @@ function ViewPageComponent(props) {
                                         </div>
                                     </div>
                                     {
-                                        props?.followers?.map((follower, i)=>{
+                                        props?.community?.followers?.map((follower, i)=>{
                                             return(
                                                 <>
                                                     <div className="d-flex justify-content-left py-1">

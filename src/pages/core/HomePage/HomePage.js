@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
-import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image,Jumbotron } from "react-bootstrap";
+import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image,Jumbotron, InputGroup } from "react-bootstrap";
 import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-    faSearch
-} from "@fortawesome/free-solid-svg-icons";
+import { FaSearch,FaRegKissWinkHeart,FaRegImages} from "react-icons/fa";
+import { RiSendPlaneFill } from "react-icons/ri";
 import { UiContext } from 'pages'
 
 import { useLatestFeed } from 'util/helpers/hooks/feed.hooks'
@@ -107,7 +106,7 @@ function HomePage(props) {
                             <Form.Group className="d-flex">
                                 <Form.Control placeholder="Search" type="text" onChange={e=>onChangeSearchBox(e)}></Form.Control>
                                 <Button variant="dark" onClick={() => handleSearch()}>
-                                    <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
+                                    <FaSearch/>
                                 </Button>
                             </Form.Group>
                         </div>
@@ -159,6 +158,27 @@ function HomePage(props) {
                                     <>
                                         <Tab.Content>
                                             <Tab.Pane eventKey="feed">
+                                                <Form>
+                                                    <Form.Group>
+                                                        <InputGroup className="mb-3">
+                                                            <InputGroup.Prepend>
+                                                                <Button variant="primary">
+                                                                <FaRegImages/>
+                                                                </Button>
+                                                                <Button variant="primary">
+                                                                <FaRegKissWinkHeart/>
+                                                                </Button>
+                                                            </InputGroup.Prepend>
+                                                            <Form.Control type="text" placeholder="Title" />
+                                                            <InputGroup.Append>
+                                                                <Button type="submit"><RiSendPlaneFill/></Button>
+                                                            </InputGroup.Append>
+                                                        </InputGroup>
+                                                    </Form.Group>
+                                                    <Form.Group>
+                                                    <Form.Control as="textarea" rows={3} />
+                                                    </Form.Group>
+                                                </Form>
                                                 {
                                                     feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
                                                     <>
