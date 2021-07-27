@@ -37,6 +37,10 @@ import { faPlus, faEllipsisV} from "@fortawesome/free-solid-svg-icons";
 import { UiContext } from 'pages'
 
 import { serverUrl } from 'static'
+import upvotesReducers from 'util/redux/reducers/upvotes.reducers';
+import { Alert } from 'bootstrap';
+import { isUndefined } from 'lodash-es';
+
 
 function ViewPageComponent(props) {
     const params = useParams();
@@ -44,7 +48,7 @@ function ViewPageComponent(props) {
     const history = useHistory()
     const {path, url} = useRouteMatch()
     const [isLoading, setIsLoading] = useState(true)
-    const [isFollowed, setIsFollowed] = useState(false)
+    const [isFollowed, setIsFollowed] = useState(0)
     const [isSearching, setIsSearching] = useState(false)
     const [layout, setLayout] = useState('list')
     const [selectedCategory, setSelectedCategory] = useState(0)
@@ -52,8 +56,8 @@ function ViewPageComponent(props) {
     const [createCategoryModal, showCreateCategoryModal] = useState(false)
     const [posts, setPosts] = useState([])
 
-    const user = useActiveUserDetails(localStorage.getItem('token')).response
-    
+    //const user = useActiveUserDetails(localStorage.getItem('token'))
+
     const getCommunityData = linearId => {
         props.getCommunityData(linearId)
         .then(()=>{
@@ -61,10 +65,28 @@ function ViewPageComponent(props) {
         })
     }
 
+    const getFollowStatus = () =>{
+        console.log(ui?.currentUser.linear_id)
+        let data = {
+            user_id: ui?.currentUser.linear_id,
+            community_id: params.community_id
+        }
+        console.log(data)
+        props.getFollowStatus(data)
+        .then(res=>{
+            console.log(res)
+            if(res.payload==null){
+                setIsFollowed(0)
+            }else{
+                setIsFollowed(res.payload.status)
+            }
+        })
+    }
+
     const getFollowedCommunities = linearId => {
         props.getCommunityFollowers(linearId)
     }
-    
+
     const createCategory = data => {
         props.createCommunityCategory(data)
         .then(()=>{
@@ -86,13 +108,13 @@ function ViewPageComponent(props) {
 
     const toggleFollowCommunity = () => {
         let data = {
-            user_id: ui.currentUser.linear_id,
-            community_id: props.community.linear_id,
+            user_id: ui?.currentUser?.linear_id,
+            community_id: props.community.linear_id
         }
 
         props.followCommunity(data)
-        .then((res)=>{
-            setIsFollowed(prevState => !prevState)
+        .then(res=>{
+            setIsFollowed(res.payload.status)
             props.getCommunityFollowers(props?.community?.linear_id)
         })
     }
@@ -106,7 +128,9 @@ function ViewPageComponent(props) {
     }
     
     useEffect(() => {
+        //console.log(ui)
         getCommunityData(params.community_id)
+        getFollowStatus()
         getFollowedCommunities(params.community_id)
         // props.getCommunityPosts(params.community_id)
         props.getCommunityCategories(params.community_id)
@@ -130,7 +154,7 @@ function ViewPageComponent(props) {
         
         props?.community?.followers?.map((follower)=>{
             if(ui && ui?.currentUser?.linear_id === follower?.user_id){
-                setIsFollowed(follower?.isFollowed === 1 ? true : false)
+                setIsFollowed(follower?.status === 1 ? 1 : 0)
             }
         })
     }, [ui])
@@ -217,7 +241,7 @@ function ViewPageComponent(props) {
                                     <div className="d-flex justify-content-left py-1">
                                         <Image src="https://placekitten.com/200/200" roundedCircle style={{height:"40px"}} className="mr-3"/>
                                         <div className="d-block">
-                                            <span><strong>{user?.username}</strong> {props.community?.user_id === user?.linear_id?"(You)":""} </span>
+                                            <span><strong>{ui?.currentUser?.username}</strong> {props.community?.user_id === ui?.currentUser?.linear_id?"(You)":""} </span>
                                             <span className="d-block">Owner</span>
                                         </div>
                                     </div>
@@ -228,7 +252,7 @@ function ViewPageComponent(props) {
                                                     <div className="d-flex justify-content-left py-1">
                                                         <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
                                                         <div className="d-block">
-                                                            <span><strong>{user?.username}</strong> {props.community?.user_id === user?.linear_id?"(You)":""} </span>
+                                                            <span><strong>{ui?.currentUser?.usernamee}</strong> {props.community?.user_id === ui?.currentUser?.linear_id?"(You)":""} </span>
                                                             <span className="d-block">Owner</span>
                                                         </div>
                                                     </div>
@@ -257,6 +281,9 @@ function ViewPageComponent(props) {
                                     :
                                         <>
                                             <ButtonGroup className="px-2">
+                                                <Button>{params.community_id}</Button>
+                                                <Button>{ui?.currentUser?.linear_id}</Button>
+                                                <Button>{isFollowed}</Button>
                                                 <FollowButton isFollowed={isFollowed} handleFollow={() => toggleFollowCommunity()}/>
                                             </ButtonGroup>
                                         </>
@@ -298,7 +325,7 @@ function ViewPageComponent(props) {
                                                     <>
                                                         {
                                                             layout==='cards'?
-                                                                <ResponsiveMasonry columnsCountBreakPoints={{350: 2, 750: 2, 900: 4}}>
+                                                                <ResponsiveMasonry columnsCountBreakPoints={{350: 1, 750: 2, 900: 3}}>
                                                                     <Masonry>
                                                                         {
                                                                             props.posts.map((post, i)=>{

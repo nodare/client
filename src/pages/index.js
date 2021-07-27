@@ -12,7 +12,7 @@ import { useActiveUserDetails } from "util/helpers/hooks/user.hooks";
 export const UiContext = React.createContext()
 
 function MainPage(props) {    
-    const user = useActiveUserDetails(localStorage.getItem('token') || null)
+    const user = useActiveUserDetails(localStorage.getItem('token'))
     const [currentUser, setCurrentUser] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -22,19 +22,14 @@ function MainPage(props) {
     
 
     useEffect(() => {
-        if(user.isLoading === false){
-            if(user.response === null){
-                setIsLoggedIn(false)
-                setCurrentUser(null)
+            if(user === null){
+                console.log(user)
                 history.push('/login')
+                console.log("Failed to load")
             }else{
                 setIsLoggedIn(true)
                 setCurrentUser(user.response)
-            }
-            setIsLoading(false)
-        }else{
-            setIsLoading(true)
-        }
+           }
     }, [user])
 
 

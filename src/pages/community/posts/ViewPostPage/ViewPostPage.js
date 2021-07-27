@@ -7,7 +7,7 @@ import PostContentsComponent from 'components/common/posts/PostContents'
 import UpvoteButton from "components/shared/buttons/UpvoteButton";
 import PostCommentItem from "components/common/comments/PostCommentItem";
 import DeleteModal from "components/shared/modals/common/DeleteModal";
-
+import EditorJs from 'react-editor-js'
 // static post
 import { accountId } from "static";
 

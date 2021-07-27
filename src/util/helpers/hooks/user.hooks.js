@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export const useActiveUserDetails = (token = null) => {
+export const useActiveUserDetails = (token) => {
     const [response, setResponse] = useState(null)
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     
     const getUser = () => {
         if(token === null){
+            localStorage.removeItem('token')
             setIsLoading(false)
         }else{
             axios.get(`auth/user?token=${token}`, {headers: {"x-access-token": localStorage.getItem("token")}})

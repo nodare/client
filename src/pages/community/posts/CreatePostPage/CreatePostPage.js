@@ -34,13 +34,34 @@ function CreatePostPage(props) {
         list: List,
         quote: Quote,
         table: Table,
-        link: LinkTool,
+        link: {
+            class:LinkTool,
+            config: {
+                endpoint: "/posts/crawl"
+            }
+        },
         image: {
             class: ImageTool,
             config: {
-                endpoints: {
-                    byFile: `/uploads/posts`,
-                    byFile: `/uploads/posts`
+                uploader:{
+                    uploadByFile(file){
+                        let formData = new FormData();
+                        formData.append("image",file);
+                        return axios.post("/files",formData,{
+                            headers: {"content-type":"multipart/form-data"}
+                        })
+                        .then((res) =>{
+                            console.log(res);
+                            return new Promise((resolve) => {
+                                resolve({ success: 1, file: { url: res.data.url } });
+                              });
+                        })
+                    },
+                    uploadByUrl(url) {
+                        return new Promise((resolve) => {
+                            resolve({ success: 1, file: { url: url } });
+                          });
+                    }
                 }
             }
         }
@@ -48,7 +69,7 @@ function CreatePostPage(props) {
     const [postFormValues, setPostFormValues] = useState({
         title: "",
         community_id: "",
-        category_id: "0"
+        category_id: ""
     })
 
     const [userCommunities, setUserCommunities] = useState([])
@@ -99,8 +120,8 @@ function CreatePostPage(props) {
         .then(newPost=>{
             props.addNewPostContents( newPost.payload.linear_id, postContents)
             .then(res=>{
-                window.alert("Post successfully created!")
-                history.replace(`/square/${data.community_id}`)
+                toast.success("Post successfully created!")
+                //history.replace(`/square/${data.community_id}`)
             })
             .catch(err=>{
                 console.log(err)
@@ -123,9 +144,6 @@ function CreatePostPage(props) {
                 </Breadcrumb>
                 <Alert variant={"warning"}>
                     <b>NOTE:</b> For <b className="text-danger">Non-subscribed users</b>, please note that you are only allowed to create contents only up to <b className="text-danger">10 blocks.</b> You can create more blocks by subscribing <Link to="/store">here.</Link>
-                </Alert>
-                <Alert variant={"danger"}>
-                    <b>NOTE:</b> Images are not yet available at this time.
                 </Alert>
                 <div>
                     <Row>

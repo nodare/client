@@ -49,7 +49,7 @@ function LoginPageComponent(props) {
                 path: '/', 
                 expires: date
             })
-            // setIsLoggedIn(true)
+            setIsLoggedIn(true)
             localStorage.setItem("token", `${props.token}`)
             history.push('/')
         }

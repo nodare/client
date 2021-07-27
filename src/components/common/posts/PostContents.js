@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
-import { Card } from "react-bootstrap";
+import { Card,Image } from "react-bootstrap";
 import PropTypes from 'prop-types'
 
 function PostContentsComponent({contents, isPreview}) {
@@ -28,76 +28,54 @@ function PostContentsComponent({contents, isPreview}) {
         <>
             {postContents?.map((content, i)=>{
                 {
-                    
+                    const data =JSON.parse(content.str)
                     switch(content.type){
                         case "header":
-                            switch(content.level){
-                                case 1:
-                                    return(
-                                        <h1 key={i}>{content.text}</h1>
-                                    )
-                                case 2:
-                                    return(
-                                        <h2 key={i}>{content.text}</h2>
-                                    )
-                                case 3:
-                                    return(
-                                        <h3 key={i}>{content.text}</h3>
-                                    )
-                                case 4:
-                                    return(
-                                        <h4 key={i}>{content.text}</h4>
-                                    )
-                                case 5:
-                                    return(
-                                        <h5 key={i}>{content.text}</h5>
-                                    )
-                                case 6:
-                                    return(
-                                        <h6 key={i}>{content.text}</h6>
-                                    )
-                            }
+                            return "<h"+data.level+"key="+i+">"+data.text+"</h"+data.level+">"
                             break;
                         case "paragraph":
                             return(
-                                <p className="mb-0" key={i}>{content.text}</p>
+                                <p className="mb-0" key={i}>{data.text}</p>
                             )
                         case "link":
                             return(
-                                <Link to={content.link}>Link</Link>
+                                <Link to={data.link}>Link</Link>
                             )
+                            break;
                         case "quote":
                             return(
-                                // to be revised
                                 <Card key={i}>
                                     <Card.Body>
-                                        <div className="d-block">
-                                            <p>{content.text}</p>
-                                        </div>
-                                        <small>{content.caption}</small>
+                                        <blockquote className="blockquote mb-0">
+                                            <p>{' '}{data.text}{' '}</p>
+                                        </blockquote>
+                                        <footer className="blockquote-footer">{data.caption}</footer>
                                     </Card.Body>
                                 </Card>
                             )
+                        case "code":
+                            return(
+                            "<pre><code>{data.code}</code></pre>"
+                            )
                         case "list":
-                            switch(content.style){
+                            switch(data.style){
                                 case "ordered":
+                                return(
                                     <ol>
                                         {
-                                            content.items.map((item,i)=>{
+                                            data.items.map((item,i)=>{
                                                 <li key={i}>{item}</li>
                                             })
                                         }
-                                    </ol>
-                                    break;
+                                    </ol>)
                                 case "unordered":
-                                    <ul>
+                                    return(<ul>
                                         {
-                                            content.items.map((item,i)=>{
+                                            data.items.map((item,i)=>{
                                                 <li key={i}>{item}</li>
                                             })
                                         }
-                                    </ul>
-                                    break;
+                                    </ul>)
                                 default: 
                                     break;
                             }
@@ -105,7 +83,7 @@ function PostContentsComponent({contents, isPreview}) {
                         // case "table":
                         //     <Table>
                         //         {
-                        //             content.data.content.map((row, i)=>{
+                        //             data.content.map((row, i)=>{
                         //                 (
                         //                     <tr key={i}>
                         //                         {
@@ -122,8 +100,39 @@ function PostContentsComponent({contents, isPreview}) {
                         //     </Table>
                         //     break;
                         case "image":
-                            // code placed sood
-                            break;
+                        if(data?.stretched){
+                            data.stretched="image-tool--stretched "
+                        }else{
+                            data.stretched=""
+                        }
+                        if(data?.withBackground){
+                             data.withBackground="image-tool--withBackground"
+                        }else{
+                            data.withBackground=""
+                        }
+                            return(
+                                <Card key={i} className=
+                                {data.stretched+data.withBackground}
+                                >
+                                    <Card.Img variant="top" src={data.file.url} alt={data.caption}/>
+                                    <Card.Body>
+                                    <Card.Text>{data.caption}</Card.Text>
+                                    </Card.Body>
+                                </Card>
+                                )
+                        case "embed":
+                            switch (data.service) {
+                              case "vimeo":
+                                return `<iframe src="${data.embed}" height="${data.height}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+                              case "youtube":
+                                return `<iframe width="${data.width}" height="${data.height}" src="${data.embed}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                              default:
+                                throw new Error(
+                                  "Only Youtube and Vime Embeds are supported right now."
+                                );
+                            }
+                        case "delimiter":
+                            return(<br/>)
                         default:
                             break;
                     }

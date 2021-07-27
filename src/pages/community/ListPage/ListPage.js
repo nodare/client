@@ -114,18 +114,28 @@ function ListPageComponent(props) {
                                                 switch(layout){
                                                     case 'cards':
                                                         return(
-                                                            <Col sm={6} md={4} xl={3} key={`com-${i}`}>
-                                                                <LinkContainer to={`/square/${community.linear_id}`} style={{cursor: "pointer"}}>
-                                                                    <Card className="my-3">
-                                                                        <Card.Body>
-                                                                            <h4 className="text-center">{community?.title} {community?.isVisible === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
-                                                                            <p className="text-center">{community?.description}</p>
-                                                                            <p className="text-center"><small>Date created: {community?.created_at}</small></p>
-                                                                            {/* <small className="text-center">{community?.community_type === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</small> */}
-                                                                        </Card.Body>
-                                                                    </Card>
-                                                                </LinkContainer>
-                                                            </Col>
+                                                        <Col sm={6} md={4} xl={3} key={`com-${i}`}>
+                                                            <LinkContainer to={`/square/${community.linear_id}`}>
+                                                                <Card bg="light" text="white">
+                                                                    <Card.Img src="http://placekitten.com/300/300"/>
+                                                                    <Card.ImgOverlay style={{padding:"0px"}}>
+                                                                    <Card.Body className="w-100" style={
+                                                                        {
+                                                                            position:"absolute",
+                                                                            bottom:"0px",
+                                                                            minHeight:"110px",
+                                                                            maxHeight:"100%",
+                                                                            overflow:"hidden",
+                                                                            background:"rgba(0,0,0,0.6)"
+                                                                        }
+                                                                        }>
+                                                                        <Card.Title className="h6">{community.title}</Card.Title>
+                                                                        <Card.Text style={{fontSize:"13px"}}>{community.description}</Card.Text>
+                                                                    </Card.Body>
+                                                                    </Card.ImgOverlay>
+                                                                </Card>
+                                                            </LinkContainer>
+                                                        </Col>
                                                         )
                                                     case 'list':
                                                         return(
@@ -138,7 +148,6 @@ function ListPageComponent(props) {
                                                                                 <h4>{community?.title} {community?.isVisible === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</h4>
                                                                                 <span>{community?.description}</span>
                                                                             </div>
-                                                                            <p><small>Date created: {community?.created_at}</small></p>
                                                                             {/* <small className="text-center">{community?.community_type === 1?<FontAwesomeIcon icon={faLock}></FontAwesomeIcon>:""}</small> */}
                                                                         </div>
                                                                     </Card>

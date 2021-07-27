@@ -91,9 +91,8 @@ export const getPostContents = postLinearId => async dispatch => {
 export const addNewPostContents = (postLinearId, data) => async dispatch => {
     let res = await data.map((content, i)=>{
         content = {
-            ...content, 
-            ...content.data, 
-            data: null, 
+            type:content.type,
+            str:content.data, 
             post_id: postLinearId, 
             order: i
         };

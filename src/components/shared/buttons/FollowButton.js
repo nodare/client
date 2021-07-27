@@ -8,24 +8,37 @@ export default function FollowButton(props) {
     const handleFollowButton = () => {
         props.handleFollow()
     }
-
-    return (
-        <div>
-            {props.isFollowed === false?
-            (
-                <Button variant="primary" onClick={() => handleFollowButton()}>
-                    Follow
-                </Button>
-            )
-            :
-            (
-                <Button variant="outline-primary" onClick={() => handleFollowButton()}>
-                    Unfollow
-                </Button>
-            )
-            }
-        </div>
-    )
+    if(props.isFollowed == 0){
+        return (
+            <Button variant="primary" onClick={() => handleFollowButton()}>
+                Follow
+            </Button>
+        )
+    }else if(props.isFollowed == 1){
+        return (
+            <Button variant="outline-primary" onClick={() => handleFollowButton()}>
+                Unfollow
+            </Button>
+        )
+    }else if(props.isFollowed == 2){
+        return (
+            <Button variant="outline-primary" onClick={() => handleFollowButton()} disabled>
+                Unfollow
+            </Button>
+        )
+    }else if(props.isFollowed ==3){
+        return(
+            <Button variant="outline-primary" onClick={() => handleFollowButton()} disabled>
+                Bannned
+            </Button>
+        )
+    }else{
+        return(
+            <Button variant="outline-primary" onClick={() => handleFollowButton()}>
+                Follow
+            </Button>
+        )
+    }
 }
 
 FollowButton.propTypes = {

@@ -17,7 +17,7 @@ import { UserContextProvider } from 'pages/user/UserContextProvider'
 
 function HomePage(props) {
     const ui = React.useContext(UiContext)
-    const usertest = React.useContext(UserContextProvider)
+    //const usertest = React.useContext(UserContextProvider)
     const feed = useLatestFeed()
     const [feedPosts, setFeedPosts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -74,13 +74,14 @@ function HomePage(props) {
         }
     }
 
-    useEffect(() => {
-        console.log(usertest)
-        setSelectedPage('feed')
-    }, [])
+    //useEffect(() => {
+        //console.log(usertest)
+        //setSelectedPage('feed')
+    //}, [])
 
     useEffect(() => {
-        props.getUsersFollowers(ui?.currentUser?.linear_id)
+        console.log(ui)
+        props.getUsersFollowers(ui.currentUser?.linear_id)
     }, [ui])
 
     useEffect(() => {

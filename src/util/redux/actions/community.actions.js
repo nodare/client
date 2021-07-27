@@ -90,6 +90,13 @@ export const getCommunityFollowers = (communityLinearId) => async dispatch => {
         payload: res.data || null
     })
 }
+export const getFollowStatus = (data) => async dispatch =>{
+    let res = await axios.post(`community/follow/status`,data)
+    return dispatch({
+        type: "GET_COMMUNITY_FOLLOWING_STATUS",
+        payload:res.data
+    })
+}
 
 export const getUsersFollowers = (communityLinearId) => async dispatch => {
     let res = await axios.get(`community/user/${communityLinearId}/follow`)

@@ -39,9 +39,9 @@ function UserNavbarComponent(props) {
         history.push('/login')
     }
 
-    useEffect(() => {
-        console.log(usertest)
-    }, [usertest])
+    //useEffect(() => {
+    //    console.log(usertest)
+    //}, [usertest])
 
     useEffect(() => {
         setUser(props.user)
