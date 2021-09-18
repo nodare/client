@@ -3,7 +3,8 @@ const messagesState = {
     conversations: [],
     users: [],
     messages: [],
-    message: {}
+    message: {},
+    dup:false
 }
 
 // reducer
@@ -23,6 +24,11 @@ export default function(state=messagesState, action){
             return({
                 ...state,
                 conversations: action.payload
+            })
+        case "DUPLICATION_CHECK":
+            return({
+                ...state,
+                dup: action.payload
             })
         case "CREATE_CONVERSATION":
             return({

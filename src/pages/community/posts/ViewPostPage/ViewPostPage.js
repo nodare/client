@@ -1,51 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useLayoutEffect } from 'react';
+import { usePostData } from 'util/helpers/hooks/post.hooks'
 import {  useParams, useHistory } from "react-router-dom";
-import { ButtonGroup, Button, Container, Card, Form, Tabs, Tab, Table } from "react-bootstrap";
+import { ButtonGroup, Card, Tabs, Tab, Alert, Form, Row, Col, Spinner,ListGroup } from "react-bootstrap";
 import * as ta from "timeago.js";
-
-import PostContentsComponent from 'components/common/posts/PostContents'
+import CommentsComponent from 'components/common/comments/PostCommentItem'
 import UpvoteButton from "components/shared/buttons/UpvoteButton";
 import PostCommentItem from "components/common/comments/PostCommentItem";
 import DeleteModal from "components/shared/modals/common/DeleteModal";
 import EditorJs from 'react-editor-js'
+import axios from 'axios'
+import Header from "@editorjs/header";
+import Paragraph from "@editorjs/paragraph";
+import List from "@editorjs/list";
+import Quote from "@editorjs/quote";
+import Table from "@editorjs/table";
+import LinkTool from "@editorjs/link";
+import ImageTool from "@editorjs/image";
 // static post
 import { accountId } from "static";
-
-
-
+import toast from 'react-hot-toast'
+import { UiContext } from 'pages'
+import { Container, Header as He,Image,Button,Comment} from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
 function ViewPostPage(props) {
     const params = useParams()
     const history = useHistory()
+    const ui = React.useContext(UiContext)
+    const post = usePostData(params.post_id)
+    const [isUpvoted, setIsUpvoted] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isCommentsLoading, setIsCommentsLoading] = useState(false)
-    const [showCommentsBox, setShowCommentsBox] = useState(true)
-    const [deleteCommunityModal, showDeleteCommunityModal] = useState(false)
-
+    const [deletePostModal, showDeletePostModal] = useState(false)
+    useLayoutEffect(()=>{
+        loadData()
+    },[])
+    const [editorContent, setEditorContent] = useState(null)
+    const [editor, setEditor] = useState(null)
+    const [isReadOnly,setIsReadOnly] = useState(true)
     const [owner, setOwner] = useState(true)
-    
-    const [commentInput, setCommentInput] = useState('')
+    const [postFormValues, setPostFormValues] = useState({
+        title: "",
+        community_id: "",
+        category_id: ""
+    })
 
-    const onClickUpvoteButton = () => {
-        let data = {
-            status: !props.postUpvoteData.status
-        }
-        props.togglePostUpvote( props.postUpvoteData.linear_id, data)
-        props.verifyPostUpvote(params.post_id, accountId)
-    }
-    
-    const onClickDeleteCommunity = () => {
-        showDeleteCommunityModal(true)
+    const [userCommunities, setUserCommunities] = useState([])
+    const [userCategories, setUserCategories] = useState([])
+    useEffect(()=>{
+        props.getCommunityCategories(params.community_id)
+        console.log(params)
+    }, [params.community_id])
+    const onClickDeletePost = () => {
+        showDeletePostModal(true)
     }
 
-    const deleteCommunity = () => {
-        props.removePost(props.postData.linear_id)
-        props.removeContentsByPost(props.postData.linear_id)
-        history.replace(`/square/${props.postData.community_id}`)
+    const deletePost = () => {
+        props.removePost(post.response.linear_id)
+        props.removeContentsByPost(post.response.linear_id)
+        props.removePostComments(post.response.linear_id)
+        history.replace(`/square/${post.response.community_id}`)
         window.alert("Post Deleted")
-    }
-
-    const onClickShowCommentsButton = () => {
-        setShowCommentsBox(true)
     }
 
     const loadComments = async () => {
@@ -53,67 +67,82 @@ function ViewPostPage(props) {
         await props.getPostComments(params.post_id)
         await setIsCommentsLoading(false)
     }
-
-    const onClickSendComment = () => {
-        // add a comment to send a comment to the api
-        if(commentInput === ""){
-            window.alert("Write something in the comment box.")
-        }else{
-            
-            let data = {
-                user_id: accountId, 
-                post_id: params.post_id,
-                content: commentInput,
-                parent_comment_id: null
-            }
-
-            const addComment = async (data) => {
-                await props.addPostComment(data)
-            }
-
-            addComment(data).then(()=>{
-                setCommentInput('')
-                loadComments()
-            })
-            
-        }
-    }
-
-    const sendCommentReply = ( data, commentLinearId=null ) => {
-        props.addPostComment(data)
-        .then(()=>{
-            console.log("tests")
-            loadComments()
-        })
-    }
-
-    const deleteComment = commentLinearId => {
-        props.removePostComment(commentLinearId)
-        .then(res=>{
-            // window.alert("Comment deleted")
-            loadComments()
-        })
-    }
-
     const loadData = async () => {
         await props.getCommunityData(params.community_id)
-        .then(async () => {
-            await props.getPostData(params.post_id)
+        .then(() => {
+            props.getPostData(params.post_id)
             .then(()=>{
                 props.getPostContents(params.post_id)
+                .then(()=>{
+                    setEditorContent(props.contents)
+                })
                 props.verifyPostUpvote(params.post_id, accountId)
+                .then((res)=>{
+                    if(res.payload){
+                        setIsUpvoted(true)
+                    }
+                })
             })
         })
         loadComments()
     }
-    
+    const upvotePost = () => {
+        //setIsUpvoted(prevState => prevState = !prevState)
+        props.togglePostUpvote(params.post_id, accountId).then((res)=>{
+            console.log(props.postUpvotedBoolean)
+        })
+
+    }
+    const handleEditorSave = async () => {
+        setIsLoading(true)
+        const savedData = await editor.save()
+        setTimeout(() => {
+            setEditorContent(savedData.blocks)
+            setIsLoading(false)
+            console.log(savedData)
+        }, 500);
+    }
+    const editorMode = async () =>{
+        setEditorContent(post.response.contents)
+        setPostFormValues({
+            title:post.response.title,
+            community_id:post.response.community_id,
+            category_id:post.response.category_id
+        })
+        console.log(postFormValues)
+        setIsReadOnly(false)
+    }
+
+    const saveEditedPost = () => {
+        if(postFormValues.title === "") return toast.error("Please include a title in your post. ")
+        if(postFormValues.community === "") return toast.error("Please select which community to post. ")
+        if(postFormValues.category_id === "") return toast.error("There's no category. Please select a category. ")
+        if(editorContent.length === 0) return toast.error("Editor is empty. Please write something. ")
+
+        let data = postFormValues
+        data.user_id = ui?.currentUser?.linear_id
+        console.log(editorContent)
+        props.updatePost(params.post_id,data)
+        .then(()=>{
+            props.removeContentsByPost(params.post_id)
+            .then(()=>{
+                props.addNewPostContents( params.post_id, editorContent)
+                .then(res=>{
+                    toast.success("Post successfully edited!")
+                    setIsReadOnly(true)
+                    history.replace(`/square/${data.community_id}/post/${params.post_id}`)
+                })
+                .catch(err=>{
+                    console.log(err)
+                })
+            })
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    }
     useEffect(() => {
-        
-        loadData()
         setIsLoading(false)
-        if(props.postData === null || props.postData === ""){
-            history.replace('/page-not-found')
-        }
         
         return()=>{
             props.clearPost()
@@ -122,122 +151,151 @@ function ViewPostPage(props) {
         }
 
     }, [isLoading])
-
+    const editorTools = {
+        header: Header,
+        paragraph: Paragraph,
+        list: List,
+        quote: Quote,
+        table: Table,
+        image: {
+            class: ImageTool,
+            config: {
+                uploader:{
+                    uploadByFile(file){
+                        let formData = new FormData();
+                        formData.append("image",file);
+                        return axios.post("/files",formData,{
+                            headers: {"content-type":"multipart/form-data"}
+                        })
+                        .then((res) =>{
+                            console.log(res);
+                            return new Promise((resolve) => {
+                                resolve({ success: 1, file: { url: res.data.url } });
+                              });
+                        })
+                    },
+                    uploadByUrl(url) {
+                        return new Promise((resolve) => {
+                            resolve({ success: 1, file: { url: url } });
+                          });
+                    }
+                }
+            }
+        }
+    }
+    console.log(post.response)
     return (
         <>
-            <Container>
-                <Tabs defaultActiveKey="post">
-                    <Tab eventKey="post" title="post">
-                        
+            <ListGroup>
+                        <ListGroup.Item className="d-block justify-content-between" onClick={()=>history.replace(`/square/${post.response?.community_id}/`)}>
+                            <strong>#All</strong>
+                        </ListGroup.Item>
+                {
+                    props.categories.length > 0?
+                        props.categories.map((category, i)=>{
+                            return(
+                                <ListGroup.Item className="d-block justify-content-between" onClick={()=>history.replace(`/square/${post.response?.community_id}/cat/${category.linear_id}`)} key={i}>
+                                    <strong>#{category.name}</strong>
+                                </ListGroup.Item>
+                            )
+                        })
+                    :""
+                }
+            </ListGroup>
+            <Container text>
                         <Card>
                             <Card.Body>
 
                                 {/* main post */}
+                                {isReadOnly?
                                 <>
-                                    <h2>{props.postData.title}</h2>
-                                    <span>Posted by: Lex</span><br/>
-                                    <span>{ta.format(new Date(props.postData.created_at))}</span>
-
-                                    <PostContentsComponent contents={props.contents}/>
-                                    
+                                    <He as='h1'>{post.response?.title}</He>
+                                    <div><Image src='https://placekitten.com/100/100' avatar/><span>{post.response?.user.username} / {ta.format(new Date(post.response?.created_at))}</span></div>
                                 </>
+                                :
+                                <>
+                                <Row>
+                        <Col xs={12}  xl={3}>
+                            <Form.Group>    
+                                <Form.Label>Post Title</Form.Label>
+                                <Form.Control type="text" placeholder="Enter title here" value={postFormValues.title} onChange={e=>setPostFormValues({...postFormValues, title: e.target.value})}></Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col xs={12} md={6} xl={3}>
+                            <Form.Group>
+                                <Form.Label>Category</Form.Label>
+                                <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, category_id: e.target.value})}>
+                                    {
+                                        props.categories.map((category)=>{
+                                            return(
+                                                <option key={category.id} value={category.linear_id}>{category.name}</option>
+                                            )
+                                        })
+                                    }
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                                </>
+                                }
+                                {post.response?
+                                <>
+                                    <EditorJs data={{blocks:post.response?.contents}} holder="editorBox" tools={editorTools} instanceRef={instance => setEditor(instance)} onChange={()=> handleEditorSave()} readOnly={isReadOnly}>
+                                    <div id="editorBox"></div>
+                                    </EditorJs>
+                                </>
+                                :
+                                <div>Empty</div>
+                                }
                                 {/* end of main post */}
 
                                 {/* post buttons */}
-                                <ButtonGroup className="py-3">
-                                    <UpvoteButton 
-                                        upvoteName={props.communityData.upvote_name}
-                                        upvotedName={props.communityData.upvoted_name}
-                                        isUpvoted={props.postUpvoteData.status}
-                                        handleUpvote={onClickUpvoteButton}
+                                    <Button
+                                    color={isUpvoted?'red':'green'}
+                                    icon='heart'
+                                    onClick={() => upvotePost()}
+                                    label={{ basic: true, color: isUpvoted?'red':'green', pointing: 'left', content: post.response?.upvotes.length }}
                                     />
-                                    <Button size="sm" variant="primary" onClick={() => onClickShowCommentsButton(true)}>Comment</Button>
-                                    <Button size="sm" variant="primary">Share</Button>
-                                    <Button size="sm" variant="danger" onClick={()=>onClickDeleteCommunity()}>Delete</Button>
+                                    <Button
+                                    basic
+                                    color='blue'
+                                    icon='share'
+                                    label={{
+                                        as: 'a',
+                                        basic: true,
+                                        color: 'blue',
+                                        pointing: 'left',
+                                        content: '2,048',
+                                    }}
+                                    />
+                                <ButtonGroup className="py-3">
+                                    <Button size="sm" color={isReadOnly?"standard":"green"} onClick={isReadOnly?()=>editorMode():() =>saveEditedPost()}>{isReadOnly?"Edit":"Save"}</Button>
+                                    <Button size="sm" variant="danger" onClick={()=>onClickDeletePost()}>Delete</Button>
                                     <Button size="sm" variant="danger">Report</Button>
                                 </ButtonGroup>
 
                                 <h4>Discussion ({props.comments.length})</h4>
-                                <Form.Group className="d-flex justify-content-left">
-                                    <textarea className="form-control" placeholder="Write a comment here" value={commentInput} onChange={e=>setCommentInput(e.target.value)}></textarea>
-                                    <Button variant="primary" onClick={()=>onClickSendComment()}>Send</Button>
-                                </Form.Group>
 
                                 {/* user comments */}
-                                {showCommentsBox === false?
-                                    (
-                                        <div className="commentsSectionBox">
-                                            <div className="d-flex justify-content-center py-3">
-                                                <span onClick={()=>onClickShowCommentsButton()} style={{cursor: "pointer"}}>Click to show comments</span>
-                                            </div>
-                                        </div>
-                                    )
-                                :
-                                isCommentsLoading ?"Loading..":(
-                                    props.comments.length == 0 ?
-                                        (
-                                            <div className="text-center">
-                                                <p>There are no comments to show as of now. </p>
-                                            </div>
-                                        )
-                                    :
-                                    props.comments.map((comment, i)=>{
-                                        if(comment.parent_comment_id === null){
-                                            return(
-                                                <div key={i}>
-                                                    <PostCommentItem
-                                                        image={"https://placekitten.com/100/100"}
-                                                        comment={comment}
-                                                        handleAddCommentReply={sendCommentReply}
-                                                        handleDeleteComment={deleteComment}
-                                                    />
-                                                </div>
-                                            )
-                                        }
-                                    })
+                                {isCommentsLoading ?"Loading..":(
+                                    <Card.Footer>
+                                            <CommentsComponent comments={props.comments} postLinearId={params.post_id} userId={ui?.currentUser?.linear_id}></CommentsComponent>
+                                        
+                                    </Card.Footer>
                                 )
                             }
 
                             </Card.Body>
                         </Card>
-
-                    </Tab>
-
-
-                    <Tab eventKey="settings" title="settings">
-                        Settings page
-                        
-                        <Table
-                            size={'sm'}
-                            borderless
-                            responsive
-                        >
-                            <tbody>
-                                <tr>
-                                    <td><strong>Communities</strong></td>
-                                    <td>123</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Registered</strong></td>
-                                    <td>02/23/2020</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Last logged in:</strong></td>
-                                    <td>14 minutes ago</td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </Tab>
-                </Tabs>
                 
             </Container>
             <DeleteModal
-                isShow={deleteCommunityModal}
-                toggleTrigger={showDeleteCommunityModal}
+                isShow={deletePostModal}
+                toggleTrigger={showDeletePostModal}
                 header={"Confirm Delete"}
-                text={"Are you sure you want to remove this community?"}
-                deleteButtonText={"Remove Community"}
-                handleDeleteButton={() => deleteCommunity()}
+                text={"Are you sure you want to remove this post?"}
+                deleteButtonText={"Remove post"}
+                handleDeleteButton={() => deletePost()}
             ></DeleteModal>
 
         </>

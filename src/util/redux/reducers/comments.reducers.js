@@ -56,6 +56,11 @@ export default function(state=commentsState, action) {
                 ...state, 
                 message: "Successfully removed comment data",
             }
+        case "REMOVE_POST_COMMENTS":
+            return{
+                ...state,
+                message: "Successfully removed all comments for this post"
+            }
         case "CLEAR_COMMENTS":
             return{
                 ...state, 

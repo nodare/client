@@ -13,25 +13,25 @@ export default function UpvoteButton(props) {
         <>
             {props.isUpvoted === (0 || false)?
             (
-                <Button size="sm" variant="primary" onClick={() => handleUpvoteButton()}>
-                    { props.upvoteName || "Upvote"}
+                <span size="sm" onClick={() => handleUpvoteButton()}>
+                ●
                     {
                         props.count && props.count !== 0?
                         <> {props.count}</>
                         :""
                     }
-                </Button>
+                </span>
             )
             :
             (
-                <Button size="sm" variant="outline-primary" onClick={() => handleUpvoteButton()}>
-                    { props.upvotedName || "Upvoted"}
+                <span onClick={() => handleUpvoteButton()}>
+                ○
                     {
                         props.count && props.count !== 0?
                         <> {props.count}</>
                         :""
                     }
-                </Button>
+                </span>
             )
             }
         </>

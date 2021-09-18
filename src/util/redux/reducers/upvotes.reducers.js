@@ -5,7 +5,7 @@ const upvoteState = {
     isUpvoted: false
 }
 
-export default function(state=upvoteState, action){
+export default function(state = upvoteState, action){
     switch(action.type){
         case "VERIFY_UPVOTE":
             return ({
@@ -14,7 +14,8 @@ export default function(state=upvoteState, action){
             })
         case "TOGGLE_POST_UPVOTE":
             return ({
-                ...state
+                ...state,
+                postUpvotedBoolean: action.payload
             })
         default:
             return({

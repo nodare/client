@@ -12,11 +12,11 @@ import thunk from "redux-thunk";
 import { createLogger } from "redux-logger";
 import reducers from "./util/redux";
 import MainPage from 'pages/index'
-
+import { useActiveUserDetails } from "util/helpers/hooks/user.hooks";
 import {UserContextProvider} from 'pages/user/UserContextProvider'
 
 function App() {
-  
+  const user = useActiveUserDetails(localStorage.getItem('token'))
   // redux main store
   const logger = createLogger({
     duration: true,
@@ -41,7 +41,7 @@ function App() {
   return (
     
     <Provider store={store}>
-      <UserContextProvider value={{test: "Object"}}>
+      <UserContextProvider value={user.username,user.linear_id}>
         <Router>
           <MainPage/>
         </Router>

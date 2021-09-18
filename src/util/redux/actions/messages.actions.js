@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 /* 
 ================================
         CONVERSATIONS
@@ -64,6 +63,7 @@ export const getMessageData = messageLinearId => async dispatch => {
 
 export const getConversationMessages = conversationLinearId => async dispatch => {
     let res = await axios.get(`messenger/messages/conversation/${conversationLinearId}`)
+    console.log(res)
     return dispatch({
         type: "GET_CONVERSATION_MESSAGES",
         payload: res.data
@@ -114,6 +114,13 @@ export const addConversationUsers = ( data ) => async dispatch => {
     return dispatch({
         type: "GET_CONVERSATION_USERS",
         payload: res.data
+    })
+}
+export const duplicationCheck = (data) => async dispatch => {
+    let res = await axios.post(`messenger/duplication`,data)
+    return dispatch({
+        type: "DUPLICATION_CHECK",
+        payload:res.data
     })
 }
 

@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
-import { Tab, Nav, Row, Col, Form, Card, Spinner, Button, Image,Jumbotron, InputGroup } from "react-bootstrap";
+import { Tab, Nav, Row, Col, Form, Spinner, Button,Jumbotron, InputGroup } from "react-bootstrap";
 import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FaSearch,FaRegKissWinkHeart,FaRegImages} from "react-icons/fa";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { UiContext } from 'pages'
-
+import {Feed,Card,Image,Icon } from 'semantic-ui-react'
 import { useLatestFeed } from 'util/helpers/hooks/feed.hooks'
 import { useCommunityDetails } from 'util/helpers/hooks/community.hooks'
 
 import FeedItemCard from 'components/shared/cards/FeedItemCards'
 
 import { UserContextProvider } from 'pages/user/UserContextProvider'
-
+import 'semantic-ui-css/semantic.min.css'
 function HomePage(props) {
     const ui = React.useContext(UiContext)
     //const usertest = React.useContext(UserContextProvider)
@@ -64,10 +64,11 @@ function HomePage(props) {
         switch(item){
             case "feed":
                 break;
-            case "explore":
+            case "community":
                 props.getAllCommunities()
                 break;
-            case "category":
+            case "blog":
+                props.getAllBlogs()
                 break;
             default: 
                 break;  
@@ -94,7 +95,8 @@ function HomePage(props) {
             setFeedPosts(feed.response)
         }
     }, [feed])
-
+    console.log(navigator.languages)
+    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
     return (
         <>
             <UserContextProvider>
@@ -114,8 +116,8 @@ function HomePage(props) {
                         
                         <Nav variant="pills" className="flex-column">
                             <Nav.Link onSelect={() => selectPage("feed")} eventKey="feed">Feed</Nav.Link>
-                            <Nav.Link onSelect={() => selectPage("explore")} eventKey="explore">Explore</Nav.Link>
-                            <Nav.Link onSelect={() => selectPage("category")} eventKey="category">Categories</Nav.Link>
+                            <Nav.Link onSelect={() => selectPage("community")} eventKey="community">Communities</Nav.Link>
+                            <Nav.Link onSelect={() => selectPage("blog")} eventKey="blog">Blogs</Nav.Link>
                         </Nav>
                         <hr/>
                         <div className="d-block">
@@ -123,7 +125,7 @@ function HomePage(props) {
                             <Row>
                                 <Col sm={12}>
                                     <Card>
-                                        <Card.Body>
+                                        <Card.Content>
                                             {
                                                 map(followedCommunitiesList, (fcommunity)=>{
                                                     return (
@@ -131,7 +133,7 @@ function HomePage(props) {
                                                     )
                                                 })
                                             }
-                                        </Card.Body>
+                                        </Card.Content>
                                     </Card>
                                 </Col>
                             </Row>
@@ -182,10 +184,10 @@ function HomePage(props) {
                                                 </Form>
                                                 {
                                                     feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
-                                                    <>
+                                                    <Feed>
                                                         {
                                                             map(feedPosts, (post, i)=>{
-                                                                if(feed.isLoading == false){
+                                                                if(feed.isLoading == false && typeof(post)!=='undefined'){
                                                                     return (
                                                                         <FeedItemCard 
                                                                             key={i} 
@@ -195,10 +197,10 @@ function HomePage(props) {
                                                                 }
                                                             })
                                                         }
-                                                    </>
+                                                    </Feed>
                                                 }
                                             </Tab.Pane>
-                                            <Tab.Pane eventKey="explore">
+                                            <Tab.Pane eventKey="community">
                                                 <Jumbotron style={{padding:"2em"}}>
                                                     <h3>Explore more communities</h3>
                                                 </Jumbotron>
@@ -208,23 +210,19 @@ function HomePage(props) {
                                                             <>
                                                                 <Col xs={6} md={4} key={i}>
                                                                     <LinkContainer to={`/square/${community.linear_id}`}>
-                                                                        <Card bg="light" text="white">
-                                                                            <Card.Img src="http://placekitten.com/300/300"/>
-                                                                            <Card.ImgOverlay style={{padding:"0px"}}>
-                                                                            <Card.Body className="w-100" style={
-                                                                                {
-                                                                                    position:"absolute",
-                                                                                    bottom:"0px",
-                                                                                    minHeight:"110px",
-                                                                                    maxHeight:"100%",
-                                                                                    overflow:"hidden",
-                                                                                    background:"rgba(0,0,0,0.6)"
-                                                                                }
-                                                                                }>
-                                                                                <Card.Title className="h6">{community.title}</Card.Title>
-                                                                                <Card.Text style={{fontSize:"13px"}}>{community.description}</Card.Text>
-                                                                            </Card.Body>
-                                                                            </Card.ImgOverlay>
+                                                                        <Card raised={true}>
+                                                                            <Image src="http://placekitten.com/300/300" wrapped ui={false} />
+                                                                            <Card.Content>
+                                                                                <Card.Header className="h6">{community.title}</Card.Header>
+                                                                                <Card.Meta>Created 1 hour ago</Card.Meta>
+                                                                                <Card.Description>{community.description}</Card.Description>
+                                                                            </Card.Content>
+                                                                            <Card.Content extra>
+                                                                            <a>
+                                                                                <Icon name='user' />
+                                                                                10 Members
+                                                                            </a>
+                                                                            </Card.Content>
                                                                         </Card>
                                                                     </LinkContainer>
                                                                 </Col>
@@ -233,18 +231,31 @@ function HomePage(props) {
                                                     })}
                                                 </Row>
                                             </Tab.Pane>
-                                            <Tab.Pane eventKey="category">
+                                            <Tab.Pane eventKey="blog">
                                                 <Row>
-                                                    {communityCategories.map((category, i)=>{
-                                                        return <Col key={`cc-${i}`} xs={6} sm={4} md={3}>
-                                                            <Card className="my-3 h-100">
-                                                                <Card.Body>
-                                                                    <h4 className="text-center">{category.name}</h4>
-                                                                    <p className="text-center"><small>46 related communities</small></p>
-                                                                </Card.Body>
-                                                            </Card>
-                                                        </Col>
-                                                        
+                                                {props.blogs?.map((blog, i)=>{
+                                                        return(
+                                                            <>
+                                                                <Col xs={6} md={4} key={i}>
+                                                                    <LinkContainer to={`/square/${blog.linear_id}`}>
+                                                                        <Card raised={true}>
+                                                                            <Image src="http://placekitten.com/300/300" wrapped ui={false} />
+                                                                            <Card.Content>
+                                                                                <Card.Header className="h6">{blog.title}</Card.Header>
+                                                                                <Card.Meta>Created 1 hour ago</Card.Meta>
+                                                                                <Card.Description>{blog.description}</Card.Description>
+                                                                            </Card.Content>
+                                                                            <Card.Content extra>
+                                                                            <a>
+                                                                                <Icon name='user' />
+                                                                                10 Members
+                                                                            </a>
+                                                                            </Card.Content>
+                                                                        </Card>
+                                                                    </LinkContainer>
+                                                                </Col>
+                                                            </>
+                                                        )
                                                     })}
                                                 </Row>
                                             </Tab.Pane>
@@ -275,7 +286,7 @@ const FollowedCommunityItemComponent = ({id}) => {
 
     return(
         <div className="d-flex justify-content-left py-1">
-            <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
+            <Image src={"https://placekitten.com/200/200"} style={{height:"40px"}} className={"mr-3"}/>
             <div className="d-block">
                 <span><small>{community && community.title}</small></span>
             </div>

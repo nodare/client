@@ -8,7 +8,7 @@ import { faComment } from '@fortawesome/free-solid-svg-icons'
 function CommentsButton(props) {
     return (
         <>
-            <Button variant={"outline-primary"} size={"sm"} onClick={() => props.handleClick()}>
+            <span size={"sm"} onClick={() => props.handleClick()}>
                 <FontAwesomeIcon icon={faComment}/> 
                 {
                     props?.count && props?.count > 0?
@@ -16,7 +16,7 @@ function CommentsButton(props) {
                     :
                     " Comment"
                 }
-            </Button>
+            </span>
         </>
     )
 }

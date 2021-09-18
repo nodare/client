@@ -82,7 +82,7 @@ export const clearPost = () => async dispatch => {
 
 export const getPostContents = postLinearId => async dispatch => {
     let res =  await axios.get(`posts/contents/${postLinearId}`)
-    return dispatch({
+    return ({
         type: "GET_POST_CONTENTS",
         payload: res.data
     })

@@ -20,7 +20,10 @@ import {
     clearConversationData,
     clearMessages
 } from "util/redux/actions/messages.actions";
-
+import {
+    getContactList
+} from "util/redux/actions/users.actions";
+import toast from 'react-hot-toast'
 import UserConversationItem from "./sub-components/UserConversationItem";
 import UserMessageItem from "./sub-components/UserMessageItem";
 
@@ -32,34 +35,61 @@ function MessagingWindow(props) {
     const [isMessagesLoading, setIsMessagesLoading] = useState(false)
     const [isCreateConversation, setIsCreateConversation] = useState(false)
     const [newUsers, setNewUsers] = useState([])
-    
+    const [isContacts, setIsContacts] = useState(false)
     const [messageInput, setMessageInput] = useState("")
 
 
     const loadConversations = () => {
         props.getUserConversations(accountId)
     }
-    
+    const loadContacts = () => {
+        props.getContactList(accountId)
+    }
     const handleCreateConversation = async (id) => {
-        await setNewUsers([accountId, id])
-        let newConversationData = {
-            user_id: accountId
+        let duplicationCheckData = {
+            user_id:accountId,
+            target_id:id
         }
-        await props.addConversation(newConversationData)
-        .then(()=>{
-            props.getUserConversations(accountId)
+        await props.duplicationCheck(duplicationCheckData)
+        .then((res)=>{
+            if(res.data.status==1){
+                handleSelectConversation(res.data.linear_id)
+            }else{
+                let newConversationData = {
+                    type:1,
+                    status:1,
+                }
+               props.addConversation(newConversationData)
+                .then((res)=>{
+                    if(res.status=200){
+                        const users = [{
+                            conversation_id:res.data,
+                            user_id: accountId
+                        },
+                        {
+                            conversation_id:res.data,
+                            user_id: id
+                        }]
+                        users.map(user=>{
+                            props.addConversationUsers({
+                                conversation_id: user.conversation_id,
+                                user_id: user.user_id
+                            })
+                        })
+                        let newMessageData = {
+                            user_id: accountId,
+                            str: {type:"system",msg:id+" invited"},
+                            conversation_id: res.data
+                        }
+                        props.addMessage(newMessageData)
+                    }
+                    props.getUserConversations(accountId)
+                })
+                .reject(toast.error("Handling error occurred"))
+            }
+        
         })
-
-        // await setTimeout(() => {
-        //     newUsers.map(user=>{
-        //         console.log('adding user')
-        //         props.addConversationUsers({
-        //             conversation_id: props.messenger.conversationData.linear_id,
-        //             user_id: user
-        //         })
-        //     })
-        // }, 1000);
-        setIsCreateConversation(false)
+        setIsContacts(false)
 
     }
 
@@ -77,11 +107,12 @@ function MessagingWindow(props) {
     const handleSendMessage = () => {
         let newMessageData = {
             user_id: accountId,
-            content: messageInput
+            str: JSON.stringify({type:"text",text:messageInput}),
+            conversation_id: props.messenger.conversationData.linear_id
         }
         props.addMessage(newMessageData)
         .then(()=>{
-            props.getConversationMessages(props.messenger.conversationData.linearId)
+            props.getConversationMessages(props.messenger.conversationData.linear_id)
             setMessageInput("")
         })
 
@@ -110,17 +141,20 @@ function MessagingWindow(props) {
                             <Row>
                                 {/* list of users */}
                                 <Col xs={1} md={3}>
-                                    <Button variant="outline-secondary" block className="mb-2" onClick={() => setIsCreateConversation(!isCreateConversation)}>
-                                        {isCreateConversation?"Cancel":"New Message"}
+                                    <Button variant="outline-secondary" block className="mb-2" onClick={() => setIsContacts(!isContacts)}>
+                                        {isContacts?"Cancel":"New Message"}
                                     </Button>
                                     <Row>
                                         {
-                                            isCreateConversation?
+                                            isContacts?
                                             <>
                                                 <div className="d-flex">
                                                     {/* static data */}
-                                                    <div className="d-block" onClick={()=>handleCreateConversation("98544686-b8e3-4db5-bae4-301a26a8e867")}>Manager</div>
-                                                    <div className="d-block" onClick={()=>handleCreateConversation("c0085c57-c2dc-4fb0-b4a1-cd85cc38405d")}>Assistant manager</div>
+                                                    {props.contacts.map((contact,i)=>{
+                                                        return(
+                                                            <div className="d-block" onClick={()=>handleCreateConversation(contact.target_id)}>{contact.username}</div>
+                                                        )
+                                                    })}
                                                 </div>
                                             </>
                                             :
@@ -139,7 +173,7 @@ function MessagingWindow(props) {
                                                                             name={conversation.title || "New conversation"}
                                                                             image={"https://placekitten.com/100/100"}
                                                                             message={"test mesasge 1"}
-                                                                            
+                                                                            isSelected={props.messenger.conversationData.linear_id === conversation.conversation_id}
                                                                         />
                                                                         <hr/>
                                                                     </Col>
@@ -170,13 +204,34 @@ function MessagingWindow(props) {
                                                 <div className="d-block">
                                                     {
                                                         props.messenger.messages.map((message,i)=>{
-                                                            return(
-                                                                <UserMessageItem
-                                                                key={i}
-                                                                    toggleReceiver={true}
-                                                                    message={message.content}
-                                                                />
-                                                            )
+                                                            const str = JSON.parse(message.str)
+                                                            console.log(str)
+                                                            switch(str.type){
+                                                                case "text":
+                                                                    return(
+                                                                        <UserMessageItem
+                                                                        key={i}
+                                                                            toggleReceiver={accountId === message?.user_id?true:false}
+                                                                            message={str.text}
+                                                                        />
+                                                                    )
+                                                                case "sys":
+                                                                    return(
+                                                                        <div className="d-block" variant="dark" style={{margin:'auto 0px'}}>str.text</div>
+                                                                    )
+                                                                case "emoji":
+                                                                    return("")
+                                                                case "image":
+                                                                    return("")
+                                                                default:
+                                                                    return(
+                                                                        <UserMessageItem
+                                                                        key={i}
+                                                                            toggleReceiver={accountId === message?.user_id?true:false}
+                                                                            message={message}
+                                                                        />
+                                                                    )
+                                                            }
                                                         })
                                                     }
                                                 </div>
@@ -214,6 +269,7 @@ const mapDispatchToProps = {
     addConversation,
     addConversationUsers,
     addMessage,
+    getContactList,
     clearConversations,
     clearConversationData,
     clearMessages,

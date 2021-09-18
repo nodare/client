@@ -7,32 +7,59 @@ import axios from 'axios'
 */
 
 export const verifyPostUpvote = (postLinearId, userId) => async dispatch => {
-    let exists = false
     let res = await axios.get(`votes/${userId}/posts/${postLinearId}`)
     if(res.data.length === 0){
+        return dispatch({
+            type: "VERIFY_UPVOTE",
+            payload: false
+        })
+    }else{
+        if(res.data[0].status){
+            return dispatch({
+                type: "VERIFY_UPVOTE",
+                payload: true
+        })
+        }else{
+            return dispatch({
+                type: "VERIFY_UPVOTE",
+                payload: false
+            }) 
+        }
+
+    }
+}
+
+export const togglePostUpvote = (postLinearId, userId) => async dispatch => {
+    axios.get(`votes/${userId}/posts/${postLinearId}`)
+    .then((res)=>{
+        console.log(res)
+    if(res.data?.length === 0){
         let data = {
             user_id: userId,
             post_id: postLinearId,
-            status: 0
+            status: 1
         }
-        let createUpvote = await axios.post(`votes/post`, data)
-        if(createUpvote.data){
-            exists = true
-            res = await axios.get(`votes/${userId}/posts/${postLinearId}`)
+        axios.post(`votes/post`, data)
+    }else{
+        
+        let data = {
+            user_id: userId,
+            post_id: postLinearId,
+            status: res.data[0].status?0:1
         }
+        console.log(res.data[0].status?false:true)
+        axios.put(`votes/post`, data).then(()=>{
+            return dispatch({
+                type: "TOGGLE_UPVOTE",
+                payload: res.data[0].status?false:true
+            })
+        })
     }
     return dispatch({
-        type: "VERIFY_UPVOTE",
-        payload: res.data[0]
-    })
-}
-
-export const togglePostUpvote = (voteLinearId, data) => async dispatch => {
-    let res = await axios.put(`votes/${voteLinearId}/post`, data)
-    return dispatch({
         type: "TOGGLE_UPVOTE",
-        payload: res.data
+        payload: true
     })
+})
 }
 
 // export const togglePostUpvote = () => async dispatch => {

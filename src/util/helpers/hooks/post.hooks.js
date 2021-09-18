@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import axios from "axios";
 import { accountId } from "static";
 
@@ -34,10 +34,9 @@ export const usePostData = (postLinearId) => {
         })
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         getData()
     }, [])
-
     return {response, error, isLoading}
 
 }

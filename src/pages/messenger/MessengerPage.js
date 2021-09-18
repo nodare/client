@@ -5,9 +5,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-
-import { Modal, Button, Col, Row, Form, Image } from "react-bootstrap";
-
+import { Modal, Button, Col, Row, Form, Image,Card,Spinner, Nav,Container } from "react-bootstrap";
+import { Input,Avatar  } from 'react-chat-elements'
+import 'react-chat-elements/dist/main.css';
+import {ChatItem,SystemMessage,MessageBox} from 'react-chat-elements'
 import { 
     getUserConversations,
     getConversationUsers,
@@ -16,50 +17,79 @@ import {
     addConversation,
     addConversationUsers,
     addMessage,
+    duplicationCheck,
     clearConversations,
     clearConversationData,
     clearMessages
 } from "util/redux/actions/messages.actions";
+import {
+    getContactList,
+    getUserName
+} from "util/redux/actions/users.actions";
 
 import UserConversationItem from "components/messaging/sub-components/UserConversationItem";
 import UserMessageItem from "components/messaging/sub-components/UserMessageItem";
-
-import { accountId } from "static";
-
+import toast from 'react-hot-toast'
+import { UiContext } from 'pages'
 
 function MessagingWindow(props) {
+    const ui = React.useContext(UiContext)
     const [isLoading, setIsLoading] = useState(false)
     const [isMessagesLoading, setIsMessagesLoading] = useState(false)
-    const [isCreateConversation, setIsCreateConversation] = useState(false)
-    const [newUsers, setNewUsers] = useState([])
-    
+    const [isContacts, setIsContacts] = useState(false)
     const [messageInput, setMessageInput] = useState("")
-
+    const [accountId,setAccountId] = useState(ui?.currentUser?.linear_id)
 
     const loadConversations = () => {
         props.getUserConversations(accountId)
     }
-    
+    const loadContacts = () => {
+        props.getContactList(accountId)
+    }
     const handleCreateConversation = async (id) => {
-        await setNewUsers([accountId, id])
-        let newConversationData = {
-            user_id: accountId
+        let duplicationCheckData = {
+            user_id:accountId,
+            target_id:id
         }
-        await props.addConversation(newConversationData)
-        .then(()=>{
-            props.getUserConversations(accountId)
-        })
-
-        await setTimeout(() => {
-            newUsers.map(user=>{
-                console.log('adding user')
-                props.addConversationUsers({
-                    conversation_id: props.messenger.conversationData.linear_id,
-                    user_id: user
+        await props.duplicationCheck(duplicationCheckData)
+        .then((res)=>{
+            console.log(res)
+            if(props.messenger.dup.status==1){
+                handleSelectConversation(props.messenger.dup.linear_id)
+            }else{
+                let newConversationData = {
+                    type:1,
+                    status:1,
+                }
+               props.addConversation(newConversationData)
+                .then(()=>{
+                    console.log(props.messenger.dup.linear_id)
+                    const users = [{
+                        user_id: accountId
+                    },
+                    {
+                        user_id: id
+                    }]
+                    users.map(user=>{
+                        props.addConversationUsers({
+                            conversation_id: props.messenger.conversationData.linear_id,
+                            user_id: user.user_id
+                        })
+                    })
+                    //INV BAN ADM
+                    let newMessageData = {
+                        user_id: accountId,
+                        str: JSON.stringify({type:"sys",user_id:props.userinfo.username,code:"OP"}),
+                        conversation_id: props.messenger.conversationData.linear_id
+                    }
+                    props.addMessage(newMessageData)
+                    handleSelectConversation(props.messenger.conversationData.linear_id)
+                    props.getUserConversations(accountId)
                 })
-            })
-        }, 1000);
-        setIsCreateConversation(false)
+            }
+        
+        })
+        setIsContacts(false)
 
     }
 
@@ -68,8 +98,8 @@ function MessagingWindow(props) {
         props.getConversationData(conversationLinearId)
         .then(()=>{
                 setTimeout(() => {
-                    props.getConversationMessages(conversationLinearId)
                     setIsMessagesLoading(false)
+                    props.getConversationMessages(conversationLinearId)
             }, 1000);
         })
     }
@@ -77,52 +107,75 @@ function MessagingWindow(props) {
     const handleSendMessage = () => {
         let newMessageData = {
             user_id: accountId,
-            content: messageInput,
+            str: JSON.stringify({type:"text",text:messageInput}),
             conversation_id: props.messenger.conversationData.linear_id
         }
         props.addMessage(newMessageData)
         .then(()=>{
             props.getConversationMessages(props.messenger.conversationData.linear_id)
-            setMessageInput("")
         })
+        setMessageInput("")
 
+    }
+    const handleUsername = (id) => {
+        props.getUserName(id)
     }
 
     useEffect(() => {
+        setIsLoading(true)
         loadConversations()
+        loadContacts()
+        setIsLoading(false)
     }, [])
 
     useEffect(() => {
         if(props.messenger.conversations.length !== 0){
             props.getConversationData(props.messenger.conversations[0].linear_id)
-            props.getConversationMessages(props.messenger.conversations[0].linear_id)
+            props.getConversationMessages(props.messenger.conversations[0].conversation_id)
         }
     }, [props.messenger.conversations])
 
     return (
         <>
-        
-
+                <Container>
+                    <Row>
                     {isLoading?
                         <div className="mx-auto text-center">
-                            Loading..
+                            <Spinner animation="border" variant="primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
                         </div>
                     :
                         <>
-                            <Row>
+                            
                                 {/* list of users */}
-                                <Col xs={1} md={3}>
-                                    <Button variant="outline-secondary" block className="mb-2" onClick={() => setIsCreateConversation(!isCreateConversation)}>
-                                        {isCreateConversation?"Cancel":"New Message"}
+                                <Col xs={12} md={12} lg={5} xl={4}>
+                                    <Button variant="outline-secondary" block className="mb-2" onClick={() => setIsContacts(!isContacts)}>
+                                        {isContacts?"Cancel":"New Message"}
                                     </Button>
-                                    <Row>
                                         {
-                                            isCreateConversation?
+                                            isContacts?
                                             <>
                                                 <div className="d-flex">
-                                                    {/* static data */}
-                                                    <div className="d-block" onClick={()=>handleCreateConversation("98544686-b8e3-4db5-bae4-301a26a8e867")}>Manager</div>
-                                                    <div className="d-block" onClick={()=>handleCreateConversation("c0085c57-c2dc-4fb0-b4a1-cd85cc38405d")}>Assistant manager</div>
+                                                    {
+                                                    props.userinfo.contacts.length === 0?
+                                                        <>
+                                                            You have no friends as of now
+                                                        </>
+                                                        :
+                                                        props.userinfo.contacts.map((contact,i)=>{
+                                                        return(
+                                                            <ChatItem
+                                                            className={'w-100'}
+                                                            avatar={"https://placekitten.com/100/100"}
+                                                            onClick={()=>handleCreateConversation(contact.target_id)}
+                                                            title={contact.username}
+                                                            subtitle={'Profile text'}
+                                                            statusText={'Online'}
+                                                            />
+                                                        )
+                                                    })
+                                                }
                                                 </div>
                                             </>
                                             :
@@ -133,33 +186,43 @@ function MessagingWindow(props) {
                                                             You have no conversations as of now
                                                         </>
                                                     :
+                                                    <Nav variant="pills" justify>
                                                         <>
                                                             {props.messenger.conversations.map((conversation,i)=>{
                                                                 return(
-                                                                    <Col key={i} xs={12} onClick={() => handleSelectConversation(conversation.linear_id)}>
-                                                                        <UserConversationItem
-                                                                            name={conversation.title || "New conversation"}
-                                                                            image={"https://placekitten.com/100/100"}
-                                                                            message={"test mesasge 1"}
-                                                                            isSelected={props.messenger.conversationData.linear_id === conversation.linear_id}
+                                                                        <Nav.Item>
+                                                                        <ChatItem
+                                                                            title={conversation.title || "Hot conversation"}
+                                                                            className={'w-100'}
+                                                                            avatar={"https://placekitten.com/100/100"}
+                                                                            alt={'Nodaq'}
+                                                                            subtitle={"Newest message should be displayed"}
+                                                                            onClick={()=>handleSelectConversation(conversation.conversation_id)}
+                                                                            date={new Date()}
+                                                                            unread={0}
                                                                         />
-                                                                    </Col>
+                                                                        </Nav.Item>
                                                                 )
                                                             })}
                                                         </>
+                                                    </Nav>
                                                 }
                                             </>
                                         }
-                                    </Row>
                                 </Col>
                                     
 
                                 {/* messages here */}
-                                <Col xs={1} md={9}>
+                                <Col xs={12} md={12} lg={7} xl={8}>
+                                <Card>
+                                    <Card.Header>{"A new chat room"}</Card.Header>
+                                    <Card.Body>
                                     {
                                         isMessagesLoading?
                                             <div className="mx-auto text-center">
-                                                Loading..
+                                                <Spinner animation="border" variant="primary" role="status">
+                                                <span className="visually-hidden">Loading...</span>
+                                                </Spinner>
                                             </div>
                                         :
                                             props.messenger.messages.length === 0?
@@ -171,38 +234,74 @@ function MessagingWindow(props) {
                                                 <div className="d-block">
                                                     {
                                                         props.messenger.messages.map((message,i)=>{
-                                                            return(
-                                                                <UserMessageItem
-                                                                key={i}
-                                                                    toggleReceiver={accountId === message.user_id?true:false}
-                                                                    message={message}
-                                                                />
-                                                            )
+                                                            const str = JSON.parse(message.str)
+                                                            switch(str.type){
+                                                                case "text":
+                                                                    return(
+                                                                        <UserMessageItem
+                                                                        key={i}
+                                                                            toggleReceiver={accountId === message?.user_id?true:false}
+                                                                            message={str.text}
+                                                                            dateSent={message.date_sent}
+                                                                        />)
+                                                                case "sys":
+                                                                        const event_code={
+                                                                            "INV":"invited",
+                                                                            "BAN":"banned",
+                                                                            "ADM":"became admin",
+                                                                            "OP":"Chatroom opened-"
+                                                                        }
+                                                                            return(
+                                                                                <SystemMessage text={event_code[str.code]}/>
+                                                                            )
+                                                                case "emoji":
+                                                                    return("")
+                                                                case "image":
+                                                                    return("")
+                                                                default:
+                                                                    return(
+                                                                        <UserMessageItem
+                                                                        key={i}
+                                                                            toggleReceiver={accountId === message?.user_id?true:false}
+                                                                            message={str.text}
+                                                                        />
+                                                                    )
+                                                            }
                                                         })
                                                     }
                                                 </div>
                                             </>
                                         
                                     }
-                                    <div className="d-flex justify-content-right">
-                                        <Form.Group>
-                                            <input type="text" name="messageInput" id="messageInput" className="form-control" value={messageInput} onChange={(e) => setMessageInput(e.target.value)} placeholder="Write your message here.."/>
-                                        </Form.Group>
-                                        <Button variant={"outline-secondary"} onClick={() => handleSendMessage()}>Send</Button>
-                                    </div>
-                                    
+                                    </Card.Body>
+                                        <Card.Footer>
+                                        <Input
+                                            className={"w-100"}
+                                            width={"100%"}
+                                            defaultValue={messageInput}
+                                            onChange={(e) => setMessageInput(e.target.value)}
+                                            multiline={false}
+                                            autoHeight={true}
+                                            minHeight={40}
+                                            autofocus={true}
+                                            placeholder="Write your message here.."
+                                            rightButtons={
+                                                <Button variant={"primary"} onClick={() => handleSendMessage()}>Send</Button>
+                                            }/>
+                                        </Card.Footer>
+                                        </Card>
                                 </Col>
-
-                            </Row>
                         </>
                     }
-                    
+                   </Row>
+                </Container> 
         </>
     )
 }
 
 const mapStateToProps = state => ({
-    messenger: state.messages
+    messenger: state.messages,
+    userinfo: state.users
 })
 
 const mapDispatchToProps = {
@@ -213,6 +312,9 @@ const mapDispatchToProps = {
     addConversation,
     addConversationUsers,
     addMessage,
+    getContactList,
+    getUserName,
+    duplicationCheck,
     clearConversations,
     clearConversationData,
     clearMessages,

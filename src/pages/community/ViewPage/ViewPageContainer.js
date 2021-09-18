@@ -20,7 +20,7 @@ const mapDispatchToProps = {
     getCommunityCategoryData, 
     getCommunityFollowers,
     getFollowStatus, 
-    followCommunity, 
+    followCommunity,
     clearCommunityData,
     clearPosts,
     clearFollow,

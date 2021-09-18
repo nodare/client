@@ -49,6 +49,7 @@ function ViewPageComponent(props) {
     const {path, url} = useRouteMatch()
     const [isLoading, setIsLoading] = useState(true)
     const [isFollowed, setIsFollowed] = useState(0)
+    const [selectedCategoryId, setSelectedCategoryId] = useState('')
     const [isSearching, setIsSearching] = useState(false)
     const [layout, setLayout] = useState('list')
     const [selectedCategory, setSelectedCategory] = useState(0)
@@ -66,16 +67,16 @@ function ViewPageComponent(props) {
     }
 
     const getFollowStatus = () =>{
-        console.log(ui?.currentUser.linear_id)
+        console.log(ui?.currentUser?.linear_id)
         let data = {
-            user_id: ui?.currentUser.linear_id,
+            user_id: ui?.currentUser?.linear_id,
             community_id: params.community_id
         }
         console.log(data)
         props.getFollowStatus(data)
-        .then(res=>{
+        .then((res)=>{
             console.log(res)
-            if(res.payload==null){
+            if(res.payload==""){
                 setIsFollowed(0)
             }else{
                 setIsFollowed(res.payload.status)
@@ -97,13 +98,22 @@ function ViewPageComponent(props) {
 
     // to be continued lateer
     const selectCategory = (key, id = 0) => {
-        if(key === selectedCategory) return
         setSelectedCategory(key)
         setIsLoading(true)
-        props.getCommunityPostsByCategory(params.community_id, id)
-        .then(()=>{
+        if(key===0){
+            props.clearPosts()
+            props.getCommunityPosts(params.community_id)
+            .then(()=>{
+                setIsLoading(false)
+            })
+        }else{
+            props.clearPosts()
+            setSelectedCategoryId(id)
+            props.getCommunityPostsByCategory(params.community_id, id)
+            .then(()=>{
             setIsLoading(false)
-        })
+            })
+        }
     }
 
     const toggleFollowCommunity = () => {
@@ -123,24 +133,32 @@ function ViewPageComponent(props) {
         if(props?.categories.length == 0){
             toast.error("You have to create a new category first before creating a post")
         }else{
-            history.push('/square/post/create')
+            history.push('/square/post/create/'+params.community_id+'/'+selectedCategoryId)
         }
     }
     
     useEffect(() => {
         //console.log(ui)
-        getCommunityData(params.community_id)
-        getFollowStatus()
+        props.getCommunityData(params.community_id)
+        if(ui?.currentUser?.linear_id){
+            getFollowStatus()
+        }
         getFollowedCommunities(params.community_id)
         // props.getCommunityPosts(params.community_id)
         props.getCommunityCategories(params.community_id)
         .then(()=>{
-            props.getCommunityPostsByCategory(params.community_id, 0)
+            props.getCommunityPosts(params.community_id)
             .then(()=>{
-                if(props.posts){
+                if(params?.category_id &&  props.categories.length > 0){
+                    props.categories.map((category, i)=>{
+                        if(category.linear_id === params.category_id){
+                            selectCategory(i+1, category.linear_id)
+                        }
+                    })
+                }else{
                     selectCategory(0)
-                    setIsLoading(false)
                 }
+                setIsLoading(false)
             })
         })
         return()=>{
@@ -151,7 +169,7 @@ function ViewPageComponent(props) {
     }, [])
     
     useEffect(() => {
-        
+        getFollowStatus()
         props?.community?.followers?.map((follower)=>{
             if(ui && ui?.currentUser?.linear_id === follower?.user_id){
                 setIsFollowed(follower?.status === 1 ? 1 : 0)
@@ -160,9 +178,9 @@ function ViewPageComponent(props) {
     }, [ui])
 
     useEffect(() => {
-        selectCategory(0)
+        selectCategory(0,0)
     }, [props.post])
-    
+    console.log(isFollowed)
     return (
         <>
             <Container>
@@ -216,6 +234,9 @@ function ViewPageComponent(props) {
                             }
                             
                             <ListGroup>
+                                        <ListGroup.Item active={selectedCategory === 0} className="d-block justify-content-between" onClick={()=>selectCategory(0,0)}>
+                                            <strong>#All</strong>
+                                        </ListGroup.Item>
                                 {
                                     props.categories.length > 0?
                                         props.categories.map((category, i)=>{
@@ -252,8 +273,8 @@ function ViewPageComponent(props) {
                                                     <div className="d-flex justify-content-left py-1">
                                                         <Image src={"https://placekitten.com/200/200"} roundedCircle style={{height:"40px"}} className={"mr-3"}/>
                                                         <div className="d-block">
-                                                            <span><strong>{ui?.currentUser?.usernamee}</strong> {props.community?.user_id === ui?.currentUser?.linear_id?"(You)":""} </span>
-                                                            <span className="d-block">Owner</span>
+                                                            <span><strong>{follower.username}</strong> {props.community?.user_id === ui?.currentUser?.linear_id?"(You)":""} </span>
+                                                            <span className="d-block">{follower.linear_id === ui?.currentUser?.linear_id?"User":""}</span>
                                                         </div>
                                                     </div>
                                                 </>
@@ -279,6 +300,24 @@ function ViewPageComponent(props) {
                                             <Button variant="success" onClick={() => verifyCreatePostNavigation()}> <FontAwesomeIcon icon={faPlus} /> Create new post</Button>
                                         </>
                                     :
+                                        props?.community?.type === 0?
+                                        <>
+                                            <ButtonGroup className="px-2">
+                                                <Button>{params.community_id}</Button>
+                                                <Button>{ui?.currentUser?.linear_id}</Button>
+                                                <Button>{isFollowed}</Button>
+                                                {isFollowed>1?
+                                                <Button variant="warning" disabled> <FontAwesomeIcon icon={faPlus} /> You can't post</Button>
+                                                :
+                                                    isFollowed===1?
+                                                <Button variant="success" onClick={() => verifyCreatePostNavigation()}> <FontAwesomeIcon icon={faPlus} /> Create new post</Button>
+                                                :
+                                                ""
+                                                }
+                                                <FollowButton isFollowed={isFollowed} handleFollow={() => toggleFollowCommunity()}/>
+                                            </ButtonGroup>
+                                        </>
+                                        :
                                         <>
                                             <ButtonGroup className="px-2">
                                                 <Button>{params.community_id}</Button>

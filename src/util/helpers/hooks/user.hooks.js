@@ -21,9 +21,9 @@ export const useActiveUserDetails = (token) => {
             .catch(err=>{
                 setError(err)
             })
-            .finally(()=>{
-                setIsLoading(false)
-            })
+            //.finally(()=>{
+            //    setIsLoading(false)
+            //})
         }
     }
 

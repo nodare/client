@@ -18,7 +18,7 @@ import { CreateCommunityModal } from "components/shared/modals/CommunityModal";
 // icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faLock } from "@fortawesome/free-solid-svg-icons";
-
+import { UserContextProvider } from 'pages/user/UserContextProvider'
 import { UiContext } from 'pages'
 
 
@@ -62,6 +62,9 @@ function ListPageComponent(props) {
 
     return (
         <>
+        <UserContextProvider>
+            
+        </UserContextProvider>
             <Container>
 
                 <Breadcrumb>

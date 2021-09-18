@@ -45,9 +45,11 @@ const routeList = [
     { path: "/square", component: ListPageContainer , isExact: true},
     { path: "/square/:community_id", component:  ViewPageContainer, isExact: true},
     { path: "/square/:community_id/settings", component: SettingsPageContainer, isExact: true},
-    { path: "/square/post/create", component: CreatePostPageContainer, isExact: true},
+    { path: "/square/post/create/:community_id", component: CreatePostPageContainer, isExact: true},
+    { path: "/square/post/create/:community_id/:category_id", component: CreatePostPageContainer, isExact: true},
     { path: "/square/:community_id/post/:post_id", component: ViewPostPageContainer, isExact: true},
-    
+    { path: "/square/:community_id/cat/:category_id", component: ViewPageContainer, isExact: true},
+
     /* document pages */
     { path: "/privacy-statement", component: PrivacyStatementPage, isExact: true},
     { path: "/cookies-policy", component: CookiesPolicyPage, isExact: true},

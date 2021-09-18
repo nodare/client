@@ -3,6 +3,7 @@ const communityState = {
     item: {},
     categoryItems: [],
     categoryItem: {},
+    accessibility:{},
     queries: [],
     isLoading: false,
     followers: [],
@@ -24,6 +25,18 @@ export default function(state=communityState, action) {
                 ...state, 
                 message: "Successfully fetched user's communitites",
                 items: action.payload
+            }
+        case "GET_ALL_BLOGS":
+            return{
+                ...state,
+                message: "Successfully fetched all blogs",
+                blogs:action.payload
+            }
+        case "GET_USERS_BLOGS":
+            return{
+                ...state,
+                message: "Successfully fetched user's blogs",
+                blogs:action.payload
             }
         case "GET_COMMUNITY_DATA":
             return{
@@ -99,6 +112,12 @@ export default function(state=communityState, action) {
                 ...state, 
                 message: "Cleared user's communitites",
                 items: []
+            }
+        case "CLEAR_BLOG_ITEMS":
+            return{
+                ...state,
+                message: "Cleared user's blogs",
+                blogs: []
             }
         case "CLEAR_COMMUNITY_DATA":
             return{

@@ -1,17 +1,19 @@
 import { ViewPostPage } from './ViewPostPage'
 import { connect } from 'react-redux'
 
-import { getCommunityData, clearCommunityData} from "util/redux/actions/community.actions";
-import { getPostData, getPostContents, removeContentsByPost, removePost, clearPost, clearContents } from "util/redux/actions/posts.actions";
-import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments } from "util/redux/actions/comments.actions";
+import { getCommunityData, clearCommunityData,getCommunityCategories} from "util/redux/actions/community.actions";
+import { getPostData, getPostContents, removeContentsByPost, removePost, clearPost, clearContents,updatePost,addNewPostContents } from "util/redux/actions/posts.actions";
+import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments,removePostComments } from "util/redux/actions/comments.actions";
 import { verifyPostUpvote, togglePostUpvote } from "util/redux/actions/upvotes.actions";
 
 const mapStateToProps = state => ({
     communityData: state.community.item,
     postData: state.posts.item,
     contents: state.posts.contents,
+    categories: state.community.categoryItems,
     comments: state.comments.items,
-    postUpvoteData: state.upvotes.postUpvoteItem
+    postUpvoteData: state.upvotes.postUpvoteItem,
+    postUpvotedBoolean: state.upvotes.postUpvotedBoolean
 })
 
 const mapDispatchToProps = {
@@ -20,12 +22,16 @@ const mapDispatchToProps = {
     getCommunityData,
     getPostData,
     removePost,
+    updatePost,
     getPostContents,
     getPostComments,
     addPostComment,
+    addNewPostContents,
     removePostComment,
+    removePostComments,
     removeContentsByPost,
     clearCommunityData,
+    getCommunityCategories,
     clearPost,
     clearContents,
     clearComments

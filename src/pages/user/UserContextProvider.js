@@ -10,7 +10,7 @@ export const UserContext = createContext(initialState)
 export const useUserContext = () => useContext(UserContext)
 
 export const UserContextProvider = ({children, value}) => {
-    const [testState, setTestState] = useState("asdf")
+    //const [testState, setTestState] = useState("asdf")
     
     return(
         <UserContext.Provider 

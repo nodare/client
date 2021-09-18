@@ -10,16 +10,30 @@ import axios from 'axios'
 // get community by user's id
 // id currently static
 export const getAllCommunities = () => async dispatch => {
-    let res = await axios.get(`community`)
+    let res = await axios.get(`community/com`)
     return dispatch({
         type: "GET_ALL_COMMUNITIES",
         payload: res.data
     })
 }
+export const getAllBlogs = () => async dispatch => {
+    let res = await axios.get('community/blog')
+    return dispatch({
+        type: "GET_ALL_BLOGS",
+        payload: res.data
+    })
+}
 export const getUsersCommunities = ( userLinearId ) => async dispatch => {
-    let res = await axios.get(`community/user/${ userLinearId }`)
+    let res = await axios.get(`community/user/${ userLinearId }/com`)
     return dispatch({
         type: "GET_USERS_COMMUNITIES",
+        payload: res.data
+    })
+}
+export const getUsersBlogs = ( userLinearId ) => async dispatch => {
+    let res = await axios.get(`community/user/${ userLinearId }/blog`)
+    return dispatch({
+        type: "GET_USERS_BLOGS",
         payload: res.data
     })
 }
@@ -68,6 +82,11 @@ export const updateCommunityFiles = (communityLinearId, data) => async dispatch 
 export const clearCommunityItems = () => async dispatch => {
     return dispatch({
         type: "CLEAR_COMMUNITY_ITEMS"
+    })
+}
+export const clearBlogItems = () => async dispatch =>{
+    return dispatch({
+        type: "CLEAR_BLOG_ITEMS"
     })
 }
 

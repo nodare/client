@@ -16,15 +16,14 @@ import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
 import LinkTool from "@editorjs/link";
 import ImageTool from "@editorjs/image";
-import {  useParams } from "react-router-dom";
+
 import toast from 'react-hot-toast'
 
 import { UiContext } from 'pages'
 
-function CreatePostPage(props) {
+function EditePostPage(props) {
     const history = useHistory()
     const ui = React.useContext(UiContext)
-    const params = useParams()
     const [postContents, setPostContents] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [editor, setEditor] = useState(null)
@@ -59,6 +58,16 @@ function CreatePostPage(props) {
                     }
                 }
             }
+        },
+        data:{
+            blocks: [
+          {
+            type: "image",
+            data: {
+              url: "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+          }
+        ]
         }
     }
     const [postFormValues, setPostFormValues] = useState({
@@ -73,25 +82,18 @@ function CreatePostPage(props) {
     const loadOptions = () => {
         props.getUsersCommunities(ui?.currentUser?.linear_id)
     }
-    useEffect(()=>{
-        setPostFormValues({
-            ...postFormValues,
-            community_id:params.community_id?params.community_id:"",
-            category_id:params.category_id?params.category_id:"",
-        })
-        props.getCommunityCategories(params.community_id)
-        .then(()=>{
-            console.log(props.categories)
-            setUserCategories(props.categories)
-        })
-    },[params])
+
     useEffect(()=>{
         // wat
         if(userCommunities.length > 0) setUserCommunities([])
         loadOptions()
     }, [ui])
 
-
+    useEffect(()=>{
+        props.getCommunityCategories(postFormValues.community_id)
+        .then(()=>{
+        })
+    }, [postFormValues.community_id])
 
     const handleEditorSave = async () => {
         setIsLoading(true)
@@ -107,10 +109,6 @@ function CreatePostPage(props) {
     // may problem dito. late kinukuha length
     const handleChangeCommunity = communityLinearId => {
         setPostFormValues({...postFormValues, community_id: communityLinearId })
-        props.getCommunityCategories(communityLinearId)
-        .then(()=>{
-            setUserCategories("")
-        })
     }
 
     const addNewPost = () => {
@@ -127,7 +125,7 @@ function CreatePostPage(props) {
             props.addNewPostContents( newPost.payload.linear_id, postContents)
             .then(res=>{
                 toast.success("Post successfully created!")
-                history.replace(`/square/${data.community_id}/cat/${data.category_id}`)
+                //history.replace(`/square/${data.community_id}`)
             })
             .catch(err=>{
                 console.log(err)
@@ -178,7 +176,6 @@ function CreatePostPage(props) {
                             <Form.Group>
                                 <Form.Label>Category</Form.Label>
                                 <Form.Control as="select" custom value={postFormValues.category_id} onChange={e=>setPostFormValues({...postFormValues, category_id: e.target.value})}>
-                                    <option disabled value="">--Select Category--</option>
                                     {
                                         props.categories.map((category)=>{
                                             return(

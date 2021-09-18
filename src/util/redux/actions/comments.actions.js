@@ -24,7 +24,14 @@ export const getPostComments = (postLinearId) => async dispatch => {
         payload: res.data
     })
 }
-
+//delete post comments
+export const removePostComments =(postLinearId) => async dispatch =>{
+    let res = await axios.delete(`comments/post/source/${postLinearId}`)
+    return dispatch({
+        type: "REMOVE_POST_COMMENTS",
+        payload: res.data
+    })
+}
 // add community comment
 export const addCommunityComment = (data) => async dispatch => {
     let res = await axios.post(`comments/community`, data )
@@ -40,6 +47,13 @@ export const addPostComment = (data) => async dispatch => {
     return dispatch({
         type: "ADD_POST_COMMENT",
         payload: res.data
+    })
+}
+export const addPostCommentReply = (data) => async dispatch =>{
+    let res = await axios.post(`comments/reply`,data)
+    return dispatch({
+        type: "ADD_POST_COMMENT_REPLY",
+        payload:res.data
     })
 }
 

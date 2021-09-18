@@ -28,11 +28,10 @@ function PostContentsComponent({contents, isPreview}) {
         <>
             {postContents?.map((content, i)=>{
                 {
-                    const data =JSON.parse(content.str)
+                    const data = content.data
                     switch(content.type){
                         case "header":
                             return "<h"+data.level+"key="+i+">"+data.text+"</h"+data.level+">"
-                            break;
                         case "paragraph":
                             return(
                                 <p className="mb-0" key={i}>{data.text}</p>
@@ -41,7 +40,6 @@ function PostContentsComponent({contents, isPreview}) {
                             return(
                                 <Link to={data.link}>Link</Link>
                             )
-                            break;
                         case "quote":
                             return(
                                 <Card key={i}>
@@ -55,15 +53,15 @@ function PostContentsComponent({contents, isPreview}) {
                             )
                         case "code":
                             return(
-                            "<pre><code>{data.code}</code></pre>"
+                            <pre><code>{data.code}</code></pre>
                             )
                         case "list":
                             switch(data.style){
                                 case "ordered":
-                                return(
+                               return(
                                     <ol>
                                         {
-                                            data.items.map((item,i)=>{
+                                            data.items?.map((item,i)=>{
                                                 <li key={i}>{item}</li>
                                             })
                                         }
@@ -71,7 +69,7 @@ function PostContentsComponent({contents, isPreview}) {
                                 case "unordered":
                                     return(<ul>
                                         {
-                                            data.items.map((item,i)=>{
+                                            data.items?.map((item,i)=>{
                                                 <li key={i}>{item}</li>
                                             })
                                         }
@@ -79,7 +77,7 @@ function PostContentsComponent({contents, isPreview}) {
                                 default: 
                                     break;
                             }
-                            break;
+                        //    break;
                         // case "table":
                         //     <Table>
                         //         {

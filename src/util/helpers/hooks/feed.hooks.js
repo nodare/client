@@ -31,6 +31,7 @@ export const useLatestFeed = () => {
                 })
             })
             setResponse(temp)
+            console.log(response)
         })
         .catch(err=>{
             setError(err)
