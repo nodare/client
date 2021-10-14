@@ -8,7 +8,7 @@ export const useLatestFeed = () => {
     const [isLoading, setIsLoading] = useState(true)
 
     const getData = (limit = 1) => {
-        axios.get(`posts?limit=${5 * limit}`)
+        axios.get(`posts?limit=${50 * limit}`)
         .then((res)=>{
             let temp = res.data
             temp.map((post)=>{

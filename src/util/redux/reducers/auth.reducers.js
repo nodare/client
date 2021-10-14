@@ -28,11 +28,6 @@ export default function(state=authState, action){
                 ...state,
                 token: null, 
             })
-        case "GET_USER_DETALS":
-            return({
-                ...state,
-                userDetails: action.payload
-            })
         case "CLEAR_TOKEN":
             return({
                 ...state,

@@ -15,7 +15,7 @@ function LoginPageComponent(props) {
     const [isPassed, setIsPassed] = useState(false)
     const [isError, setIsError] = useState(false)
     const [errorMessage,setErrorMessage] = useState('')
-    const [isLogin,setIsLogin] = useState(false)
+    const [isLogin,setIsLogin] = useState(true)
     const [signInForm, setSignInForm] = useState({
         input: "",
         password: ""

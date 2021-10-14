@@ -2,7 +2,8 @@ const usersState = {
     users: [],
     userData: [],
     contacts:[],
-    auser:[]
+    auser:[],
+    userDetails:{}
 }
 
 export default function( state = usersState, action){
@@ -20,6 +21,11 @@ export default function( state = usersState, action){
         default:
             return({
                 ...state
+            })
+        case "GET_USER_DETALS":
+            return({
+                ...state,
+                userDetails: action.payload
             })
     }
 }

@@ -12,13 +12,13 @@ import { ViewPageContainer } from "pages/community/ViewPage";
 import { SettingsPageContainer } from "pages/community/SettingsPage";
 import { ViewPostPageContainer } from 'pages/community/posts/ViewPostPage';
 import { CreatePostPageContainer } from 'pages/community/posts/CreatePostPage';
+import { UserProfilePageContainer } from "pages/user/UserProfilePage";
 
 import PrivacyStatementPage from 'pages/documents/PrivacyStatementPage';
 import CookiesPolicyPage from 'pages/documents/CookiesPolicyPage';
 import TermsAndConditionsPage from 'pages/documents/TermsAndConditionsPage';
 import CommunityGuidelinesPage from 'pages/documents/CommunityGuidelinesPage';
 import AdminPage from "pages/admin/AdminPage";
-import UserProfilePage from "pages/user/UserProfilePage";
 import { UserSettingsPageContainer } from 'pages/user/SettingsPage'
 import MessengerPage from 'pages/messenger/MessengerPage';
 import MainStorePage from "pages/store/StorePage";
@@ -36,8 +36,7 @@ const routeList = [
     { path: "/", component: HomePageContainer , isExact: true},
 
     // user
-    { path: "/me", component: UserProfilePage, isExact: true},
-    { path: "/profile/:id", component: UserProfilePage, isExact: true},
+    { path: "/profile/:user_id", component: UserProfilePageContainer, isExact: true},
     { path: "/messenger", component: MessengerPage, isExact: true},
     { path: "/settings", component: UserSettingsPageContainer, isExact: true},
     

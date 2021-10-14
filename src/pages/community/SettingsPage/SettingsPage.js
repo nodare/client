@@ -158,13 +158,20 @@ function SettingsPageComponent(props) {
                                     </Form.Group>
                                 </Col>
 
-                                <Col xs={12} md={2} className="text-right"><strong>Upvoted Name</strong></Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                    
+                    <Card className="my=3">
+                        <Card.Header>Assistant Managers Settings</Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col xs={12} md={2} className="text-right"><strong>Managers</strong></Col>
                                 <Col xs={12} md={9}>
                                     <Form.Group>
-                                        <input type="text" className="form-control" name={"upvoted_name"} value={communitySettingsForm?.upvoted_name} onChange={handleFormInputChange} placeholder="Enter upvoted name"/>
+                                        <input type="search"/>
                                     </Form.Group>
-                                </Col>  
-
+                                </Col>
                             </Row>
                         </Card.Body>
                     </Card>

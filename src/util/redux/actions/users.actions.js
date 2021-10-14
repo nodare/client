@@ -4,13 +4,13 @@ import axios from 'axios'
             USERS
 ================================
 */
-export const getUserDetails = userLinearId => async dispatch => {
+export const getUserDetails = (userLinearId) => async dispatch => {
+    let res = await axios.get(`users/profile/${userLinearId}`)
     return dispatch({
         type: "GET_USER_DETAILS",
-        payload: null
+        payload: res.data[0]
     })
 }
-
 // update profile picture
 export const updateProfilePicture = (userLinearId, data) => async dispatch => {
     return dispatch({

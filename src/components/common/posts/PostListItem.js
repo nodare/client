@@ -25,8 +25,8 @@ function PostListItem({post}) {
                         <span><strong>{postData?.user.username || "Nodaq User"}</strong> - <small><em>{ta.format(postData?.created_at)}</em></small></span>
                         <div className="text-secondary">#{postData?.category?.name || "Uncategorized"}</div>
                         <div>{post.title}</div>
-                        <FontAwesomeIcon icon={faThumbsUp} fixedWidth className="text-secondary"></FontAwesomeIcon><span>{postData?.upvotes.length}</span>
-                        <FontAwesomeIcon icon={faComment} fixedWidth className="text-secondary"></FontAwesomeIcon><span>{postData?.comments.length}</span>
+                        <FontAwesomeIcon icon={faThumbsUp} fixedWidth className="text-secondary"></FontAwesomeIcon><span>{postData?.upvotecount.count}</span>
+                        <FontAwesomeIcon icon={faComment} fixedWidth className="text-secondary"></FontAwesomeIcon><span>{postData?.commentcount.count}</span>
                     </div>
                 </div>
             </ListGroup.Item>

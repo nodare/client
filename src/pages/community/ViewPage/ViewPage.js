@@ -40,6 +40,7 @@ import { serverUrl } from 'static'
 import upvotesReducers from 'util/redux/reducers/upvotes.reducers';
 import { Alert } from 'bootstrap';
 import { isUndefined } from 'lodash-es';
+import { Segment,Icon} from 'semantic-ui-react';
 
 
 function ViewPageComponent(props) {
@@ -117,16 +118,18 @@ function ViewPageComponent(props) {
     }
 
     const toggleFollowCommunity = () => {
-        let data = {
-            user_id: ui?.currentUser?.linear_id,
-            community_id: props.community.linear_id
-        }
+        if(ui?.currentUser?.linear_id){
+            let data = {
+                user_id: ui?.currentUser?.linear_id,
+                community_id: props.community.linear_id
+            }
 
-        props.followCommunity(data)
-        .then(res=>{
-            setIsFollowed(res.payload.status)
-            props.getCommunityFollowers(props?.community?.linear_id)
-        })
+            props.followCommunity(data)
+            .then(res=>{
+                setIsFollowed(res.payload.status)
+                props.getCommunityFollowers(props?.community?.linear_id)
+            })
+        }
     }
 
     const verifyCreatePostNavigation = () => {
@@ -139,6 +142,7 @@ function ViewPageComponent(props) {
     
     useEffect(() => {
         //console.log(ui)
+        if(params.community_id){
         props.getCommunityData(params.community_id)
         if(ui?.currentUser?.linear_id){
             getFollowStatus()
@@ -166,7 +170,8 @@ function ViewPageComponent(props) {
             props.clearPosts()
             props.clearFollow()
         }
-    }, [])
+    }
+    }, [params])
     
     useEffect(() => {
         getFollowStatus()
@@ -187,9 +192,6 @@ function ViewPageComponent(props) {
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">
                         Home
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item href="/square">
-                        Communities
                     </Breadcrumb.Item>
                     <Breadcrumb.Item active>{props.community.title}</Breadcrumb.Item>
                 </Breadcrumb>
@@ -233,7 +235,7 @@ function ViewPageComponent(props) {
                                 :""
                             }
                             
-                            <ListGroup>
+                            <Segment.Group raised>
                                         <ListGroup.Item active={selectedCategory === 0} className="d-block justify-content-between" onClick={()=>selectCategory(0,0)}>
                                             <strong>#All</strong>
                                         </ListGroup.Item>
@@ -248,7 +250,7 @@ function ViewPageComponent(props) {
                                         })
                                     :""
                                 }
-                            </ListGroup>
+                            </Segment.Group>
                         </div>
                         {/* end of categories list */}
 
@@ -327,6 +329,7 @@ function ViewPageComponent(props) {
                                             </ButtonGroup>
                                         </>
                                 }
+                                <Button><Icon name="heart outline"/></Button>
                                 <ChangeLayoutButtons handleChangeLayout={setLayout}/>
 
                                 <DropdownButton

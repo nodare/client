@@ -18,11 +18,10 @@ function PostThumbnailComponent({contents}) {
         })
 
     }, [contents])
-    console.log(postContents)
     return (
         postContents?
             postContents?.map((content, i)=>{
-                return(<Image className="d-block" src={content.data.file.url} style={{height:"100px",width:"100px",objectFit:"scale-down"}} key={i}/>)
+                return(<Image src={content.data.file.url} style={{height:"100px",width:"100px",objectFit:"scale-down"}} key={i}/>)
                 })
             :
             null

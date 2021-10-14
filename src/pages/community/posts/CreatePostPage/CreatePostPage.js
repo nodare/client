@@ -4,7 +4,7 @@ import axios from 'axios'
 import { serverUrl } from 'static'
 
 import { useHistory } from "react-router";
-import { Alert, Container, Button, Form, Row, Col, Card, Spinner, Breadcrumb } from "react-bootstrap";
+import { Alert, Container, Form, Row, Col, Card, Spinner, Breadcrumb } from "react-bootstrap";
 
 import { HotToast } from 'components/common/toasts/toast'
 
@@ -18,7 +18,8 @@ import LinkTool from "@editorjs/link";
 import ImageTool from "@editorjs/image";
 import {  useParams } from "react-router-dom";
 import toast from 'react-hot-toast'
-
+import {Button} from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
 import { UiContext } from 'pages'
 
 function CreatePostPage(props) {
@@ -189,17 +190,6 @@ function CreatePostPage(props) {
                                 </Form.Control>
                             </Form.Group>
                         </Col>
-                        <Col xs={12} md={6} xl={3}>
-                            <Button block variant="primary w-100" onClick={() => addNewPost()} disabled={isLoading}>
-                                {
-                                    isLoading === true?(
-                                        <Spinner animation="border" role="status"></Spinner>
-                                    ):(
-                                        <span>Save post and publish</span>
-                                    )
-                                }
-                            </Button>
-                        </Col>
                     </Row>
                 </div>
                 <Card className="p-3 my-3">
@@ -208,6 +198,16 @@ function CreatePostPage(props) {
                         <div id="editorBox"></div>
                     </EditorJs>
                 </Card>
+                <Button.Group floated="right" size="large">
+                    <Button onClick={()=>history.replace(`/square/${postFormValues.community_id}/cat/${postFormValues.category_id}`)}>Cancel</Button>
+                    <Button.Or />
+                    <Button positive onClick={() => addNewPost()}>{
+                                    isLoading === true?
+                                        <Spinner animation="border" role="status" size="sm"></Spinner>
+                                    :
+                                        "Save"
+                                }</Button>
+                </Button.Group>
             </Container>
         </>
     )

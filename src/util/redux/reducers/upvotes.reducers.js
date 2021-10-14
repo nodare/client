@@ -17,6 +17,16 @@ export default function(state = upvoteState, action){
                 ...state,
                 postUpvotedBoolean: action.payload
             })
+        case "POST_UPVOTE_COUNT":
+            return({
+                ...state,
+                postUpvoteCount: action.payload
+            })
+        case "UPVOTE_COUNT":
+            return({
+                ...state,
+                upvoteCount: action.payload
+            })
         default:
             return({
                 ...state

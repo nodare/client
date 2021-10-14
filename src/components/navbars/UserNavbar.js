@@ -20,7 +20,6 @@ import { logoutUser } from "util/redux/actions/auth.actions";
 import { UserContext } from 'pages/user/UserContextProvider'
 
 function UserNavbarComponent(props) {
-    const usertest = useContext(UserContext)
     const history = useHistory()
     const ui = useContext(UiContext)
     const [user, setUser] = useState(null)
@@ -44,7 +43,11 @@ function UserNavbarComponent(props) {
     //}, [usertest])
 
     useEffect(() => {
-        setUser(props.user)
+        if(props.user){
+            setUser(props.user)
+        }else{
+            ui.setIsLoggedIn(false)
+        }
     }, [user])
     
     return (
@@ -67,7 +70,7 @@ function UserNavbarComponent(props) {
                     <Navbar.Collapse>
                         <Nav className="mr-auto">
                             <Link to="/">
-                                <Navbar.Brand><strong>NODAQ</strong> Home</Navbar.Brand>
+                                <Navbar.Brand>NODAQ</Navbar.Brand>
                             </Link>
                         </Nav>
                         <Nav>                            
@@ -87,7 +90,7 @@ function UserNavbarComponent(props) {
                                             </LinkContainer>
                                         </Nav.Link>
                                         <NavDropdown title="Account">
-                                            <LinkContainer to="/me">
+                                            <LinkContainer to={`/profile/${ui?.currentUser?.linear_id}`}>
                                                 <NavDropdown.Item>
                                                     <div className="d-flex justify-content my-1">
                                                         <ProfileImageSmall

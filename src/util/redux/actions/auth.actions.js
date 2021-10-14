@@ -30,14 +30,6 @@ export const registerUser = (data) => async dispatch => {
     })
 } 
 
-export const getUserDetails = (userLinearId) => async dispatch => {
-    let res = await axios.get(`auth/profile/${userLinearId}`)
-    return dispatch({
-        type: "GET_USER_DETAILS",
-        payload: res.data[0]
-    })
-}
-
 export const logoutUser = () => async dispatch => {
     console.log("logging out")
     return dispatch({

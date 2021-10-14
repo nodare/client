@@ -5,7 +5,20 @@ import axios from 'axios'
             UPVOTES
 ================================
 */
-
+export const getPostUpvoteCount = (postLinearId) => async dispatch =>{
+    let res = await axios.get(`votes/post/count/${postLinearId}`)
+    return dispatch({
+        type:"POST_UPVOTE_COUNT",
+        payload:res.data
+    })
+}
+export const getUpvoteCount = () => async dispatch =>{
+    let res = await axios.get(`votes/count`)
+    return dispatch({
+        type:"UPVOTE_COUNT",
+        payload:res.data
+    })
+}
 export const verifyPostUpvote = (postLinearId, userId) => async dispatch => {
     let res = await axios.get(`votes/${userId}/posts/${postLinearId}`)
     if(res.data.length === 0){

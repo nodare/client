@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { map } from 'lodash'
 import { LinkContainer } from "react-router-bootstrap";
+import * as ta from "timeago.js";
 import { Tab, Nav, Row, Col, Form, Spinner, Button,Jumbotron, InputGroup } from "react-bootstrap";
 import { communityCategories } from "static";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -201,9 +202,6 @@ function HomePage(props) {
                                                 }
                                             </Tab.Pane>
                                             <Tab.Pane eventKey="community">
-                                                <Jumbotron style={{padding:"2em"}}>
-                                                    <h3>Explore more communities</h3>
-                                                </Jumbotron>
                                                 <Row className="my-2">
                                                     {props.communities.map((community, i)=>{
                                                         return(
@@ -214,7 +212,7 @@ function HomePage(props) {
                                                                             <Image src="http://placekitten.com/300/300" wrapped ui={false} />
                                                                             <Card.Content>
                                                                                 <Card.Header className="h6">{community.title}</Card.Header>
-                                                                                <Card.Meta>Created 1 hour ago</Card.Meta>
+                                                                                <Card.Meta>Since {ta.format(new Date(community.created_at))}</Card.Meta>
                                                                                 <Card.Description>{community.description}</Card.Description>
                                                                             </Card.Content>
                                                                             <Card.Content extra>
@@ -242,7 +240,7 @@ function HomePage(props) {
                                                                             <Image src="http://placekitten.com/300/300" wrapped ui={false} />
                                                                             <Card.Content>
                                                                                 <Card.Header className="h6">{blog.title}</Card.Header>
-                                                                                <Card.Meta>Created 1 hour ago</Card.Meta>
+                                                                                <Card.Meta>Since {ta.format(new Date(blog.created_at))}</Card.Meta>
                                                                                 <Card.Description>{blog.description}</Card.Description>
                                                                             </Card.Content>
                                                                             <Card.Content extra>

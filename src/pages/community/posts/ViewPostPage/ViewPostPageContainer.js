@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { getCommunityData, clearCommunityData,getCommunityCategories} from "util/redux/actions/community.actions";
 import { getPostData, getPostContents, removeContentsByPost, removePost, clearPost, clearContents,updatePost,addNewPostContents } from "util/redux/actions/posts.actions";
 import { getPostComments, addPostComment, removePostComment, addCommentReply, clearComments,removePostComments } from "util/redux/actions/comments.actions";
-import { verifyPostUpvote, togglePostUpvote } from "util/redux/actions/upvotes.actions";
+import { verifyPostUpvote, togglePostUpvote,getPostUpvoteCount } from "util/redux/actions/upvotes.actions";
 
 const mapStateToProps = state => ({
     communityData: state.community.item,
@@ -12,14 +12,15 @@ const mapStateToProps = state => ({
     contents: state.posts.contents,
     categories: state.community.categoryItems,
     comments: state.comments.items,
-    postUpvoteData: state.upvotes.postUpvoteItem,
-    postUpvotedBoolean: state.upvotes.postUpvotedBoolean
+    postUpvoteCount:state.upvotes.postUpvoteCount,
+    postUpvotedBoolean: state.upvotes.postUpvotedBoolean,
 })
 
 const mapDispatchToProps = {
     verifyPostUpvote,
     togglePostUpvote,
     getCommunityData,
+    getPostUpvoteCount,
     getPostData,
     removePost,
     updatePost,

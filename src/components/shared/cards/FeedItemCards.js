@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { map } from 'lodash'
 import { Link } from 'react-router-dom'
+import * as ta from "timeago.js";
 import { LinkContainer } from 'react-router-bootstrap'
 import { Card,Image,Row,Col,Container } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,6 +14,7 @@ import UpvoteButton from 'components/shared/buttons/UpvoteButton'
 import CommentsButton from 'components/shared/buttons/CommentsButton'
 import CommentsComponent from 'components/common/comments/PostCommentItem'
 import { serverUrl } from 'static'
+import {Label} from 'semantic-ui-react'
 import { useActiveUserDetails } from 'util/helpers/hooks/user.hooks'
 import 'semantic-ui-css/semantic.min.css'
 
@@ -41,7 +43,7 @@ function FeedItemCard({post, handleUpvotePost}) {
 
     useEffect(() => {
         map(post?.upvotes ,  upvote=>{
-            if(upvote?.user_id === currentUser.linear_id){
+            if(upvote?.user_id === currentUser?.linear_id){
                 setIsUpvoted(true)
             }
         })
@@ -55,23 +57,29 @@ function FeedItemCard({post, handleUpvotePost}) {
     //console.log(postData)
     return (
         <Feed.Event>
-        <Feed.Label image='https://placekitten.com/50/50' />
         <Feed.Content>
-        <Feed.Summary>
-            <Feed.User>{postData?.user?.username}</Feed.User> posted {postData.title} in {postData?.community?.title}
-          <Feed.Date>2 Days Ago</Feed.Date>
-        </Feed.Summary>
+            
+            <Label as='a' color="blue" style={{margin:"3px"}} image>
+      <img src='https://placekitten.com/50/50' />
+      {postData?.user?.username}
+      </Label>
+      <Label as='a' href={`/square/${postData?.community_id}/post/${postData?.linear_id}`} style={{margin:"3px"}} color="violet">{postData.title}</Label>
+      <Label as='a' href={`/square/${postData?.community_id}`} color="purple" style={{margin:"3px"}} image>
+          {postData?.community?.title}
+      <Label.Detail>{ta.format(new Date(postData?.created_at))}</Label.Detail>
+      </Label>
           <Feed.Extra images>
             <PostThumbnailComponent contents={postData.contents}/>
             <PostContentsComponent isPreview={true} contents={postData.contents}/>
           </Feed.Extra>
           <Feed.Meta>
             <Feed.Like>
-              <Icon name='like' onClick={() => upvotePost()}/>{postData?.upvotes?.length} Like
+              <Icon name='like' onClick={() => upvotePost()} />{postData?.upvotecount} Like
             </Feed.Like>
-            <LinkContainer to={`/square/${postData?.community_id}/post/${postData?.linear_id}`}>
-            <Button variant={"link"} size={'sm'}>Read more</Button>
-            </LinkContainer>
+            <Label as='a' href={`/square/${postData?.community_id}/post/${postData?.linear_id}`}>
+            <Icon name='play' />
+            Read more
+            </Label>
           </Feed.Meta>
         </Feed.Content>
         </Feed.Event>

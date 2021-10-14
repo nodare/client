@@ -2,18 +2,21 @@ import React, { useEffect,useState } from 'react'
 import { LinkContainer } from "react-router-bootstrap";
 import { Card } from "react-bootstrap";
 import PropTypes from "prop-types";
+import ReplyComponent from './CommentReplyItem';
 import { useUserDetails } from "util/helpers/hooks/user.hooks";
-import { Button, Comment, Form, Header,Divider,Icon } from 'semantic-ui-react'
+import { Button, Comment, Form, Header,Divider,Icon,Label } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import 'semantic-ui-css/semantic.min.css'
 import axios from 'axios';
-function CommentsComponent({comments,postLinearId,userId}){
+function CommentsComponent({postLinearId,userId}){
   
   const [postComments, setPostComments] = useState(null)
   const [showReplyBox, setShowReplyBox] = useState(false)
   const [replyInput,setReplyInput] = useState({type:'',content:'',parent_comment_id:'',post_id:'',user_id:userId})
   const [commentInput,setCommentInput] = useState({type:'',content:'',post_id:'',user_id:userId})
+  const [isReplyLoading,setIsReplyLoading] = useState(false)
   const [selectedComment,setSelectedComment] = useState(0)
+  const [commentCount,setCommentCount] = useState(0)
   const handleReplyButton =(key) =>{
     setSelectedComment(key)
     setShowReplyBox(true)
@@ -53,26 +56,25 @@ const deleteComment = commentLinearId => {
 const loadComments = postLinearId =>{
   axios.get(`comments/post/source/${postLinearId}`)
   .then((res)=>{
-    console.log(res)
-    comments =res.data
+    setIsReplyLoading(true)
+    setPostComments(res.data)
+    axios.get(`comments/post/count/${postLinearId}`)
+    .then((res)=>{
+      setCommentCount(res.data[0].count)
+    })
+    setIsReplyLoading(false)
   })
 }
   useEffect(()=>{
-    console.log(comments)
-    if(comments?.length>0){
-    setPostComments((prevState)=>{
-        return comments?.filter((comment)=>{
-          console.log(comment?.parent_comment_id === null?"TRUE":"FALSE")
-          return comment?.parent_comment_id === null
-        })
-    })
-    }
-  },[comments])
-  console.log(postComments)
+    loadComments(postLinearId)
+  },[postLinearId])
   return(
     postComments?.length>0?
     <>
     <Comment.Group threaded>
+    <Label color='blue' ribbon>
+      Discussion ({commentCount})
+    </Label>
     {postComments.map((comment,i)=>{
       return(
       <Comment>
@@ -98,26 +100,11 @@ const loadComments = postLinearId =>{
           </Form>
         </Comment.Content>
         <Comment.Group>
-      {comments.map((reply,j)=>{
-        if(reply.parent_comment_id === comment.linear_id){
-          return(
-            <Comment>
-              <Comment.Avatar src='https://placekitten.com/50/50' />
-              <Comment.Content>
-                <Comment.Author as='a'>{reply.user_id}</Comment.Author>
-                <Comment.Metadata>
-                  <div>{comment.created_at}</div>
-                </Comment.Metadata>
-                <Comment.Text>{reply.content}</Comment.Text>
-                <Comment.Actions>
-                  <Comment.Action onClick={()=>handleReplyButton()}>Reply</Comment.Action>
-                </Comment.Actions>
-              </Comment.Content>
-            </Comment>
-          )
-        }
-      })
-      }
+          {isReplyLoading?
+          <ReplyComponent commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
+          :
+          <ReplyComponent commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
+          }
         </Comment.Group>
       </Comment>
       )
@@ -131,6 +118,9 @@ const loadComments = postLinearId =>{
     </>
     :
     <>
+    <Label color='blue' ribbon>
+      Discussion ({commentCount})
+    </Label>
     <Comment.Group>
     <Form reply>
       <Form.TextArea value={commentInput.content} onChange={(e)=>setCommentInput({type:"text",content:e.target.value,post_id:postLinearId,user_id:userId})}/>

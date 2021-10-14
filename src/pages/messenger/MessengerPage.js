@@ -158,12 +158,12 @@ function MessagingWindow(props) {
                                             <>
                                                 <div className="d-flex">
                                                     {
-                                                    props.userinfo.contacts.length === 0?
+                                                    props.userinfo?.contacts?.length === 0?
                                                         <>
                                                             You have no friends as of now
                                                         </>
                                                         :
-                                                        props.userinfo.contacts.map((contact,i)=>{
+                                                        props.userinfo?.contacts?.map((contact,i)=>{
                                                         return(
                                                             <ChatItem
                                                             className={'w-100'}
@@ -188,7 +188,7 @@ function MessagingWindow(props) {
                                                     :
                                                     <Nav variant="pills" justify>
                                                         <>
-                                                            {props.messenger.conversations.map((conversation,i)=>{
+                                                            {props.messenger?.conversations?.map((conversation,i)=>{
                                                                 return(
                                                                         <Nav.Item>
                                                                         <ChatItem
