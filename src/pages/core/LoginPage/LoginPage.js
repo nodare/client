@@ -24,6 +24,10 @@ function LoginPageComponent(props) {
         email:"",
         username:"",
         name:"",
+        password:"",
+        lang:"",
+        zone:"",
+
     })
     const errorOpen = (sentence) => {
         setIsError(true)
@@ -43,14 +47,14 @@ function LoginPageComponent(props) {
     const submitSignUpForm =() => {
         setSignUpForm({
             email:signUpForm.email,
-            username:signUpForm.username,
+            input:signUpForm.input,
             name:signUpForm.name,
             password:signUpForm.password,
             lang:navigator.languages,
             zone:Intl.DateTimeFormat().resolvedOptions().timeZone,
             isAgreed:signUpForm.isAgreed
         })
-        if(signUpForm.email == "" || signUpForm.username =="" || signUpForm.name == "") return errorOpen("Please fill out the fields required")
+        if(signUpForm.email == "" || signUpForm.input =="" || signUpForm.name == "") return errorOpen("Please fill out the fields required")
         if(signUpForm.isAgreed === false) return errorOpen("You haven't agreed to the terms and condtiions applied. ")
         props.registerUser(signUpForm)
     }
@@ -102,11 +106,11 @@ function LoginPageComponent(props) {
                 {isLogin?
                 <Grid.Column>
                 <Form>
-                <Form.Input
+                 <Form.Input
                     icon='user'
                     iconPosition='left'
-                    label='Username'
-                    placeholder='Username'
+                    label='Name'
+                    placeholder='Username or Email'
                     value={signInForm.input}
                     onChange={(e)=>setSignInForm({...signInForm,input:e.target.value})}
                 />

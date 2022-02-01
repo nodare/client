@@ -1,16 +1,18 @@
 import { ListPageComponent } from './ListPage'
 import { connect } from 'react-redux'
 
-import { getUsersCommunities, clearCommunityItems, createCommunity } from "util/redux/actions/community.actions";
+import { getUsersCommunities,getUsersBlogs, clearCommunityItems, createCommunity } from "util/redux/actions/community.actions";
 
 const mapStateToProps = state => ({
-    communityItems: state.community.items
+    communityItems: state.community.items,
+    blogItems:state.community.blogs
 })
 
 const mapDispatchToProps = {
     getUsersCommunities,
+    getUsersBlogs,
     createCommunity,    
-    clearCommunityItems
+    clearCommunityItems,
 }
 
 export const ListPageContainer = connect(mapStateToProps, mapDispatchToProps)(ListPageComponent)

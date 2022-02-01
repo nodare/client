@@ -36,18 +36,18 @@ const routeList = [
     { path: "/", component: HomePageContainer , isExact: true},
 
     // user
-    { path: "/profile/:user_id", component: UserProfilePageContainer, isExact: true},
+    { path: "/profile/:username", component: UserProfilePageContainer, isExact: true},
     { path: "/messenger", component: MessengerPage, isExact: true},
     { path: "/settings", component: UserSettingsPageContainer, isExact: true},
     
     // community pages
     { path: "/square", component: ListPageContainer , isExact: true},
-    { path: "/square/:community_id", component:  ViewPageContainer, isExact: true},
-    { path: "/square/:community_id/settings", component: SettingsPageContainer, isExact: true},
-    { path: "/square/post/create/:community_id", component: CreatePostPageContainer, isExact: true},
-    { path: "/square/post/create/:community_id/:category_id", component: CreatePostPageContainer, isExact: true},
-    { path: "/square/:community_id/post/:post_id", component: ViewPostPageContainer, isExact: true},
-    { path: "/square/:community_id/cat/:category_id", component: ViewPageContainer, isExact: true},
+    { path: "/square/:addr", component:  ViewPageContainer, isExact: true},
+    { path: "/square/:addr/settings", component: SettingsPageContainer, isExact: true},
+    { path: "/square/post/create/:addr", component: CreatePostPageContainer, isExact: true},
+    { path: "/square/post/create/:addr/:category_id", component: CreatePostPageContainer, isExact: true},
+    { path: "/square/:addr/post/:post_id", component: ViewPostPageContainer, isExact: true},
+    { path: "/square/:addr/cat/:category_id", component: ViewPageContainer, isExact: true},
 
     /* document pages */
     { path: "/privacy-statement", component: PrivacyStatementPage, isExact: true},

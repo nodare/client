@@ -2,19 +2,22 @@ import React, { useEffect,useState } from 'react'
 import { LinkContainer } from "react-router-bootstrap";
 import { Card } from "react-bootstrap";
 import PropTypes from "prop-types";
+import ProfileComponent from "../users/ProfileItem"
 import ReplyComponent from './CommentReplyItem';
 import { useUserDetails } from "util/helpers/hooks/user.hooks";
+import { UiContext } from 'pages'
 import { Button, Comment, Form, Header,Divider,Icon,Label } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import 'semantic-ui-css/semantic.min.css'
 import axios from 'axios';
-function CommentsComponent({postLinearId,userId}){
-  
+function CommentsComponent({communityAddr,postLinearId,userId}){
+  const ui = React.useContext(UiContext)
   const [postComments, setPostComments] = useState(null)
   const [showReplyBox, setShowReplyBox] = useState(false)
   const [replyInput,setReplyInput] = useState({type:'',content:'',parent_comment_id:'',post_id:'',user_id:userId})
   const [commentInput,setCommentInput] = useState({type:'',content:'',post_id:'',user_id:userId})
   const [isReplyLoading,setIsReplyLoading] = useState(false)
+  const [isPrivileged,setIsPrivileged] = useState(false)
   const [selectedComment,setSelectedComment] = useState(0)
   const [commentCount,setCommentCount] = useState(0)
   const handleReplyButton =(key) =>{
@@ -47,10 +50,27 @@ const sendComment = (data) => {
       loadComments(postLinearId)
   })
 }
+const privilegeCheck = communityAddr =>{
+  let data ={
+    addr:communityAddr,
+    user_id:ui.currentUser.linear_id
+  }
+  axios.post(`community/follow/status`,data).then((res)=>{
+    if(res.data.status>=3){
+      setIsPrivileged(true)
+    }else{
+      setIsPrivileged(false)
+    }
+  })
+}
 const deleteComment = commentLinearId => {
-  axios.delete(`comments/${commentLinearId}/post`)
+  const data={
+    status:0,
+    content:""
+  }
+  axios.put(`comments/${commentLinearId}/post`,data)
   .then((res)=>{
-      // window.alert("Comment deleted")
+      loadComments(postLinearId)
   })
 }
 const loadComments = postLinearId =>{
@@ -68,6 +88,9 @@ const loadComments = postLinearId =>{
   useEffect(()=>{
     loadComments(postLinearId)
   },[postLinearId])
+  useEffect(()=>{
+    if(ui?.currentUser?.linear_id&&communityAddr) privilegeCheck(communityAddr)
+  },[ui])
   return(
     postComments?.length>0?
     <>
@@ -80,13 +103,21 @@ const loadComments = postLinearId =>{
       <Comment>
         <Comment.Avatar src='https://placekitten.com/50/50'/>
         <Comment.Content>
-          <Comment.Author as='a'>{comment.user_id}</Comment.Author>
+          <Comment.Author as='a'>
+          <ProfileComponent userLinearId={comment.user_id}/>
+          </Comment.Author>
           <Comment.Metadata>
             <span>{comment.created_at}</span>
           </Comment.Metadata>
-          <Comment.Text>{comment.content}</Comment.Text>
+          <Comment.Text>{comment.status?comment.content:"Deleted Comment"}</Comment.Text>
           <Comment.Actions>
-          <Comment.Action onClick={()=>handleReplyButton(i)}>Reply</Comment.Action>
+          <Comment.Action style={{"color":"black","display":comment.status?"inline-block":"none"}} onClick={()=>handleReplyButton(i)}>Reply</Comment.Action>
+          {
+            (ui?.currentUser?.linear_id==comment.user_id)||isPrivileged?
+            <Comment.Action style={{"display":comment.status?"inline-block":"none"}} onClick={()=>deleteComment(comment.linear_id)}>Delete</Comment.Action>
+            :
+            ""
+          }
           </Comment.Actions>
           <Form className={i===selectedComment&&showReplyBox?"d-block":"d-none"} reply>
                   <Form.TextArea value={replyInput.content} onChange={(e)=>setReplyInput({type:"text",content:e.target.value,parent_comment_id:comment.linear_id,post_id:postLinearId,user_id:userId})}/>
@@ -101,9 +132,9 @@ const loadComments = postLinearId =>{
         </Comment.Content>
         <Comment.Group>
           {isReplyLoading?
-          <ReplyComponent commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
+          <ReplyComponent communityAddr={communityAddr} commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
           :
-          <ReplyComponent commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
+          <ReplyComponent communityAddr={communityAddr} commentLinearId={comment.linear_id} isReplyLoading={isReplyLoading}/>
           }
         </Comment.Group>
       </Comment>
@@ -135,5 +166,6 @@ export default CommentsComponent
 CommentsComponent.propTypes={
   comments: PropTypes.array.isRequired,
   postLinearId: PropTypes.string.isRequired,
+  communityAddr: PropTypes.string.isRequired,
   userId:PropTypes.string.isRequired
 }

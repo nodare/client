@@ -17,18 +17,33 @@ import { serverUrl } from 'static'
 import {Label} from 'semantic-ui-react'
 import { useActiveUserDetails } from 'util/helpers/hooks/user.hooks'
 import 'semantic-ui-css/semantic.min.css'
+import axios from 'axios';
 
 function FeedItemCard({post, handleUpvotePost}) {
     const user = useActiveUserDetails(localStorage.getItem('token') || null)
     const [currentUser, setCurrentUser] = useState(null)
-    const [postData, setPostData] = useState([])
+    const [postUser, setPostUser] = useState(null)
     const [isUpvoted, setIsUpvoted] = useState(false)
     const [showComment, setShowComment] = useState(false)
-    
-
+    const [upvotes,setUpvotes] = useState(0)
+    const [address,setAddress] = useState('')
+    const [contents,setContents] =useState([])
 
     useEffect(() => {
-        setPostData(post)
+        if(post){
+            axios.get(`users/${post?.user_id}`).then((res)=>{
+                setPostUser(res.data[0].username)
+                axios.get(`comments/post/count/${post?.linear_id}`).then((res1)=>{
+                    setUpvotes(res1.data[0].count)
+                })
+            })
+            axios.get(`community/linear/${post.community_id}`).then((res)=>{
+                setAddress(res.data[0].addr)
+            })
+            axios.get(`posts/contents/${post?.linear_id}`).then((res)=>{
+                setContents(res.data)
+            })
+        }
     }, [post])
 
     useEffect(() => {
@@ -56,33 +71,37 @@ function FeedItemCard({post, handleUpvotePost}) {
     // show na lang ng comments 
     //console.log(postData)
     return (
-        <Feed.Event>
-        <Feed.Content>
-            
-            <Label as='a' color="blue" style={{margin:"3px"}} image>
-      <img src='https://placekitten.com/50/50' />
-      {postData?.user?.username}
-      </Label>
-      <Label as='a' href={`/square/${postData?.community_id}/post/${postData?.linear_id}`} style={{margin:"3px"}} color="violet">{postData.title}</Label>
-      <Label as='a' href={`/square/${postData?.community_id}`} color="purple" style={{margin:"3px"}} image>
-          {postData?.community?.title}
-      <Label.Detail>{ta.format(new Date(postData?.created_at))}</Label.Detail>
-      </Label>
-          <Feed.Extra images>
-            <PostThumbnailComponent contents={postData.contents}/>
-            <PostContentsComponent isPreview={true} contents={postData.contents}/>
-          </Feed.Extra>
-          <Feed.Meta>
-            <Feed.Like>
-              <Icon name='like' onClick={() => upvotePost()} />{postData?.upvotecount} Like
-            </Feed.Like>
-            <Label as='a' href={`/square/${postData?.community_id}/post/${postData?.linear_id}`}>
-            <Icon name='play' />
-            Read more
-            </Label>
-          </Feed.Meta>
-        </Feed.Content>
-        </Feed.Event>
+
+            <>
+            <Feed.Event>
+            <Feed.Content>
+                
+                <Label as='a' color="blue" style={{margin:"3px"}} image>
+        <img src='https://placekitten.com/50/50' />
+        {postUser}
+        </Label>
+        <Label as='a' href={`/square/${address}/post/${post?.linear_id}`} style={{margin:"3px"}} color="violet">{post?.title}</Label>
+        <Label as='a' href={`/square/${address}`} color="purple" style={{margin:"3px"}} image>
+            {post?.community?.title}
+        <Label.Detail>{ta.format(new Date(post?.created_at))}</Label.Detail>
+        </Label>
+            <Feed.Extra images>
+                <PostThumbnailComponent contents={contents}/>
+                <PostContentsComponent isPreview={true} contents={contents}/>
+            </Feed.Extra>
+            <Feed.Meta>
+                <Feed.Like>
+                <Icon name='like' onClick={() => upvotePost()} />{upvotes} Like
+                </Feed.Like>
+                <Label as='a' href={`/square/${address}/post/${post?.linear_id}`}>
+                <Icon name='play' />
+                Read more
+                </Label>
+            </Feed.Meta>
+            </Feed.Content>
+            </Feed.Event>
+            </>
+        
     )
 }
 

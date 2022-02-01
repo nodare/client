@@ -4,12 +4,14 @@ import { useHistory, useParams } from 'react-router';
 import { Breadcrumb, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import bsCustomFileInput from "bs-custom-file-input";
-
+import { UiContext } from 'pages'
 import InfoModal from "components/shared/modals/common/InfoModal";
+import axios from 'axios';
 
 function SettingsPageComponent(props) {
     const params = useParams()
     const history = useHistory()
+    const ui = React.useContext(UiContext)
     const fileData = new FormData()
 
     const [isLoading, setIsLoading] = useState(true)
@@ -18,10 +20,31 @@ function SettingsPageComponent(props) {
     const [communitySettingsForm, setCommunitySettingsForm] = useState({})
     const [communityUploadedImages, setCommunityUploadedImages] = useState([])
     const [confirmDiscardModal, showConfirmDiscardModal] = useState(false)
+    const [isAuthenticated,setIsAuthenticated] = useState(false)
     
-
     const loadCommunityData = () => {
         props.getCommunityData(params.community_id)
+        let data = {
+            user_id:ui?.currentUser?.linear_id,
+            community_id:params.community_id
+        }
+        console.log(ui?.currentUser?.linear_id)
+        if(data.user_id){
+        axios.post(`community/auth`,data).then((res)=>{
+                if(res.data){
+                    console.log(res.data)
+                    if(res.data[0].status>=3){
+                        setIsAuthenticated(true)
+                    }else{
+                        history.push(`/square/${params.community_id}`)
+                    }
+                }else{
+                    history.push(`/square/${params.community_id}`)
+                }
+            })
+        }else{
+            history.push(`/square/${params.community_id}`)
+        }
         prefillForm()
         setIsLoading(false)
     }
@@ -31,19 +54,23 @@ function SettingsPageComponent(props) {
     }
 
     const handleSaveSettings = (event) => {
-        event.preventDefault()
-        console.log(fileData.entries())
-        props.updateCommunity(params.community_id, communitySettingsForm)
-        .then(()=>{
-            console.log(fileData)
-            console.log(communityUploadedImages)
-            props.updateCommunityFiles(params.community_id, communityUploadedImages)
-            .then((res)=>{
-                console.log(res)
-                window.alert("Settings saved!")
-                history.push(`/square`)
+            if(isAuthenticated){
+            event.preventDefault()
+            console.log(fileData.entries())
+            props.updateCommunity(params.community_id, communitySettingsForm)
+            .then(()=>{
+                console.log(fileData)
+                console.log(communityUploadedImages)
+                props.updateCommunityFiles(params.community_id, communityUploadedImages)
+                .then((res)=>{
+                    console.log(res)
+                    window.alert("Settings saved!")
+                    history.push(`/square/${params.community_id}`)
+                })
             })
-        })
+        }else{
+            history.push(`/square/${params.community_id}`)
+        }
     }
 
     const handleFormInputChange = event => {

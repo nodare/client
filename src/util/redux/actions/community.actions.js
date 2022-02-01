@@ -38,8 +38,8 @@ export const getUsersBlogs = ( userLinearId ) => async dispatch => {
     })
 }
 
-export const getCommunityData = (communityLinearId) => async dispatch => {
-    let res = await axios.get(`community/${communityLinearId}`)
+export const getCommunityData = (communityAddress) => async dispatch => {
+    let res = await axios.get(`community/${communityAddress}`)
     return dispatch({
         type: "GET_COMMUNITY_DATA",
         payload: res.data[0]
@@ -106,7 +106,7 @@ export const getCommunityFollowers = (communityLinearId) => async dispatch => {
     let res = await axios.get(`community/${communityLinearId}/follow`)
     return dispatch({
         type: "GET_COMMUNITY_FOLLOWERS",
-        payload: res.data || null
+        payload: res.data
     })
 }
 export const getFollowStatus = (data) => async dispatch =>{

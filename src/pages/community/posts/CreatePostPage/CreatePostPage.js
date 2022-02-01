@@ -30,6 +30,7 @@ function CreatePostPage(props) {
     const [isLoading, setIsLoading] = useState(false)
     const [editor, setEditor] = useState(null)
     const [editorContent, setEditorContent] = useState(null)
+    const [linearId,setLinearId] = useState('')
     const editorTools = {
         header: Header,
         paragraph: Paragraph,
@@ -74,25 +75,13 @@ function CreatePostPage(props) {
     const loadOptions = () => {
         props.getUsersCommunities(ui?.currentUser?.linear_id)
     }
-    useEffect(()=>{
-        setPostFormValues({
-            ...postFormValues,
-            community_id:params.community_id?params.community_id:"",
-            category_id:params.category_id?params.category_id:"",
-        })
-        props.getCommunityCategories(params.community_id)
-        .then(()=>{
-            console.log(props.categories)
-            setUserCategories(props.categories)
-        })
-    },[params])
-    useEffect(()=>{
-        // wat
-        if(userCommunities.length > 0) setUserCommunities([])
-        loadOptions()
-    }, [ui])
 
-
+    const getCommunityData = addr => {
+        props.getCommunityData(addr)
+        .then((res)=>{
+            setLinearId(res.payload.linear_id)
+        })
+    }
 
     const handleEditorSave = async () => {
         setIsLoading(true)
@@ -106,9 +95,9 @@ function CreatePostPage(props) {
     }
 
     // may problem dito. late kinukuha length
-    const handleChangeCommunity = communityLinearId => {
-        setPostFormValues({...postFormValues, community_id: communityLinearId })
-        props.getCommunityCategories(communityLinearId)
+    const handleChangeCommunity = communityAddr => {
+        setPostFormValues({...postFormValues, community_id: communityAddr })
+        props.getCommunityCategories(communityAddr)
         .then(()=>{
             setUserCategories("")
         })
@@ -116,7 +105,7 @@ function CreatePostPage(props) {
 
     const addNewPost = () => {
         if(postFormValues.title === "") return toast.error("Please include a title in your post. ")
-        if(postFormValues.community === "") return toast.error("Please select which community to post. ")
+        if(postFormValues.community_id === "") return toast.error("Please select which community to post. ")
         if(postFormValues.category_id === "") return toast.error("There's no category. Please select a category. ")
         if(postContents.length === 0) return toast.error("Editor is empty. Please write something. ")
 
@@ -139,6 +128,35 @@ function CreatePostPage(props) {
         })
     }
 
+    useEffect(()=>{
+        if(params.addr){
+            getCommunityData(params.addr)
+            return()=>{
+                props.clearCommunityData()
+                props.clearPosts()
+                props.clearFollow()
+            }
+        }
+    },[params])
+    useEffect(()=>{
+        // wat
+        if(userCommunities.length > 0) setUserCommunities([])
+        loadOptions()
+    }, [ui])
+
+    useEffect(()=>{
+            setPostFormValues({
+                ...postFormValues,
+                community_id:params.addr?params.addr:"",
+                category_id:params.category_id?params.category_id:"",
+            })
+            props.getCommunityCategories(params.addr)
+            .then(()=>{
+                console.log(props.categories)
+                setUserCategories(props.categories)
+            })
+        
+    },[params])
 
     return (
         <>
@@ -166,9 +184,9 @@ function CreatePostPage(props) {
                                 <Form.Control as="select" value={postFormValues.community_id} onChange={e=>handleChangeCommunity(e.target.value)}>
                                     <option disabled value="">--Select Community--</option>
                                     {
-                                        props.communities.map((community)=>{
+                                        props.communities?.map((community)=>{
                                             return(
-                                                <option key={community.id} value={community.linear_id}>{community.title}</option>
+                                                <option key={community.id} value={community.addr}>{community.title}</option>
                                             )
                                         })
                                     }
@@ -199,7 +217,7 @@ function CreatePostPage(props) {
                     </EditorJs>
                 </Card>
                 <Button.Group floated="right" size="large">
-                    <Button onClick={()=>history.replace(`/square/${postFormValues.community_id}/cat/${postFormValues.category_id}`)}>Cancel</Button>
+                    <Button onClick={()=>history.replace(`/square/${params.addr}/${postFormValues.category_id?"cat/":""}${postFormValues.category_id}`)}>Cancel</Button>
                     <Button.Or />
                     <Button positive onClick={() => addNewPost()}>{
                                     isLoading === true?

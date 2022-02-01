@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { UiContext } from 'pages'
@@ -8,28 +8,28 @@ export function CreateCommunityModal(props) {
     const [communityNameInput, setCommunityNameInput] = useState("")
     const [communityDescriptionInput, setCommunityDescriptionInput] = useState("")
     const [communityType, setCommunityType] = useState(false)
+    const [communityAddressInput, setCommunityAddressInput] = useState("")
     
     const createCommunity = () =>{
         if(communityNameInput === "") return window.alert("Write something in the community name")
         if(communityDescriptionInput === "") return window.alert("Write something in the community description")
         
         let data = {
-            user_id: ui?.currentUser?.linear_id,
-            title: communityNameInput,
-            description: communityDescriptionInput,
-            community_type: communityType,
-            status: 0,
+            'user_id': ui?.currentUser?.linear_id,
+            'title': communityNameInput,
+            'description': communityDescriptionInput,
+            'addr': communityAddressInput,
+            'type': communityType?1:0,
+            'status': 0
         }
         // place some code to set a timeout and add a condition to close the modal
         props.toggleTrigger(false)
         props.handleCreateCommunity(data)
-        
         setCommunityNameInput("")
         setCommunityDescriptionInput("")
+        setCommunityAddressInput("")
         setCommunityType(false)
     }
-
-    
     return (
         <>
             <Modal show={props.isShow} onHide={() => props.toggleTrigger(false)}>
@@ -51,11 +51,15 @@ export function CreateCommunityModal(props) {
                         <textarea type="text" className="form-control" maxLength={255} required onChange={(e) => setCommunityDescriptionInput(e.target.value)} placeholder="Write your description here.."></textarea>
                     </Form.Group>
                     <Form.Group>
+                        <Form.Label>Short Link</Form.Label>
+                        <textarea type="text" className="form-control" maxLength={30} required onChange={(e) => setCommunityAddressInput(e.target.value)} placeholder="Write a short nickname for the community"></textarea>
+                    </Form.Group>
+                    <Form.Group>
                         <Form.Check
                             id="communityType"
                             type="switch"
-                            label={communityType === false?'Public':'Private'}
-                            onChange={e=>setCommunityType(e.target.checked)}
+                            label={communityType?'Blog':'Community'}
+                            onChange={(e)=>setCommunityType(e.target.checked)}
                         ></Form.Check>
                     </Form.Group>
                 </Modal.Body>

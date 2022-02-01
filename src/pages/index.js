@@ -22,13 +22,13 @@ function MainPage(props) {
     
 
     useEffect(() => {
-            if(user === null){
-                console.log(user)
-                history.push('/login')
-                console.log("Failed to load")
-            }else{
+            if(user.response){
                 setIsLoggedIn(true)
                 setCurrentUser(user.response)
+            }else{
+                console.log(user)
+                setIsLoggedIn(false)
+                console.log(user.response)
            }
     }, [user])
 
@@ -36,10 +36,10 @@ function MainPage(props) {
     return (
             <>
                 <UiContext.Provider value={{currentUser, isLoggedIn, setIsLoggedIn}}>
-
                     {
-                        isLoggedIn ?<UserNavbarComponent isLoggedIn={isLoggedIn} user={currentUser || null}/>:""
+                        <UserNavbarComponent isLoggedIn={isLoggedIn} user={currentUser || null}/>
                     }
+                    
                     <Container className="py-3">                        
                         <RouteComponent currentUser={currentUser}/>
                     </Container>

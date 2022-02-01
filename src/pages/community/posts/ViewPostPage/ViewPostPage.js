@@ -33,7 +33,6 @@ function ViewPostPage(props) {
     const [editorContent, setEditorContent] = useState(null)
     const [editor, setEditor] = useState(null)
     const [isReadOnly,setIsReadOnly] = useState(true)
-    const [isPrivileged, setIsPrivileged] = useState(false)
     const [upvoteCount,setUpvoteCount] = useState(0)
     const [postFormValues, setPostFormValues] = useState({
         title: "",
@@ -43,12 +42,6 @@ function ViewPostPage(props) {
 
     const [userCommunities, setUserCommunities] = useState([])
     const [userCategories, setUserCategories] = useState([])
-    useEffect(()=>{
-        if(params.community_id){
-        props.getCommunityCategories(params.community_id)
-        loadData()
-        }
-    }, [params])
     const onClickDeletePost = () => {
         showDeletePostModal(true)
     }
@@ -68,7 +61,7 @@ function ViewPostPage(props) {
     }
     const loadData = async () => {
         console.log(params.post_id)
-        await props.getCommunityData(params.community_id)
+        await props.getCommunityData(params.addr)
         .then(() => {
             props.getPostData(params.post_id)
             .then(()=>{
@@ -78,7 +71,7 @@ function ViewPostPage(props) {
                 })
             })
         })
-        loadComments()
+        console.log("Hey BB")
     }
     const upvotePost = () => {
         //setIsUpvoted(prevState => prevState = !prevState)
@@ -88,7 +81,7 @@ function ViewPostPage(props) {
                 .then((res)=>{
                     console.log(res)
                     setUpvoteCount(res.data[0].count)
-                    setIsUpvoted(!isUpvoted)
+                    setIsUpvoted(res.data[0].status)
                 })
         }
 
@@ -142,28 +135,30 @@ function ViewPostPage(props) {
     }
     useEffect(() => {
         setIsLoading(false)
-        
         return()=>{
-
         }
 
     }, [isLoading])
-    useEffect(() =>{
+    useEffect(()=>{
+        props.getCommunityCategories(params.addr)
+        console.log(post)
+    },[ui])
+    useEffect(()=>{
         props.verifyPostUpvote(params.post_id, ui?.currentUser?.linear_id)
         .then((res)=>{
-            if(res.payload){
-                setIsUpvoted(true)
-            }
+                setIsUpvoted(res.payload?true:false)
         })
     },[ui])
     useEffect(()=>{
-        if(params){
+        props.verifyPostUpvote(params.post_id, ui?.currentUser?.linear_id)
+        .then((res)=>{
+                setIsUpvoted(res.payload?true:false)
+        })
         props.getPostUpvoteCount(params.post_id)
             .then((res)=>{
                 setUpvoteCount(res.payload[0].count)
             })
-        }
-    },[params])
+    },[isUpvoted])
     const editorTools = {
         header: Header,
         paragraph: Paragraph,
@@ -196,7 +191,6 @@ function ViewPostPage(props) {
             }
         }
     }
-    console.log(upvoteCount)
     return (
         <>
         <Row>
@@ -208,19 +202,19 @@ function ViewPostPage(props) {
                     <Breadcrumb.Item href="/">
                         Home
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item href={`/square/${params.community_id}`}>{props.communityData?.type?"Blog main":"Community main"}</Breadcrumb.Item>
+                    <Breadcrumb.Item href={`/square/${post.response?.community?.addr}`}>{props.communityData?.type?"Blog main":"Community main"}</Breadcrumb.Item>
                     <Breadcrumb.Item active>Post</Breadcrumb.Item>
                 </Breadcrumb>
             </Col>
             <Col md={12} lg={3} style={{marginBottom:"2rem"}}>
             <Segment.Group raised>
-                        <Segment className="d-block justify-content-between" onClick={()=>history.replace(`/square/${post.response?.community_id}/`)}>
+                        <Segment className="d-block justify-content-between" key={0} onClick={()=>history.replace(`/square/${post.response?.community?.addr}/`)}>
                             <strong>#All</strong>
                         </Segment>
                 {
                         props.categories?.map((category, i)=>{
                             return(
-                                <Segment className="d-block justify-content-between" onClick={()=>history.replace(`/square/${post.response?.community_id}/cat/${category.linear_id}`)} key={i}>
+                                <Segment active={params?.category_id===category.linear_id} className="d-block justify-content-between" onClick={()=>history.replace(`/square/${post.response?.community?.addr}/cat/${category.linear_id}`)} key={i+1}>
                                     <strong>#{category.name}</strong>
                                 </Segment>
                             )
@@ -289,11 +283,14 @@ function ViewPostPage(props) {
                                 {/* end of main post */}
 
                                 {/* post buttons */}
+                                {
+                                    isUpvoted?
+                                    <>
                                     <Button
-                                    color={isUpvoted?'red':'green'}
+                                    color={'red'}
                                     icon='heart'
                                     onClick={() => upvotePost()}
-                                    label={{ basic: true, color: isUpvoted?'red':'green', pointing: 'left', content: upvoteCount }}
+                                    label={{ basic: true, color: 'red', pointing: 'left', content: upvoteCount }}
                                     />
                                     <Button
                                     basic
@@ -307,20 +304,43 @@ function ViewPostPage(props) {
                                         content: '2,048',
                                     }}
                                     />
+                                    </>
+                                    :
+                                    <>
+                                    <Button
+                                    color={'green'}
+                                    icon='heart'
+                                    onClick={() => upvotePost()}
+                                    label={{ basic: true, color: 'green', pointing: 'left', content: upvoteCount }}
+                                    />
+                                    <Button
+                                    basic
+                                    color='blue'
+                                    icon='share'
+                                    label={{
+                                        as: 'a',
+                                        basic: true,
+                                        color: 'blue',
+                                        pointing: 'left',
+                                        content: '2,048',
+                                    }}
+                                    />
+                                    </>
+                                }
                                 <ButtonGroup className="py-3">
                                     {/* feature for manangers should be added */}
                                     {post?.response?.user_id === ui?.currentUser?.linear_id?
                                     <>
-                                    <Button size="sm" color={isReadOnly?"standard":"green"} onClick={isReadOnly?()=>editorMode():() =>saveEditedPost()}>{isReadOnly?"Edit":"Save"}</Button>
-                                    <Button size="sm" variant="danger" onClick={()=>onClickDeletePost()}>Delete</Button>
+                                    <Button size="small" color={isReadOnly?"teal":"olive"} onClick={isReadOnly?()=>editorMode():() =>saveEditedPost()}>{isReadOnly?"Edit":"Save"}</Button>
+                                    <Button size="small" variant="danger" onClick={()=>onClickDeletePost()}>Delete</Button>
                                     </>
                                     :
                                     ui?.currentUser?.user_type===1?
-                                    <Button size="sm" variant="danger" onClick={()=>onClickDeletePost()}>Delete</Button>
+                                    <Button size="small" variant="danger" onClick={()=>onClickDeletePost()}>Delete</Button>
                                     :
                                     ""
                                 }
-                                    <Button size="sm" variant="danger">Report</Button>
+                                    <Button size="small" variant="danger">Report</Button>
                                 </ButtonGroup>
                                 </Segment>
 
@@ -338,7 +358,7 @@ function ViewPostPage(props) {
                                     </Placeholder.Paragraph>
                                 </Placeholder>
                                 :(
-                                        <CommentsComponent postLinearId={params.post_id} userId={ui?.currentUser?.linear_id}></CommentsComponent>
+                                        <CommentsComponent communityAddr={params.addr} postLinearId={params.post_id} userId={ui?.currentUser?.linear_id}></CommentsComponent>
                                 )
                                 }
                                 </Segment>

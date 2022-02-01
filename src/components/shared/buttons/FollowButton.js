@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
+import { replace } from 'lodash-es';
 
 export default function FollowButton(props) {
     const [isLoading, setIsLoading] = useState(false)
@@ -8,7 +9,13 @@ export default function FollowButton(props) {
     const handleFollowButton = () => {
         props.handleFollow()
     }
-    if(props.isFollowed == 0){
+    if(props.isLoggedIn == false){
+        return (
+            <Button variant="primary" onClick={() => window.location.replace('/login')}>
+                Follow
+            </Button>
+        )
+    }else if(props.isFollowed == 0){
         return (
             <Button variant="primary" onClick={() => handleFollowButton()}>
                 Follow
@@ -43,5 +50,6 @@ export default function FollowButton(props) {
 
 FollowButton.propTypes = {
     isFollowed: PropTypes.any,
-    handleFollow: PropTypes.func.isRequired
+    handleFollow: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.any
 }

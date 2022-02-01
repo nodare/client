@@ -13,9 +13,7 @@ export const UserContextProvider = ({children, value}) => {
     //const [testState, setTestState] = useState("asdf")
     
     return(
-        <UserContext.Provider 
-            values={{UserContext}}
-        >
+        <UserContext.Provider values={{UserContext}}>
             {children}
         </UserContext.Provider>
     )

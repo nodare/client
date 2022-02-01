@@ -4,8 +4,8 @@ import axios from 'axios'
             USERS
 ================================
 */
-export const getUserDetails = (userLinearId) => async dispatch => {
-    let res = await axios.get(`users/profile/${userLinearId}`)
+export const getUserDetails = (userName) => async dispatch => {
+    let res = await axios.get(`users/profile/${userName}`)
     return dispatch({
         type: "GET_USER_DETAILS",
         payload: res.data[0]

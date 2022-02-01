@@ -92,10 +92,10 @@ function HomePage(props) {
 
     
     useEffect(() => {
-        if(!feed.isLoading){
+            setIsLoading(true)
             setFeedPosts(feed.response)
-        }
-    }, [feed])
+            setIsLoading(false)
+    }, [feed.response])
     console.log(navigator.languages)
     console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
     return (
@@ -162,40 +162,18 @@ function HomePage(props) {
                                     <>
                                         <Tab.Content>
                                             <Tab.Pane eventKey="feed">
-                                                <Form>
-                                                    <Form.Group>
-                                                        <InputGroup className="mb-3">
-                                                            <InputGroup.Prepend>
-                                                                <Button variant="primary">
-                                                                <FaRegImages/>
-                                                                </Button>
-                                                                <Button variant="primary">
-                                                                <FaRegKissWinkHeart/>
-                                                                </Button>
-                                                            </InputGroup.Prepend>
-                                                            <Form.Control type="text" placeholder="Title" />
-                                                            <InputGroup.Append>
-                                                                <Button type="submit"><RiSendPlaneFill/></Button>
-                                                            </InputGroup.Append>
-                                                        </InputGroup>
-                                                    </Form.Group>
-                                                    <Form.Group>
-                                                    <Form.Control as="textarea" rows={3} />
-                                                    </Form.Group>
-                                                </Form>
+
                                                 {
                                                     feedPosts &&  feedPosts.length === 0 ?"there are no new posts now":
                                                     <Feed>
                                                         {
                                                             map(feedPosts, (post, i)=>{
-                                                                if(feed.isLoading == false && typeof(post)!=='undefined'){
                                                                     return (
                                                                         <FeedItemCard 
                                                                             key={i} 
                                                                             post={post}
                                                                         />
                                                                     )
-                                                                }
                                                             })
                                                         }
                                                     </Feed>
@@ -203,11 +181,11 @@ function HomePage(props) {
                                             </Tab.Pane>
                                             <Tab.Pane eventKey="community">
                                                 <Row className="my-2">
-                                                    {props.communities.map((community, i)=>{
+                                                    {props.communities?.map((community, i)=>{
                                                         return(
                                                             <>
                                                                 <Col xs={6} md={4} key={i}>
-                                                                    <LinkContainer to={`/square/${community.linear_id}`}>
+                                                                    <LinkContainer to={`/square/${community.addr}`}>
                                                                         <Card raised={true}>
                                                                             <Image src="http://placekitten.com/300/300" wrapped ui={false} />
                                                                             <Card.Content>
@@ -235,7 +213,7 @@ function HomePage(props) {
                                                         return(
                                                             <>
                                                                 <Col xs={6} md={4} key={i}>
-                                                                    <LinkContainer to={`/square/${blog.linear_id}`}>
+                                                                    <LinkContainer to={`/square/${blog.addr}`}>
                                                                         <Card raised={true}>
                                                                             <Image src="http://placekitten.com/300/300" wrapped ui={false} />
                                                                             <Card.Content>

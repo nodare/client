@@ -35,7 +35,7 @@ function UserNavbarComponent(props) {
         localStorage.removeItem('token')
         ui.setIsLoggedIn(false)
         window.alert("You are successfully logged out!")
-        history.push('/login')
+        window.location.replace('/login')
     }
 
     //useEffect(() => {
@@ -43,6 +43,7 @@ function UserNavbarComponent(props) {
     //}, [usertest])
 
     useEffect(() => {
+        console.log(props.user)
         if(props.user){
             setUser(props.user)
         }else{
@@ -90,7 +91,7 @@ function UserNavbarComponent(props) {
                                             </LinkContainer>
                                         </Nav.Link>
                                         <NavDropdown title="Account">
-                                            <LinkContainer to={`/profile/${ui?.currentUser?.linear_id}`}>
+                                            <LinkContainer to={`/profile/${ui?.currentUser?.username}`}>
                                                 <NavDropdown.Item>
                                                     <div className="d-flex justify-content my-1">
                                                         <ProfileImageSmall
