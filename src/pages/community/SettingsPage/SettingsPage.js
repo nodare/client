@@ -23,10 +23,10 @@ function SettingsPageComponent(props) {
     const [isAuthenticated,setIsAuthenticated] = useState(false)
     
     const loadCommunityData = () => {
-        props.getCommunityData(params.community_id)
+        props.getCommunityData(params.addr)
         let data = {
             user_id:ui?.currentUser?.linear_id,
-            community_id:params.community_id
+            addr:params.addr
         }
         console.log(ui?.currentUser?.linear_id)
         if(data.user_id){
@@ -36,14 +36,14 @@ function SettingsPageComponent(props) {
                     if(res.data[0].status>=3){
                         setIsAuthenticated(true)
                     }else{
-                        history.push(`/square/${params.community_id}`)
+                        history.push(`/square/${params.addr}`)
                     }
                 }else{
-                    history.push(`/square/${params.community_id}`)
+                    history.push(`/square/${params.addr}`)
                 }
             })
         }else{
-            history.push(`/square/${params.community_id}`)
+            history.push(`/square/${params.addr}`)
         }
         prefillForm()
         setIsLoading(false)

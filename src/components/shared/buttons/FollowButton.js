@@ -30,13 +30,13 @@ export default function FollowButton(props) {
     }else if(props.isFollowed == 2){
         return (
             <Button variant="outline-primary" onClick={() => handleFollowButton()} disabled>
-                Unfollow
+                Bannned
             </Button>
         )
-    }else if(props.isFollowed ==3){
+    }else if(props.isFollowed ==3 ||props.isFollowed ==4){
         return(
-            <Button variant="outline-primary" onClick={() => handleFollowButton()} disabled>
-                Bannned
+            <Button variant="outline-primary" disabled>
+                Admin
             </Button>
         )
     }else{

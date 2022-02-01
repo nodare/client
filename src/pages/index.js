@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Container, Button } from "react-bootstrap";
 import { createBrowserHistory } from "history";
+import jwt_decode from "jwt-decode";
 import RouteComponent from 'routes'
 
 
@@ -20,15 +21,21 @@ function MainPage(props) {
     
     const history = createBrowserHistory()
     
-
+    useEffect(() =>{
+        let token = localStorage.getItem('token')
+        const exp = jwt_decode(token).exp
+        const expirationTime = (exp * 1000) - 60000
+        if (Date.now() >= expirationTime) {
+            localStorage.clear()
+            history.push('/login')
+        }
+    },[localStorage])
     useEffect(() => {
             if(user.response){
                 setIsLoggedIn(true)
                 setCurrentUser(user.response)
             }else{
-                console.log(user)
                 setIsLoggedIn(false)
-                console.log(user.response)
            }
     }, [user])
 

@@ -324,7 +324,7 @@ function ViewPageComponent(props) {
                                     drop={'down'}
                                     >
                                             <>
-                                                <LinkContainer to={`/square/${props.community.linear_id}/settings`}>
+                                                <LinkContainer to={`/square/${params.addr}/settings`}>
                                                     <Dropdown.Item>Settings</Dropdown.Item>
                                                 </LinkContainer>
                                             </>

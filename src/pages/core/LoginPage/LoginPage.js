@@ -27,6 +27,7 @@ function LoginPageComponent(props) {
         password:"",
         lang:"",
         zone:"",
+        isAgreed:false
 
     })
     const errorOpen = (sentence) => {
@@ -47,14 +48,14 @@ function LoginPageComponent(props) {
     const submitSignUpForm =() => {
         setSignUpForm({
             email:signUpForm.email,
-            input:signUpForm.input,
+            username:signUpForm.username,
             name:signUpForm.name,
             password:signUpForm.password,
             lang:navigator.languages,
             zone:Intl.DateTimeFormat().resolvedOptions().timeZone,
             isAgreed:signUpForm.isAgreed
         })
-        if(signUpForm.email == "" || signUpForm.input =="" || signUpForm.name == "") return errorOpen("Please fill out the fields required")
+        if(signUpForm.email == "" || signUpForm.input =="" || signUpForm.name == "" || signUpForm.username== "") return errorOpen("Please fill out the fields required")
         if(signUpForm.isAgreed === false) return errorOpen("You haven't agreed to the terms and condtiions applied. ")
         props.registerUser(signUpForm)
     }
@@ -133,28 +134,43 @@ function LoginPageComponent(props) {
                         icon='mail'
                         iconPosition='left'
                         label='Email'
+                        value={signUpForm.email}
+                        onChange={(e)=>setSignUpForm({...signUpForm,email:e.target.value})}
                         placeholder='Email'
+                        required
                     />
                     <Form.Input
                         icon='user'
                         iconPosition='left'
                         label='Username'
+                        value={signUpForm.username}
+                        onChange={(e)=>setSignUpForm({...signUpForm,username:e.target.value})}
                         placeholder='Username'
+                        required
                     />
                     <Form.Input
                         icon='info'
                         iconPosition='left'
                         label='Name'
+                        value={signUpForm.name}
+                        onChange={(e)=>setSignUpForm({...signUpForm,name:e.target.value})}
                         placeholder='Name'
+                        required
                     />
                     <Form.Input
                         icon='lock'
                         iconPosition='left'
                         label='Password'
                         type='password'
+                        value={signUpForm.password}
+                        onChange={(e)=>setSignUpForm({...signUpForm,password:e.target.value})}
+                        required
                     />
                     <Form.Checkbox
                         label='I agree to the Terms and Conditions'
+                        value={signUpForm.isAgreed}
+                        onChange={(e)=>setSignUpForm({...signUpForm,isAgreed:e.target.checked})}
+                        required
                     />
                     <Button content='Sign Up' onClick={()=>submitSignUpForm()} primary />
                 </Form>
